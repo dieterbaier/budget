@@ -1,18 +1,23 @@
 # Budget
 
-Private, single-household budgeting application: offline-first mobile expense
-capture with a backend that owns budget calculation.
+Private, **single-user** budgeting application: an actuals tracker that replaces
+a Notion budget. The owner records transactions from bank statements, organized
+by category and category group across three accounts; a server-owned domain
+computes monthly expenditure, account reserves, a cash runway, and a pension
+projection, rendered by an installable React PWA.
 
 This repository was bootstrapped with the
 [architecture-knowledge-toolkit](https://github.com/docs-as-code-toolkit/architecture-knowledge-toolkit)
 `bootstrap-project` skill. It currently contains **architecture documentation
 only** (no application code yet).
 
-> **All architecture content is an AI-generated draft** (`draft`/`proposed`,
-> `reviewed: false`). It was seeded from the toolkit's private-budget example and
-> must be reviewed against the real product intent before acceptance. Open
-> assumptions and required human decisions are tracked in
-> `src/docs/doc-005-questions-and-answers.adoc`.
+> The initial content was AI-generated from the toolkit's private-budget
+> example. On 2026-07-24 the owner reviewed the scope and made the first product
+> and technology decisions (see `src/docs/arc42/09-architecture-decisions/` and
+> `src/docs/doc-005-questions-and-answers.adoc`); content grounded in those
+> decisions is marked `reviewed`/`accepted`. Newly derived or still-uncertain
+> content remains `draft`/`proposed` until confirmed. Remaining open items are
+> tracked in `src/docs/doc-005-questions-and-answers.adoc`.
 
 ## Layout
 

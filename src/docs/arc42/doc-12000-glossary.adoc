@@ -2,12 +2,13 @@
 id: DOC-12000-glossary
 type: Document
 title: Glossary
-status: draft
+status: reviewed
 owner: product owner
 created: '2026-07-03'
-reviewed: false
+updated: '2026-07-24'
+reviewed: true
 generated: false
-summary: Shared terms for the Private Budget domain.
+summary: Shared terms for the private Budget domain.
 tags:
 - arc42
 - glossary
@@ -20,9 +21,22 @@ metadata_version: '1.0'
 [cols="1,3", options="header"]
 |===
 | Term | Meaning
-| Budget | Monthly spending limit for a category.
-| Category | User-defined grouping for transactions.
-| Transaction | Income or expense recorded by the user.
-| Sync command | Pending mobile change sent to the backend.
+| Transaction | A recorded expense, income, or transfer taken from a bank statement.
+| Fixed cost | A recurring cost with an amount, an interval (monthly, quarterly, half-yearly, yearly), and an anchor date.
+| Variable cost | A non-recurring expense recorded as an ordinary transaction.
+| Category | A user-defined classification a transaction is assigned to.
+| Category group | A grouping of categories (for example dog, car, household, daughter, licensing) used for the group view.
+| Account | One of the three tracked accounts: current account, reserve call-money account, savings call-money account.
+| Balance snapshot | A manually entered account balance with its "as of" date; not derived from transactions.
+| Transfer | Money moved between accounts; never counted as an expense.
+| Refund | A negative expense recorded in the same category as the original cost.
+| Reserve requirement | Money that must sit on the call-money account to cover non-monthly fixed costs, derived from amounts and anchor dates.
+| Overspending signal | Comparison of current monthly expenditure against average monthly income.
+| Cash runway | How much must be on the current account from today until month end.
+| Pension projection | Nominal estimate of retirement need from pot, retirement age, life expectancy, average inflation, entered nominal return, and pension-relevant costs.
+| Pension-relevance flag | A flag on a category, cost, or fixed cost marking whether it still applies in retirement.
+| Asset | A manually entered net-worth position (life insurance, house value, account balance, investment portfolio, latest statutory pension figure).
+| Net worth | The sum of tracked assets, used against the projected retirement need.
+| Pension shortfall | Projected retirement need minus tracked net worth.
+| Barabhebung | A cash withdrawal booking; the only cash movement the owner records.
 |===
-

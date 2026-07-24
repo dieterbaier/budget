@@ -3,70 +3,43 @@
 :id: DOC-005-questions-and-answers
 
 This is the central discussion document for the private Budget project. It
-records open and answered questions and the assumptions behind the AI-generated
-bootstrap. Open questions are picked up by the generator into the open-questions
-index for the architecture decisions chapter.
+records open and answered questions and the decisions taken. Open questions are
+picked up by the generator into the open-questions index for the architecture
+decisions chapter.
 
-== Bootstrap Notes
+== Decision Notes
 
-All architecture content in this repository is an AI-generated draft produced by
-the architecture-knowledge-toolkit bootstrap. Every artifact is `draft` or
-`proposed` with `reviewed: false`. Draft prose was seeded from the toolkit's
-private-budget example (same domain) and must be reviewed and corrected against
-the real product intent before any artifact is marked `reviewed` or `accepted`.
+The AI bootstrap seeded this repository from the toolkit's private-budget
+example. On 2026-07-24 the owner reviewed the scope and made the first product
+and technology decisions in a clarification session. The confirmed product is a
+*private, single-user actuals tracker* that replaces the owner's Notion budget:
 
-Assumptions made during bootstrap (to confirm or correct):
+* Transactions are entered from bank statements. Cash is not tracked, except a
+  `Barabhebung` (cash withdrawal) booking. The app analyses spending; it is not
+  a full ledger and does not derive account balances.
+* Master data: category groups, categories, three accounts (current account, a
+  call-money reserve account for non-monthly fixed costs, a call-money savings
+  account), fixed-cost definitions (amount, interval, anchor date), and a
+  monthly income table.
+* Core views: current monthly expenditure with an overspending signal against
+  average income; spend per category group; account-reserve requirements; a
+  cash runway to month end; net-worth tracking; and a nominal pension projection
+  that yields the pension shortfall.
+* Clients: an installable React PWA is the only v1 client and covers both
+  desktop and mobile. Offline capture and multi-user sharing are out of scope.
 
-* Product idea. The original bootstrap prompt left the project idea blank; it was
-  confirmed interactively as a *private, single-household budgeting application*
-  with offline-first mobile expense capture and server-owned budget calculation.
-  See Q-PO-002.
-* Clients. A mobile app for capture plus a backend; a web UI is assumed optional
-  for later. See Q-PO-003.
-* Technology stack. No concrete languages, frameworks, datastore, or hosting
-  target have been decided. The techstack canvas and deployment chapter hold
-  placeholders only. See Q-ARCH-001 and Q-OPS-002.
-* Decisions. Three ADRs are proposed (backend API boundary, mobile local-first
-  entry, server-owned budget calculation). They reflect the assumed idea and are
-  not yet accepted. See Q-ARCH-002.
+The corresponding technology decisions are recorded in ADR-001 and ADR-003
+through ADR-008. Content confirmed in that session is marked `reviewed`;
+newly derived or still-uncertain content stays `draft`/`proposed`.
 
 == Open Questions For Product Owner
 
-[[q-po-001]]
-=== Q-PO-001: Should multiple household members share one budget?
-
-Answer: Open.
-
-[[q-po-002]]
-=== Q-PO-002: Is the confirmed product scope a private single-household budgeting app?
-
-Answer: Open.
-
-Confirmed interactively during bootstrap, but not yet ratified as the accepted
-product definition. Needs product-owner sign-off before dependent artifacts are
-reviewed.
-
-[[q-po-003]]
-=== Q-PO-003: Are mobile capture plus backend sufficient for v1, or is a web UI in scope?
-
-Answer: Open.
+No open questions for this role.
 
 == Open Questions For Architect
 
-[[q-arch-001]]
-=== Q-ARCH-001: Which technology stack is chosen for backend, mobile client, and datastore?
-
-Answer: Open.
-
-No stack has been decided; the techstack canvas holds placeholders.
-
-[[q-arch-002]]
-=== Q-ARCH-002: Are the three proposed ADRs the right initial decisions to pursue?
-
-Answer: Open.
-
-ADR-001 (backend API boundary), ADR-002 (mobile local-first entry), and ADR-003
-(server-owned budget calculation) are proposed drafts pending review.
+No open questions for this role. The stack (Q-ARCH-001) and initial ADR set
+(Q-ARCH-002) are decided; see the answered questions below.
 
 == Open Questions For Developer
 
@@ -78,14 +51,79 @@ No open questions for this role.
 
 == Open Questions For Operations
 
+[[q-ops-003]]
+=== Q-OPS-003: Which always-on host runs the backend once multi-device is enabled?
+
+Answer: Open.
+
+The MVP runs locally on a single device. To use the PWA on a phone, the backend
+and database must move to an always-on host reachable over HTTPS (a small VPS is
+the intended shape). The concrete provider is not yet chosen.
+
+== Answered Questions
+
+[[q-po-001]]
+=== Q-PO-001: Should multiple household members share one budget?
+
+Answer: No. The application is single-user with no shared or multi-user data.
+
+[[q-po-002]]
+=== Q-PO-002: Is the confirmed product scope a private single-household budgeting app?
+
+Answer: Yes, refined to a private *single-user actuals tracker* that replaces
+Notion. Confirmed by the owner on 2026-07-24.
+
+[[q-po-003]]
+=== Q-PO-003: Are mobile capture plus backend sufficient for v1, or is a web UI in scope?
+
+Answer: A web UI is in scope and is the primary client. It is delivered as an
+installable PWA that also serves mobile use; native mobile apps are out of
+scope. See xref:adr-005-web-client-as-pwa[ADR-005].
+
+[[q-arch-001]]
+=== Q-ARCH-001: Which technology stack is chosen for backend, mobile client, and datastore?
+
+Answer: Spring Boot (Java 21) hexagonal backend, React + TypeScript + Vite PWA,
+and PostgreSQL with JPA and Flyway. See xref:adr-004-backend-stack-and-architecture[ADR-004],
+xref:adr-005-web-client-as-pwa[ADR-005], and xref:adr-006-relational-datastore[ADR-006].
+
+[[q-arch-002]]
+=== Q-ARCH-002: Are the three proposed ADRs the right initial decisions to pursue?
+
+Answer: ADR-001 (API boundary) and ADR-003 (server-owned calculation) are
+confirmed and accepted. ADR-002 (mobile local-first offline entry) is withdrawn
+and removed because offline capture is out of scope. New decisions ADR-004
+through ADR-008 record the stack, PWA client, datastore, deployment/auth, and
+the manual account-balance model.
+
 [[q-ops-001]]
 === Q-OPS-001: Which backup retention period is required?
 
-Answer: Open.
+Answer: The backup approach is decided — a nightly `pg_dump` plus an in-app
+export endpoint so the owner is never locked in, with dump copies kept off the
+application host. A concrete retention target (keep at least the last twelve
+snapshots) is a configuration detail to refine during Increment 1, not an open
+architecture question.
 
 [[q-ops-002]]
 === Q-OPS-002: What is the hosting and deployment target for the backend?
 
-Answer: Open.
+Answer: The MVP runs locally (backend plus PostgreSQL) on a single device. When
+multi-device use is wanted, backend and database move to a single always-on host
+serving all clients over HTTPS. The direction is decided; provider selection is
+tracked as Q-OPS-003. See xref:adr-007-single-user-deployment-and-auth[ADR-007].
 
-The deployment view holds placeholders until this is decided.
+[[q-po-004]]
+=== Q-PO-004: What is the exact pension-projection formula?
+
+Answer: The projection is computed in *nominal* terms. The owner enters an
+estimated nominal return (the rate a safe investment would yield today). The
+inflation rate is the average of Germany's historical annual inflation rates
+from https://www.global-rates.com/de/inflation/historisch/[global-rates.com].
+The expected monthly need in retirement is derived from current costs, filtered
+by a *pension-relevance* flag carried on categories, individual costs, and fixed
+costs (for example, a mortgage repayment is flagged not relevant). The owner also
+tracks net worth (life insurance, house value, account balances, investment
+portfolio) and the latest statutory pension figures; the projected need minus
+tracked net worth yields the *pension shortfall*. The precise compounding
+mechanics are refined during the pension increment.

@@ -2,24 +2,24 @@
 id: DOC-001-arc42
 type: Document
 title: Budget arc42 Architecture
-status: draft
+status: reviewed
 owner: project maintainers
 created: '2026-07-24'
-reviewed: false
+updated: '2026-07-24'
+reviewed: true
 generated: false
-summary: Draft assembled arc42 architecture documentation for the private Budget application.
+summary: Assembled arc42 architecture documentation for the private single-user Budget application.
 derived_from:
 - type: prompt
   description: >-
     AI bootstrap of architecture documentation for the private Budget project via
-    the architecture-knowledge-toolkit bootstrap-project skill; product idea
-    confirmed interactively as a private, single-household budgeting application
-    with offline-first mobile capture and server-owned budget calculation.
-- type: artifact
+    the architecture-knowledge-toolkit bootstrap-project skill, then reviewed and
+    refined by the owner on 2026-07-24 into a private, single-user actuals-tracking
+    budget app with a server-owned domain and an installable PWA client.
+- type: conversation
   description: >-
-    Draft content seeded from the toolkit private-budget example
-    (docs-as-code-toolkit/architecture-knowledge-toolkit example/) and requires
-    human review before acceptance.
+    Scope and first technology decisions confirmed with the owner on 2026-07-24;
+    open items remain tracked in doc-005-questions-and-answers.adoc.
 tags:
 - arc42
 - budget
@@ -111,14 +111,14 @@ metadata_version: '1.0'
 :skip-front-matter:
 
 This is the assembled arc42 architecture documentation for the private Budget
-application: a single-household budgeting product with offline-first mobile
-expense capture and server-owned budget calculation.
+application: a single-user actuals-tracking budget product that replaces the
+owner's Notion setup, with a server-owned domain, a versioned HTTP API, and an
+installable React PWA client.
 
-All content is an AI-generated draft produced by the
-architecture-knowledge-toolkit bootstrap and is `draft`/`proposed` with
-`reviewed: false`. It must not be treated as accepted architecture truth until
-reviewed by the accountable owners. Open assumptions and required human
-decisions are tracked in
+The scope and first technology decisions were reviewed and confirmed by the
+owner on 2026-07-24; content grounded in those decisions is marked `reviewed`.
+Any newly derived or still-uncertain content starts `draft`/`proposed` until
+confirmed. Remaining open items are tracked in
 xref:doc-005-questions-and-answers.adoc#canvas-questions-and-answers[the
 Questions and Answers document].
 

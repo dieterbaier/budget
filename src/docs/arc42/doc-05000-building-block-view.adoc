@@ -2,12 +2,13 @@
 id: DOC-05000-building-block-view
 type: Document
 title: Building Block View
-status: draft
+status: reviewed
 owner: architecture
 created: '2026-07-03'
-reviewed: false
+updated: '2026-07-24'
+reviewed: true
 generated: false
-summary: Level-1 building blocks for backend, web UI, mobile app, and database.
+summary: Level-1 building blocks for the PWA, hexagonal backend, and database.
 tags:
 - arc42
 - building-blocks
@@ -17,29 +18,35 @@ metadata_version: '1.0'
 [[building-block-view]]
 = Building Block View
 
-[plantuml,private-budget-building-blocks,png]
+[plantuml,budget-building-blocks,png]
 ----
 @startuml
 !include <C4/C4_Component>
-Container(web, "Web UI", "TypeScript SPA", "Budget overview and entry forms")
-Container(app, "Mobile App", "Mobile client", "Offline expense entry")
-Container(api, "Backend API", "HTTP API", "Authentication, validation, budget commands")
-Container(domain, "Budget Domain", "Backend module", "Budget rules and summaries")
-ContainerDb(db, "Application Database", "SQL", "Users, categories, transactions, budgets")
+Container(web, "Web PWA", "React + TypeScript", "Transaction entry, budget and pension views")
+Container(api, "HTTP Adapter", "Spring MVC", "Versioned JSON API, single-user auth, validation")
+Container(app, "Application Layer", "Use-case ports", "Orchestrates domain use cases")
+Container(domain, "Budget Domain", "Framework-free Java", "Money rules: expenditure, reserves, pension")
+Container(persistence, "Persistence Adapter", "Spring Data JPA", "Implements repository ports")
+ContainerDb(db, "PostgreSQL", "SQL", "Accounts, groups, categories, transactions, fixed costs, income, balances")
 Rel(web, api, "Uses", "HTTPS/JSON")
-Rel(app, api, "Syncs", "HTTPS/JSON")
-Rel(api, domain, "Invokes")
-Rel(domain, db, "Persists")
+Rel(api, app, "Calls")
+Rel(app, domain, "Invokes")
+Rel(app, persistence, "Uses port")
+Rel(persistence, db, "Reads/writes")
 @enduml
 ----
 
 [cols="1,2,2,2", options="header"]
 |===
 | Building block | Responsibility | Interface | Storage location
-| Web UI | Budget dashboard and forms | Backend API | `/web`
-| Mobile App | Offline expense capture and sync | Backend API | `/app`
-| Backend API | Client boundary and validation | HTTP JSON | `/backend`
-| Budget Domain | Budget rules and summaries | Application services | `/backend/domain`
-| Application Database | Persistent budget records | SQL | Managed database
+| Web PWA | Entry forms and budget/pension views | Backend API | `/web`
+| HTTP Adapter | API boundary, auth, validation | HTTP JSON | `/backend/.../adapter/web`
+| Application Layer | Use-case orchestration | Ports | `/backend/.../application`
+| Budget Domain | Money rules and calculations | Domain services | `/backend/.../domain`
+| Persistence Adapter | Repository implementations | JPA | `/backend/.../adapter/persistence`
+| PostgreSQL | Persistent records | SQL | Managed database
 |===
 
+The domain depends on nothing outward; the HTTP and persistence adapters depend
+inward on application ports. This keeps the money rules testable in isolation and
+the datastore swappable.

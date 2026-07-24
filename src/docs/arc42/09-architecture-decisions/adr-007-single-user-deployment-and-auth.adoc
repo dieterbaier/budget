@@ -1,0 +1,95 @@
+---
+id: ADR-007-single-user-deployment-and-auth
+type: ADR
+title: Single-User Deployment Topology And Authentication
+status: accepted
+owner: architecture
+created: '2026-07-24'
+updated: '2026-07-24'
+reviewed: true
+summary: MVP runs locally; a later always-on host serves all clients; single-user password auth over HTTPS.
+tags:
+- decision
+- deployment
+- security
+derived_from:
+- type: question
+  description: What is the hosting and deployment target for the backend?
+  anchor: q-ops-002
+relations:
+- type: mitigates
+  target: R-001-private-data-exposure
+  status: accepted
+  rationale: Single-user authentication and HTTPS reduce exposure of personal spending data.
+  reviewed: true
+metadata_version: '1.0'
+---
+[[adr-007-single-user-deployment-and-auth]]
+== ADR-007: Single-User Deployment Topology And Authentication
+
+=== Status
+
+Accepted (topology and auth direction). Host provider selection is tracked as
+Q-OPS-003. Confirmed by the owner on 2026-07-24.
+
+=== Decision
+
+For the MVP, the backend and PostgreSQL run locally on a single device; the PWA
+talks to `localhost`. To use the PWA on the phone, the backend and database move
+to a single always-on host (a small VPS) reachable over HTTPS, with every client
+a thin consumer of that one backend. Access is protected by single-user
+authentication: one credential, password hashed with Argon2, sessions over TLS
+only.
+
+=== Decision Drivers
+
+* One user; no need for an identity provider or multi-tenant auth.
+* A PWA on the phone cannot reach a backend that only exists on the laptop's
+  `localhost`; the backend — not the database — must be the shared, reachable
+  component.
+* Personal spending data must stay private (see xref:r-001-private-data-exposure[R-001]).
+
+=== Considered Options
+
+==== Local MVP, later single always-on host (chosen)
+
+Minimal now; a clean, well-understood path to multi-device without a rewrite.
+
+==== Shared database, app run per device
+
+The owner's initial idea. A shared database does not enable the phone, because
+the phone still has no backend to run; also risks concurrent-write and
+exposure problems. Rejected.
+
+==== Fully hosted from day one
+
+Reachable everywhere immediately, but adds ops before it is needed for a
+single-device MVP.
+
+=== Pugh Matrix
+
+[cols="2,1,1,1", options="header"]
+|===
+| Criterion | Local then host | Shared DB per device | Hosted day one
+| MVP simplicity | +1 | 0 | -1
+| Enables mobile PWA | +1 | -1 | +1
+| Data-safety when remote | +1 | -1 | +1
+s| Sum s| 3 s| -2 s| 1
+|===
+
+=== Consequences
+
+==== Positive
+
+* The MVP has no hosting or ops burden; multi-device is a deployment change.
+
+==== Negative
+
+* Live views require the backend to be running (local, then hosted).
+
+==== Neutral or Follow-Up
+
+* Choose the concrete host (Q-OPS-003) before enabling mobile use.
+* Backups: nightly `pg_dump` plus an in-app export endpoint (see Q-OPS-001).
+
+include::generated/adr-007-single-user-deployment-and-auth-traceability.adoc[leveloffset=+1]

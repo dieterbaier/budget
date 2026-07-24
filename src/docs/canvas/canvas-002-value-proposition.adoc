@@ -2,6 +2,7 @@
 = Value Proposition Canvas
 :id: CANVAS-002-value-proposition
 
-Users want fast expense entry, clear remaining budgets, and confidence that
-private spending data stays private.
-
+The owner wants quick transaction entry from bank statements, a trustworthy
+monthly-expenditure view with an overspending signal, a per-group breakdown of
+where money goes, clear account-reserve figures, and a pension projection — all
+without exposing private spending data to a third party such as Notion.

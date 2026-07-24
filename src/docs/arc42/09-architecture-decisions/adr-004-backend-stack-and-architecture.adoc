@@ -1,0 +1,99 @@
+---
+id: ADR-004-backend-stack-and-architecture
+type: ADR
+title: Backend Stack And Architecture Style
+status: accepted
+owner: architecture
+created: '2026-07-24'
+updated: '2026-07-24'
+reviewed: true
+summary: Spring Boot (Java 21) with a Clean/Hexagonal architecture, BDD in Gherkin and TDD.
+tags:
+- decision
+- backend
+- architecture
+derived_from:
+- type: question
+  description: Which technology stack is chosen for the backend?
+  anchor: q-arch-001
+relations:
+- type: relates_to
+  target: ADR-001-backend-api-boundary
+  status: accepted
+  rationale: The HTTP API is the driving adapter of the hexagonal backend.
+  reviewed: true
+- type: relates_to
+  target: ADR-003-server-owned-budget-calculation
+  status: accepted
+  rationale: The domain layer hosts the server-owned calculations.
+  reviewed: true
+metadata_version: '1.0'
+---
+[[adr-004-backend-stack-and-architecture]]
+== ADR-004: Backend Stack And Architecture Style
+
+=== Status
+
+Accepted. Confirmed by the owner on 2026-07-24.
+
+=== Decision
+
+The backend is a Spring Boot service on Java 21, built with Gradle (Kotlin DSL),
+structured as a Clean/Hexagonal architecture: a framework-free domain (entities
+and money rules), an application layer of use-case ports, and adapters (HTTP
+inbound, persistence outbound). Every infrastructure interaction is reached
+through a port implemented by an outbound adapter. Features are written in
+Gherkin and driven with Cucumber-JVM at the application boundary; unit rules are
+developed test-first with JUnit 5, AssertJ, and Mockito.
+
+=== Decision Drivers
+
+* The owner is fluent in Spring Boot and wants a clean, tested implementation.
+* Clean Architecture keeps the datastore and delivery mechanism swappable, which
+  the "local now, hosted later" deployment plan needs.
+* TDD and Gherkin are explicit project constraints.
+
+=== Considered Options
+
+==== Spring Boot + Hexagonal (chosen)
+
+Owner's home turf; strong testing story; ports keep infrastructure at arm's
+length.
+
+==== Spring Boot, layered/anemic
+
+Faster to start but blurs the domain and weakens the swap-the-datastore goal.
+
+==== Non-JVM stack (e.g. Node/TypeScript backend)
+
+Would unify language with the frontend but drops the owner's backend expertise
+and the mature JVM BDD/TDD tooling.
+
+=== Pugh Matrix
+
+[cols="2,1,1,1", options="header"]
+|===
+| Criterion | SB + Hexagonal | SB layered | Non-JVM
+| Owner expertise | +1 | +1 | -1
+| Testability (TDD/BDD) | +1 | 0 | 0
+| Swappable infrastructure | +1 | -1 | 0
+s| Sum s| 3 s| 0 s| -1
+|===
+
+=== Consequences
+
+==== Positive
+
+* Money rules sit in a framework-free, fully unit-tested core.
+* PostgreSQL and the HTTP layer are adapters, not entangled dependencies.
+
+==== Negative
+
+* More upfront structure (ports/adapters) than a single-user app strictly needs.
+
+==== Neutral or Follow-Up
+
+* Build tool is Gradle (Kotlin DSL). Choose the module layout (single module vs.
+  domain/app/infra split) during the walking skeleton.
+
+include::generated/adr-004-backend-stack-and-architecture-traceability.adoc[leveloffset=+1]

@@ -1,0 +1,89 @@
+---
+id: ADR-005-web-client-as-pwa
+type: ADR
+title: Web Client As Installable PWA
+status: accepted
+owner: architecture
+created: '2026-07-24'
+updated: '2026-07-24'
+reviewed: true
+summary: A single React + TypeScript + Vite PWA serves both desktop and mobile.
+tags:
+- decision
+- frontend
+- pwa
+derived_from:
+- type: question
+  description: Are mobile capture plus backend sufficient for v1, or is a web UI in scope?
+  anchor: q-po-003
+relations:
+- type: addresses
+  target: QS-002-expense-entry-latency
+  status: accepted
+  rationale: A responsive PWA gives fast entry on desktop and phone from one codebase.
+  reviewed: true
+metadata_version: '1.0'
+---
+[[adr-005-web-client-as-pwa]]
+== ADR-005: Web Client As Installable PWA
+
+=== Status
+
+Accepted. Confirmed by the owner on 2026-07-24.
+
+=== Decision
+
+The only v1 client is a React + TypeScript + Vite single-page app shipped as an
+installable Progressive Web App. The same build runs in a desktop browser and,
+"added to home screen," on the phone. No native mobile app is built.
+
+=== Decision Drivers
+
+* The owner knows React and has no native-mobile expertise.
+* One codebase must cover both desktop and mobile entry/editing.
+* Mobile is a "nice to have," not a v1 blocker; a PWA delivers it at near-zero
+  extra cost.
+
+=== Considered Options
+
+==== Installable PWA (chosen)
+
+One React codebase; installable on the phone; no app-store process.
+
+==== React web + separate React Native app
+
+Shares the language but roughly doubles the client work and adds store
+distribution — unjustified for one user.
+
+==== Desktop web only
+
+Simplest, but drops the wanted mobile entry.
+
+=== Pugh Matrix
+
+[cols="2,1,1,1", options="header"]
+|===
+| Criterion | PWA | Web + React Native | Web only
+| Mobile entry | +1 | +1 | -1
+| Build effort | +1 | -1 | +1
+| Owner skill fit | +1 | 0 | +1
+s| Sum s| 3 s| 0 s| 1
+|===
+
+=== Consequences
+
+==== Positive
+
+* Desktop and mobile from one React codebase; installable without an app store.
+
+==== Negative
+
+* Offline capability of a PWA is deliberately not used in v1 (offline is out of
+  scope); the phone needs the backend reachable.
+
+==== Neutral or Follow-Up
+
+* Reaching the PWA from the phone requires the hosted deployment in
+  xref:adr-007-single-user-deployment-and-auth[ADR-007].
+
+include::generated/adr-005-web-client-as-pwa-traceability.adoc[leveloffset=+1]

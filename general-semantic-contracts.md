@@ -39,11 +39,13 @@ When project conventions and toolkit conventions conflict, apply this order:
 These are the only project-specific rules; everything else defers to the toolkit
 contract. They **extend** the toolkit and do not duplicate or override it.
 
-- All architecture artifacts in this repository were AI-bootstrapped and are
-  `draft`/`proposed` with `reviewed: false`. Do not mark any artifact `reviewed`
-  or `accepted` without recorded human acceptance.
-- Draft prose was seeded from the toolkit private-budget example (same domain)
-  and must be reviewed against the real product intent; see
+- Architecture artifacts were AI-bootstrapped from the toolkit private-budget
+  example. On 2026-07-24 the owner reviewed the scope and confirmed the first
+  product and technology decisions; artifacts grounded in those decisions are
+  marked `reviewed`/`accepted`. Do not mark any *further* artifact `reviewed` or
+  `accepted` without recorded human acceptance, and start newly created content
+  as `draft`/`proposed`.
+- Remaining open questions and decisions are tracked in
   `src/docs/doc-005-questions-and-answers.adoc`.
 - The vendored tooling under `metamodel/`, `templates/`, and `scripts/`, plus
   `build.sh`, is copied from the toolkit and kept in sync with the recorded

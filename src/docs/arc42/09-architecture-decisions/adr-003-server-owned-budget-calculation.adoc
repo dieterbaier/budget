@@ -2,21 +2,22 @@
 id: ADR-003-server-owned-budget-calculation
 type: ADR
 title: Server-Owned Budget Calculation
-status: proposed
+status: accepted
 owner: architecture
 created: '2026-07-03'
-reviewed: false
-summary: Proposed decision to calculate budget totals on the backend.
+updated: '2026-07-24'
+reviewed: true
+summary: All budget, reserve, and pension calculations live in the backend domain layer.
 tags:
 - decision
 - integrity
 relations:
 - type: addresses
   target: QS-001-budget-total-integrity
-  status: proposed
-  rationale: Server-owned calculation supports consistent budget totals.
+  status: accepted
+  rationale: Server-owned calculation supports consistent, trustworthy totals.
   evidence: src/docs/arc42/10-quality-requirements/qs-001-budget-total-integrity.adoc
-  reviewed: false
+  reviewed: true
 metadata_version: '1.0'
 ---
 [[adr-003-server-owned-budget-calculation]]
@@ -24,32 +25,50 @@ metadata_version: '1.0'
 
 === Status
 
-Proposed.
+Accepted. Confirmed by the owner on 2026-07-24.
 
 === Decision
 
-We propose to calculate budget totals and remaining amounts on the backend.
+All calculations — monthly expenditure and the overspending signal, fixed-cost
+amortization, account-reserve requirements, cash runway to month end, and the
+pension projection — live in the backend domain layer. The PWA renders results;
+it does not compute them.
 
 === Context
 
-The web UI and mobile app should display the same budget state. Client-only
-calculation would duplicate business rules.
+The rules are the heart of the product and must be covered by TDD and Gherkin
+features. Concentrating them in the hexagonal domain keeps one tested source of
+truth and keeps the client thin. There is one user, so there is no need to push
+computation to the client for scale.
+
+=== Considered Options
+
+==== Server-owned (domain layer)
+
+One implementation, fully testable behind the application boundary.
+
+==== Client-owned
+
+Duplicates money rules in TypeScript and undermines the TDD/Gherkin approach.
+
+==== Database views only
+
+Buries rules in SQL where they are hard to unit-test and evolve.
 
 === Pugh Matrix
 
 [cols="2,1,1,1", options="header"]
 |===
-| Criterion | Server-owned | Client-owned | Database views only
-| Consistency | +1 | -1 | +1
-| Rule ownership | +1 | -1 | 0
+| Criterion | Server-owned | Client-owned | DB views only
+| Single source of truth | +1 | -1 | 0
+| Testable (TDD/Gherkin) | +1 | -1 | -1
 | Client simplicity | +1 | -1 | +1
-s| Sum s| 3 s| -3 s| 2
+s| Sum s| 3 s| -3 s| 0
 |===
 
 === Consequences
 
-* Budget rules have one implementation point.
-* Backend availability affects live budget summaries.
+* Money rules have one implementation point, exercised by domain tests.
+* Live views depend on backend availability (acceptable for a single user).
 
 include::generated/adr-003-server-owned-budget-calculation-traceability.adoc[leveloffset=+1]
-

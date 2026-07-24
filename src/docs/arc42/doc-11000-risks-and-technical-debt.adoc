@@ -2,28 +2,23 @@
 id: DOC-11000-risks-and-technical-debt
 type: Document
 title: Risks And Technical Debt
-status: draft
+status: reviewed
 owner: architecture
 created: '2026-07-03'
-reviewed: false
+updated: '2026-07-24'
+reviewed: true
 generated: false
-summary: Initial risks and technical debt for the Private Budget application.
+summary: Risks and technical debt for the private single-user Budget application.
 tags:
 - arc42
 - risk
 relations:
 - type: documents
   target: R-001-private-data-exposure
-  status: proposed
+  status: accepted
   rationale: The chapter contains this risk.
   evidence: src/docs/arc42/doc-11000-risks-and-technical-debt.adoc
-  reviewed: false
-- type: documents
-  target: R-002-sync-conflict-loss
-  status: proposed
-  rationale: The chapter contains this risk.
-  evidence: src/docs/arc42/doc-11000-risks-and-technical-debt.adoc
-  reviewed: false
+  reviewed: true
 metadata_version: '1.0'
 ---
 [[risks-and-technical-debt]]

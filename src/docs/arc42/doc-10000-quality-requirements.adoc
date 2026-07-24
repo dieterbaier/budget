@@ -2,34 +2,29 @@
 id: DOC-10000-quality-requirements
 type: Document
 title: Quality Requirements
-status: draft
+status: reviewed
 owner: architecture
 created: '2026-07-03'
-reviewed: false
+updated: '2026-07-24'
+reviewed: true
 generated: false
-summary: Quality tree and proposed quality scenarios.
+summary: Quality tree and quality scenarios.
 tags:
 - arc42
 - quality
 relations:
 - type: documents
   target: QS-001-budget-total-integrity
-  status: proposed
+  status: accepted
   rationale: The chapter contains this quality scenario.
   evidence: src/docs/arc42/doc-10000-quality-requirements.adoc
-  reviewed: false
+  reviewed: true
 - type: documents
   target: QS-002-expense-entry-latency
-  status: proposed
+  status: accepted
   rationale: The chapter contains this quality scenario.
   evidence: src/docs/arc42/doc-10000-quality-requirements.adoc
-  reviewed: false
-- type: documents
-  target: QS-003-offline-expense-capture
-  status: proposed
-  rationale: The chapter contains this quality scenario.
-  evidence: src/docs/arc42/doc-10000-quality-requirements.adoc
-  reviewed: false
+  reviewed: true
 metadata_version: '1.0'
 ---
 [[quality-requirements]]
@@ -39,7 +34,7 @@ metadata_version: '1.0'
 
 * Privacy
 * Data integrity
-* Offline resilience
+* Calculation correctness
 * Usability
 
 include::10-quality-requirements/generated/doc-10001-quality-scenarios.adoc[]

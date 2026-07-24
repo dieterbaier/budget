@@ -2,38 +2,67 @@
 id: DOC-09000-architecture-decisions
 type: Document
 title: Architecture Decisions
-status: draft
+status: reviewed
 owner: architecture
 created: '2026-07-03'
-reviewed: false
+updated: '2026-07-24'
+reviewed: true
 generated: false
-summary: Proposed ADRs for the Private Budget architecture.
+summary: Accepted ADRs for the private single-user Budget architecture.
 tags:
 - arc42
 - decisions
 relations:
 - type: documents
   target: ADR-001-backend-api-boundary
-  status: proposed
+  status: accepted
   rationale: The chapter contains this ADR.
   evidence: src/docs/arc42/doc-09000-architecture-decisions.adoc
-  reviewed: false
-- type: documents
-  target: ADR-002-mobile-local-first-entry
-  status: proposed
-  rationale: The chapter contains this ADR.
-  evidence: src/docs/arc42/doc-09000-architecture-decisions.adoc
-  reviewed: false
+  reviewed: true
 - type: documents
   target: ADR-003-server-owned-budget-calculation
-  status: proposed
+  status: accepted
   rationale: The chapter contains this ADR.
   evidence: src/docs/arc42/doc-09000-architecture-decisions.adoc
-  reviewed: false
+  reviewed: true
+- type: documents
+  target: ADR-004-backend-stack-and-architecture
+  status: accepted
+  rationale: The chapter contains this ADR.
+  evidence: src/docs/arc42/doc-09000-architecture-decisions.adoc
+  reviewed: true
+- type: documents
+  target: ADR-005-web-client-as-pwa
+  status: accepted
+  rationale: The chapter contains this ADR.
+  evidence: src/docs/arc42/doc-09000-architecture-decisions.adoc
+  reviewed: true
+- type: documents
+  target: ADR-006-relational-datastore
+  status: accepted
+  rationale: The chapter contains this ADR.
+  evidence: src/docs/arc42/doc-09000-architecture-decisions.adoc
+  reviewed: true
+- type: documents
+  target: ADR-007-single-user-deployment-and-auth
+  status: accepted
+  rationale: The chapter contains this ADR.
+  evidence: src/docs/arc42/doc-09000-architecture-decisions.adoc
+  reviewed: true
+- type: documents
+  target: ADR-008-manual-account-balance-snapshots
+  status: accepted
+  rationale: The chapter contains this ADR.
+  evidence: src/docs/arc42/doc-09000-architecture-decisions.adoc
+  reviewed: true
 metadata_version: '1.0'
 ---
 [[architecture-decisions]]
 = Architecture Decisions
+
+The decisions below were confirmed by the owner on 2026-07-24. The withdrawn
+ADR-002 (mobile local-first offline entry) has been removed because offline
+capture is out of scope.
 
 include::09-architecture-decisions/generated/doc-09001-adr-index.adoc[]
 include::09-architecture-decisions/generated/open-questions.adoc[]

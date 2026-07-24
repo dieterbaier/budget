@@ -2,10 +2,11 @@
 id: DOC-04000-solution-strategy
 type: Document
 title: Solution Strategy
-status: draft
+status: reviewed
 owner: architecture
 created: '2026-07-03'
-reviewed: false
+updated: '2026-07-24'
+reviewed: true
 generated: false
 summary: Main architectural approaches for the budget application.
 tags:
@@ -14,31 +15,58 @@ tags:
 relations:
 - type: documents
   target: ADR-001-backend-api-boundary
-  status: proposed
-  rationale: The API boundary is a central solution strategy decision.
+  status: accepted
+  rationale: The versioned HTTP API is the client boundary.
   evidence: src/docs/arc42/09-architecture-decisions/adr-001-backend-api-boundary.adoc
-  reviewed: false
-- type: documents
-  target: ADR-002-mobile-local-first-entry
-  status: proposed
-  rationale: Local-first entry supports the offline resilience strategy.
-  evidence: src/docs/arc42/09-architecture-decisions/adr-002-mobile-local-first-entry.adoc
-  reviewed: false
+  reviewed: true
 - type: documents
   target: ADR-003-server-owned-budget-calculation
-  status: proposed
-  rationale: Server-owned calculations support integrity and consistency.
+  status: accepted
+  rationale: The domain layer owns budget, reserve, and pension calculations.
   evidence: src/docs/arc42/09-architecture-decisions/adr-003-server-owned-budget-calculation.adoc
-  reviewed: false
+  reviewed: true
+- type: documents
+  target: ADR-004-backend-stack-and-architecture
+  status: accepted
+  rationale: Spring Boot with a hexagonal architecture is the backend strategy.
+  evidence: src/docs/arc42/09-architecture-decisions/adr-004-backend-stack-and-architecture.adoc
+  reviewed: true
+- type: documents
+  target: ADR-005-web-client-as-pwa
+  status: accepted
+  rationale: A single React PWA is the client strategy for desktop and mobile.
+  evidence: src/docs/arc42/09-architecture-decisions/adr-005-web-client-as-pwa.adoc
+  reviewed: true
+- type: documents
+  target: ADR-006-relational-datastore
+  status: accepted
+  rationale: PostgreSQL behind a persistence port is the storage strategy.
+  evidence: src/docs/arc42/09-architecture-decisions/adr-006-relational-datastore.adoc
+  reviewed: true
+- type: documents
+  target: ADR-007-single-user-deployment-and-auth
+  status: accepted
+  rationale: Local-then-hosted single-user deployment is the operational strategy.
+  evidence: src/docs/arc42/09-architecture-decisions/adr-007-single-user-deployment-and-auth.adoc
+  reviewed: true
 metadata_version: '1.0'
 ---
 [[solution-strategy]]
 = Solution Strategy
 
-The architecture keeps the backend as the system of record, offers web and
-mobile clients through an API boundary, and lets the mobile app queue expense
-entries while offline.
+The backend is the system of record: a Spring Boot service in a Clean/Hexagonal
+layout whose framework-free domain owns every money rule (monthly expenditure and
+overspending, fixed-cost amortization, account reserves, cash runway, pension
+projection). A single React + TypeScript PWA renders those results over a
+versioned HTTP JSON API and serves both desktop and phone. Data lives in
+PostgreSQL behind a persistence port, so the store can move from a local instance
+to a hosted one without touching the domain. Account balances are manually
+entered snapshots, not a derived ledger.
 
-The first increment is a walking skeleton: create a category, add an expense,
-sync it, and show the remaining monthly budget.
+Features are specified in Gherkin and built test-first: Cucumber-JVM exercises use
+cases at the application boundary; JUnit 5, AssertJ, and Mockito cover the domain;
+Testcontainers exercises the PostgreSQL adapter.
 
+The first increment is a walking skeleton: bootstrap the master data, record a
+transaction, and show the current monthly expenditure with the overspending
+signal.

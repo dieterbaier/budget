@@ -2,9 +2,17 @@
 = Vision And Mission
 :id: DOC-002-vision-mission
 
-Vision: Private Budget gives people a calm, private view of where their money
-goes.
+Vision: Budget gives its owner a calm, self-hosted view of where the household
+money actually goes, without handing personal spending data to a third party.
 
-Mission: Provide simple budget tracking across web and mobile without turning
-personal spending data into a product.
+Mission: Replace the owner's Notion budget with a private, single-user
+application that records real bank-statement transactions, keeps them organized
+by category and category group, and answers a small set of concrete money
+questions:
 
+* How much am I spending this month, and is that more than my average income?
+* For which group (house, car, dog, daughter, licensing, ...) do I spend most?
+* How much must sit on each account, including the reserve account for
+  non-monthly fixed costs?
+* Am I on track for retirement given my current pot, costs, inflation, and
+  expected return?

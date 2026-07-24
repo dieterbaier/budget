@@ -9,3 +9,6 @@ out/
 # OS / editor noise
 .DS_Store
 .idea/
+
+# JVM/AsciiDoctor-PlantUML font cache (build noise)
+.java/

@@ -2,12 +2,13 @@
 id: DOC-07000-deployment-view
 type: Document
 title: Deployment View
-status: draft
+status: reviewed
 owner: operations
 created: '2026-07-03'
-reviewed: false
+updated: '2026-07-24'
+reviewed: true
 generated: false
-summary: Initial deployment view for local development and hosted runtime.
+summary: Local MVP deployment and the later single always-on host.
 tags:
 - arc42
 - deployment
@@ -17,11 +18,22 @@ metadata_version: '1.0'
 [[deployment-view]]
 = Deployment View
 
-Local development runs backend, web UI, and database with a single compose
-setup. The mobile app uses the same backend API endpoint through environment
-configuration.
+== MVP — Local, Single Device
 
-The first hosted environment deploys the backend API and database together in
-one region. Static web assets are served separately. Mobile app distribution is
-outside the first architecture decision scope.
+Backend and PostgreSQL run locally (a single compose setup); the PWA is served
+from the same host and talks to `localhost`. This covers the single-device MVP
+with no hosting or ops burden. It does not make the app reachable from a phone.
 
+== Later — Single Always-On Host
+
+To use the PWA on the phone, backend and PostgreSQL move to one always-on host (a
+small VPS), reachable over HTTPS. Every client — desktop browser and phone — is a
+thin consumer of that one backend. A shared database alone would not enable the
+phone, because the phone has no backend to run; the reachable component must be
+the backend, not the database (see ADR-007).
+
+== Backups
+
+Durability is the owner's responsibility now that Notion is gone: a nightly
+`pg_dump` copied off the application host, plus an in-app export endpoint (see
+Q-OPS-001). The concrete host provider is still open (Q-OPS-003).

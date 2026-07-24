@@ -2,21 +2,22 @@
 id: R-001-private-data-exposure
 type: Risk
 title: Private Budget Data Exposure
-status: proposed
+status: reviewed
 owner: architecture
 created: '2026-07-03'
-reviewed: false
-summary: Personal spending data may be exposed through weak access control or logging.
+updated: '2026-07-24'
+reviewed: true
+summary: Personal spending data may be exposed through weak access control, transport, or logging.
 tags:
 - risk
 - privacy
 relations:
 - type: affects
   target: QS-001-budget-total-integrity
-  status: proposed
-  rationale: Exposure or tampering can undermine trust in recorded budget data.
+  status: accepted
+  rationale: Exposure or tampering undermines trust in the recorded data.
   evidence: src/docs/arc42/11-risks-and-technical-debt/r-001-private-data-exposure.adoc
-  reviewed: false
+  reviewed: true
 metadata_version: '1.0'
 ---
 [[r-001-private-data-exposure]]
@@ -24,26 +25,26 @@ metadata_version: '1.0'
 
 === Risk Statement
 
-Because budget data contains personal spending patterns, weak authorization,
-transport security, or logging may expose sensitive information to unauthorized
-parties.
+Because the self-hosted data contains personal spending patterns, weak
+authentication, transport security, or logging may expose sensitive information —
+especially once the backend is reachable over the internet for mobile use.
 
 === Assessment
 
 [cols="1,3", options="header"]
 |===
 | Field | Value
-| Likelihood | Medium.
+| Likelihood | Medium (rises when hosted).
 | Impact | High.
 | Priority | High.
-| Timeframe | First increment.
+| Timeframe | Before the hosted deployment.
 | Confidence | Medium.
 |===
 
 === Mitigation Options
 
-Use authenticated API access, server-side authorization, transport encryption,
-password hashing, and log redaction.
+Single-user authentication with Argon2 hashing, TLS-only transport, server-side
+authorization, log redaction, and off-host encrypted backups. See
+xref:adr-007-single-user-deployment-and-auth[ADR-007].
 
 include::generated/r-001-private-data-exposure-traceability.adoc[leveloffset=+1]
-
