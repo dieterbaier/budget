@@ -17,13 +17,13 @@ relations:
   target: QS-001-budget-total-integrity
   status: accepted
   rationale: The chapter contains this quality scenario.
-  evidence: src/docs/arc42/doc-10000-quality-requirements.adoc
+  evidence: docs/arc42/doc-10000-quality-requirements.adoc
   reviewed: true
 - type: documents
   target: QS-002-expense-entry-latency
   status: accepted
   rationale: The chapter contains this quality scenario.
-  evidence: src/docs/arc42/doc-10000-quality-requirements.adoc
+  evidence: docs/arc42/doc-10000-quality-requirements.adoc
   reviewed: true
 metadata_version: '1.0'
 ---

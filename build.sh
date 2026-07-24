@@ -21,7 +21,7 @@ set -eu
 # an unpinned host toolchain.
 #
 # Adjust SOURCE_DOC below if the project's arc42 entry document is not the
-# default src/docs/doc-001-arc42.adoc. Modeled on the toolkit's own build.sh.
+# default docs/doc-001-arc42.adoc. Modeled on the toolkit's own build.sh.
 
 COMMAND="${1:-build}"
 if [ "$#" -gt 0 ]; then
@@ -32,7 +32,7 @@ fi
 # example to a digest for an even stricter pin.
 DOCS_TOOLBOX_IMAGE="${DOCS_TOOLBOX_IMAGE:-ghcr.io/docs-as-code-toolkit/docs-toolbox:v1.3.1}"
 BUILD_DIR="${BUILD_DIR:-build/architecture}"
-SOURCE_DOC="${SOURCE_DOC:-src/docs/doc-001-arc42.adoc}"
+SOURCE_DOC="${SOURCE_DOC:-docs/doc-001-arc42.adoc}"
 
 usage() {
   cat <<'USAGE'

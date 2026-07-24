@@ -8,26 +8,29 @@ projection, rendered by an installable React PWA.
 
 This repository was bootstrapped with the
 [architecture-knowledge-toolkit](https://github.com/docs-as-code-toolkit/architecture-knowledge-toolkit)
-`bootstrap-project` skill. It currently contains **architecture documentation
-only** (no application code yet).
+`bootstrap-project` skill. It holds architecture documentation under `docs/` and
+the application under `application/` (currently a Spring Boot backend walking
+skeleton).
 
 > The initial content was AI-generated from the toolkit's private-budget
 > example. On 2026-07-24 the owner reviewed the scope and made the first product
-> and technology decisions (see `src/docs/arc42/09-architecture-decisions/` and
-> `src/docs/doc-005-questions-and-answers.adoc`); content grounded in those
+> and technology decisions (see `docs/arc42/09-architecture-decisions/` and
+> `docs/doc-005-questions-and-answers.adoc`); content grounded in those
 > decisions is marked `reviewed`/`accepted`. Newly derived or still-uncertain
 > content remains `draft`/`proposed` until confirmed. Remaining open items are
-> tracked in `src/docs/doc-005-questions-and-answers.adoc`.
+> tracked in `docs/doc-005-questions-and-answers.adoc`.
 
 ## Layout
 
-- `src/docs/doc-001-arc42.adoc` — assembled arc42 architecture entry point.
-- `src/docs/arc42/` — arc42 chapters as addressable source artifacts, with ADRs
+- `docs/doc-001-arc42.adoc` — assembled arc42 architecture entry point.
+- `docs/arc42/` — arc42 chapters as addressable source artifacts, with ADRs
   (chapter 9), quality scenarios (chapter 10), and risks (chapter 11).
-- `src/docs/canvas/`, `doc-002-vision-mission.adoc`, `doc-004-roadmap.adoc`,
+- `docs/canvas/`, `doc-002-vision-mission.adoc`, `doc-004-roadmap.adoc`,
   `doc-005-questions-and-answers.adoc` — product clarification.
-- `metamodel/`, `templates/`, `scripts/`, `build.sh` — executable tooling
-  vendored from the toolkit (kept in sync; see the recorded reference in
+- `application/backend/` — the Spring Boot (Java 21, Gradle) backend, built with
+  its own toolchain (`cd application/backend && ./gradlew test`).
+- `metamodel/`, `templates/`, `scripts/`, `build.sh` — executable documentation
+  tooling vendored from the toolkit (kept in sync; see the recorded reference in
   `AGENTS.md`).
 - `adapters/` — generated thin agent routing wrappers (do not edit by hand).
 - `AGENTS.md`, `.github/copilot-instructions.md`, `general-semantic-contracts.md`
@@ -37,7 +40,7 @@ only** (no application code yet).
 
 ```sh
 ruby scripts/validate-metamodel.rb \
-  --docs src/docs \
+  --docs docs \
   --relations-schema metamodel/relations.schema.yaml \
   --generate
 ```

@@ -28,79 +28,79 @@ relations:
   target: DOC-01000-introduction-and-goals
   status: proposed
   rationale: The assembled architecture includes the introduction and goals chapter.
-  evidence: src/docs/doc-001-arc42.adoc
+  evidence: docs/doc-001-arc42.adoc
   reviewed: false
 - type: documents
   target: DOC-02000-architecture-constraints
   status: proposed
   rationale: The assembled architecture includes the constraints chapter.
-  evidence: src/docs/doc-001-arc42.adoc
+  evidence: docs/doc-001-arc42.adoc
   reviewed: false
 - type: documents
   target: DOC-03000-system-scope-and-context
   status: proposed
   rationale: The assembled architecture includes the scope and context chapter.
-  evidence: src/docs/doc-001-arc42.adoc
+  evidence: docs/doc-001-arc42.adoc
   reviewed: false
 - type: documents
   target: DOC-04000-solution-strategy
   status: proposed
   rationale: The assembled architecture includes the solution strategy chapter.
-  evidence: src/docs/doc-001-arc42.adoc
+  evidence: docs/doc-001-arc42.adoc
   reviewed: false
 - type: documents
   target: DOC-05000-building-block-view
   status: proposed
   rationale: The assembled architecture includes the building block chapter.
-  evidence: src/docs/doc-001-arc42.adoc
+  evidence: docs/doc-001-arc42.adoc
   reviewed: false
 - type: documents
   target: DOC-06000-runtime-view
   status: proposed
   rationale: The assembled architecture includes the runtime chapter.
-  evidence: src/docs/doc-001-arc42.adoc
+  evidence: docs/doc-001-arc42.adoc
   reviewed: false
 - type: documents
   target: DOC-07000-deployment-view
   status: proposed
   rationale: The assembled architecture includes the deployment chapter.
-  evidence: src/docs/doc-001-arc42.adoc
+  evidence: docs/doc-001-arc42.adoc
   reviewed: false
 - type: documents
   target: DOC-08000-crosscutting-concepts
   status: proposed
   rationale: The assembled architecture includes the crosscutting concepts chapter.
-  evidence: src/docs/doc-001-arc42.adoc
+  evidence: docs/doc-001-arc42.adoc
   reviewed: false
 - type: documents
   target: DOC-09000-architecture-decisions
   status: proposed
   rationale: The assembled architecture includes the architecture decisions chapter.
-  evidence: src/docs/doc-001-arc42.adoc
+  evidence: docs/doc-001-arc42.adoc
   reviewed: false
 - type: documents
   target: DOC-10000-quality-requirements
   status: proposed
   rationale: The assembled architecture includes the quality requirements chapter.
-  evidence: src/docs/doc-001-arc42.adoc
+  evidence: docs/doc-001-arc42.adoc
   reviewed: false
 - type: documents
   target: DOC-11000-risks-and-technical-debt
   status: proposed
   rationale: The assembled architecture includes the risks and technical debt chapter.
-  evidence: src/docs/doc-001-arc42.adoc
+  evidence: docs/doc-001-arc42.adoc
   reviewed: false
 - type: documents
   target: DOC-12000-glossary
   status: proposed
   rationale: The assembled architecture includes the glossary chapter.
-  evidence: src/docs/doc-001-arc42.adoc
+  evidence: docs/doc-001-arc42.adoc
   reviewed: false
 - type: documents
   target: DOC-13000-appendix
   status: proposed
   rationale: The assembled architecture includes the appendix.
-  evidence: src/docs/doc-001-arc42.adoc
+  evidence: docs/doc-001-arc42.adoc
   reviewed: false
 metadata_version: '1.0'
 ---

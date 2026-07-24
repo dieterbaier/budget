@@ -1,5 +1,5 @@
 # Derived architecture output — regenerate from source, do not check in.
-# Source of truth is src/docs/**; generators produce these from metadata.
+# Source of truth is docs/**; generators produce these from metadata.
 # Anchored to the repo root so they do not match source packages such as
 # application/port/out/ (the hexagonal outbound-adapter package).
 **/generated/

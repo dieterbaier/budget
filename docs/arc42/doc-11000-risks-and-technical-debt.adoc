@@ -17,7 +17,7 @@ relations:
   target: R-001-private-data-exposure
   status: accepted
   rationale: The chapter contains this risk.
-  evidence: src/docs/arc42/doc-11000-risks-and-technical-debt.adoc
+  evidence: docs/arc42/doc-11000-risks-and-technical-debt.adoc
   reviewed: true
 metadata_version: '1.0'
 ---

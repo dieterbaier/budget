@@ -17,7 +17,7 @@ relations:
   target: R-001-private-data-exposure
   status: accepted
   rationale: Security and privacy controls mitigate personal data exposure.
-  evidence: src/docs/arc42/doc-08000-crosscutting-concepts.adoc
+  evidence: docs/arc42/doc-08000-crosscutting-concepts.adoc
   reviewed: true
 metadata_version: '1.0'
 ---

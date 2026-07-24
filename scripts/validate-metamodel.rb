@@ -574,7 +574,7 @@ class OpenQuestionsIndexGenerator
   def initialize(root:, docs_dir:, questions_path: nil)
     @root = Pathname.new(root).expand_path
     @docs_dir = output_base(docs_dir)
-    @questions_path = Pathname.new(questions_path || @root.join('src/docs/doc-005-questions-and-answers.adoc')).expand_path
+    @questions_path = Pathname.new(questions_path || @root.join('docs/doc-005-questions-and-answers.adoc')).expand_path
     @output_paths = []
   end
 
@@ -1159,7 +1159,7 @@ end
 if $PROGRAM_NAME == __FILE__
   root = Pathname.new(__dir__).join('..').expand_path
   default_docs_targets = [
-    root.join('src/docs')
+    root.join('docs')
   ]
   options = {
     docs_dir: default_docs_targets,
@@ -1202,7 +1202,7 @@ if $PROGRAM_NAME == __FILE__
       output_base = first_docs_target.directory? ? first_docs_target : first_docs_target.dirname
       output_base.join('generated/traceability-matrix.adoc')
     else
-      root.join('src/docs/generated/traceability-matrix.adoc')
+      root.join('docs/generated/traceability-matrix.adoc')
     end
     generator = DocumentationGenerator.new(
       root: root,

@@ -20,10 +20,13 @@ metadata_version: '1.0'
 
 == Record A Transaction
 
-The application layer never touches PostgreSQL directly. It depends on an
-outbound *repository port*; the persistence adapter implements that port and is
-the only component that speaks JPA/SQL. This keeps every infrastructure
-interaction behind an adapter, as Clean/Hexagonal architecture requires.
+Both boundaries are crossed through ports. The HTTP adapter depends on an
+*inbound use-case port* that the application service implements; the application
+service depends on an *outbound repository port* that the persistence adapter
+implements. The application service never touches PostgreSQL directly, and the
+HTTP adapter never touches the service directly — each speaks only to a port.
+This keeps every infrastructure interaction behind an adapter, as Clean/Hexagonal
+architecture requires.
 
 [plantuml,transaction-entry-runtime,png]
 ----
@@ -31,22 +34,24 @@ interaction behind an adapter, as Clean/Hexagonal architecture requires.
 actor Owner
 participant "Web PWA" as Web
 participant "HTTP Adapter\n(inbound)" as Api
-participant "Application\n(use case)" as App
+participant "Use-Case Port\n(inbound)" as InPort
+participant "Application Service" as App
 participant "Budget Domain" as Domain
-participant "Repository Port" as Port
+participant "Repository Port\n(outbound)" as OutPort
 participant "Persistence Adapter\n(outbound)" as Repo
 database "PostgreSQL" as Db
 Owner -> Web: Enter transaction (date, amount, category, account, type)
 Web -> Api: POST /transactions
-Api -> App: RecordTransaction use case
+Api -> InPort: recordTransaction(command)
+InPort -> App: (implemented by)
 App -> Domain: Validate (expense / income / transfer, refund = negative)
-App -> Port: save(transaction)
-Port -> Repo: (implemented by)
+App -> OutPort: save(transaction)
+OutPort -> Repo: (implemented by)
 Repo -> Db: INSERT
 Db --> Repo: ok
 Repo --> App: saved
-App -> Port: load month data for summary
-Port -> Repo: query
+App -> OutPort: load month data for summary
+OutPort -> Repo: query
 Repo -> Db: SELECT
 Db --> Repo: rows
 Repo --> App: transactions

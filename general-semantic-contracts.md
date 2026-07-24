@@ -20,7 +20,7 @@ The authoritative general semantic contracts are the toolkit's
 
 Read the toolkit `general-semantic-contracts.md` before creating or changing
 architecture content. Read
-`src/docs/arc42/04-solution-strategy/doc-04001-metamodel.adoc` (when present in
+`docs/arc42/04-solution-strategy/doc-04001-metamodel.adoc` (when present in
 the toolkit or this repository) before creating or adapting artifact metadata,
 artifact types, lifecycle states, relation semantics, metamodel schemas,
 validators, or generator inputs.
@@ -46,7 +46,7 @@ contract. They **extend** the toolkit and do not duplicate or override it.
   `accepted` without recorded human acceptance, and start newly created content
   as `draft`/`proposed`.
 - Remaining open questions and decisions are tracked in
-  `src/docs/doc-005-questions-and-answers.adoc`.
+  `docs/doc-005-questions-and-answers.adoc`.
 - The vendored tooling under `metamodel/`, `templates/`, and `scripts/`, plus
   `build.sh`, is copied from the toolkit and kept in sync with the recorded
   reference. Do not hand-edit it to diverge from the toolkit; update the pin

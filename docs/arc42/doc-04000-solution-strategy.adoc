@@ -17,37 +17,37 @@ relations:
   target: ADR-001-backend-api-boundary
   status: accepted
   rationale: The versioned HTTP API is the client boundary.
-  evidence: src/docs/arc42/09-architecture-decisions/adr-001-backend-api-boundary.adoc
+  evidence: docs/arc42/09-architecture-decisions/adr-001-backend-api-boundary.adoc
   reviewed: true
 - type: documents
   target: ADR-003-server-owned-budget-calculation
   status: accepted
   rationale: The domain layer owns budget, reserve, and pension calculations.
-  evidence: src/docs/arc42/09-architecture-decisions/adr-003-server-owned-budget-calculation.adoc
+  evidence: docs/arc42/09-architecture-decisions/adr-003-server-owned-budget-calculation.adoc
   reviewed: true
 - type: documents
   target: ADR-004-backend-stack-and-architecture
   status: accepted
   rationale: Spring Boot with a hexagonal architecture is the backend strategy.
-  evidence: src/docs/arc42/09-architecture-decisions/adr-004-backend-stack-and-architecture.adoc
+  evidence: docs/arc42/09-architecture-decisions/adr-004-backend-stack-and-architecture.adoc
   reviewed: true
 - type: documents
   target: ADR-005-web-client-as-pwa
   status: accepted
   rationale: A single React PWA is the client strategy for desktop and mobile.
-  evidence: src/docs/arc42/09-architecture-decisions/adr-005-web-client-as-pwa.adoc
+  evidence: docs/arc42/09-architecture-decisions/adr-005-web-client-as-pwa.adoc
   reviewed: true
 - type: documents
   target: ADR-006-relational-datastore
   status: accepted
   rationale: PostgreSQL behind a persistence port is the storage strategy.
-  evidence: src/docs/arc42/09-architecture-decisions/adr-006-relational-datastore.adoc
+  evidence: docs/arc42/09-architecture-decisions/adr-006-relational-datastore.adoc
   reviewed: true
 - type: documents
   target: ADR-007-single-user-deployment-and-auth
   status: accepted
   rationale: Local-then-hosted single-user deployment is the operational strategy.
-  evidence: src/docs/arc42/09-architecture-decisions/adr-007-single-user-deployment-and-auth.adoc
+  evidence: docs/arc42/09-architecture-decisions/adr-007-single-user-deployment-and-auth.adoc
   reviewed: true
 metadata_version: '1.0'
 ---

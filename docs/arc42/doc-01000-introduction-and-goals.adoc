@@ -16,19 +16,19 @@ relations:
   target: DOC-01002-requirements-overview
   status: accepted
   rationale: The chapter includes the requirements overview.
-  evidence: src/docs/arc42/doc-01000-introduction-and-goals.adoc
+  evidence: docs/arc42/doc-01000-introduction-and-goals.adoc
   reviewed: true
 - type: documents
   target: DOC-01001-quality-goals
   status: accepted
   rationale: The chapter includes the top quality goals.
-  evidence: src/docs/arc42/doc-01000-introduction-and-goals.adoc
+  evidence: docs/arc42/doc-01000-introduction-and-goals.adoc
   reviewed: true
 - type: documents
   target: DOC-01003-stakeholders
   status: accepted
   rationale: The chapter includes stakeholder concerns.
-  evidence: src/docs/arc42/doc-01000-introduction-and-goals.adoc
+  evidence: docs/arc42/doc-01000-introduction-and-goals.adoc
   reviewed: true
 metadata_version: '1.0'
 ---

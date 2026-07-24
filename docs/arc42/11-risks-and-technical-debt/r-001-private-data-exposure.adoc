@@ -16,7 +16,7 @@ relations:
   target: QS-001-budget-total-integrity
   status: accepted
   rationale: Exposure or tampering undermines trust in the recorded data.
-  evidence: src/docs/arc42/11-risks-and-technical-debt/r-001-private-data-exposure.adoc
+  evidence: docs/arc42/11-risks-and-technical-debt/r-001-private-data-exposure.adoc
   reviewed: true
 metadata_version: '1.0'
 ---

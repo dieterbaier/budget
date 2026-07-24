@@ -16,7 +16,7 @@ relations:
   target: QS-001-budget-total-integrity
   status: accepted
   rationale: Server-owned calculation supports consistent, trustworthy totals.
-  evidence: src/docs/arc42/10-quality-requirements/qs-001-budget-total-integrity.adoc
+  evidence: docs/arc42/10-quality-requirements/qs-001-budget-total-integrity.adoc
   reviewed: true
 metadata_version: '1.0'
 ---

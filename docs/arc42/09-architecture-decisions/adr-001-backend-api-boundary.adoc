@@ -16,7 +16,7 @@ relations:
   target: QS-002-expense-entry-latency
   status: accepted
   rationale: A stable API boundary supports predictable client transaction entry.
-  evidence: src/docs/arc42/10-quality-requirements/qs-002-expense-entry-latency.adoc
+  evidence: docs/arc42/10-quality-requirements/qs-002-expense-entry-latency.adoc
   reviewed: true
 metadata_version: '1.0'
 ---
