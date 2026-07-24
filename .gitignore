@@ -1,0 +1,11 @@
+# Derived architecture output — regenerate from source, do not check in.
+# Source of truth is src/docs/**; generators produce these from metadata.
+**/generated/
+build/
+dist/
+target/
+out/
+
+# OS / editor noise
+.DS_Store
+.idea/

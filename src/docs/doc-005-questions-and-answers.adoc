@@ -1,0 +1,91 @@
+[[canvas-questions-and-answers]]
+= Questions And Answers
+:id: DOC-005-questions-and-answers
+
+This is the central discussion document for the private Budget project. It
+records open and answered questions and the assumptions behind the AI-generated
+bootstrap. Open questions are picked up by the generator into the open-questions
+index for the architecture decisions chapter.
+
+== Bootstrap Notes
+
+All architecture content in this repository is an AI-generated draft produced by
+the architecture-knowledge-toolkit bootstrap. Every artifact is `draft` or
+`proposed` with `reviewed: false`. Draft prose was seeded from the toolkit's
+private-budget example (same domain) and must be reviewed and corrected against
+the real product intent before any artifact is marked `reviewed` or `accepted`.
+
+Assumptions made during bootstrap (to confirm or correct):
+
+* Product idea. The original bootstrap prompt left the project idea blank; it was
+  confirmed interactively as a *private, single-household budgeting application*
+  with offline-first mobile expense capture and server-owned budget calculation.
+  See Q-PO-002.
+* Clients. A mobile app for capture plus a backend; a web UI is assumed optional
+  for later. See Q-PO-003.
+* Technology stack. No concrete languages, frameworks, datastore, or hosting
+  target have been decided. The techstack canvas and deployment chapter hold
+  placeholders only. See Q-ARCH-001 and Q-OPS-002.
+* Decisions. Three ADRs are proposed (backend API boundary, mobile local-first
+  entry, server-owned budget calculation). They reflect the assumed idea and are
+  not yet accepted. See Q-ARCH-002.
+
+== Open Questions For Product Owner
+
+[[q-po-001]]
+=== Q-PO-001: Should multiple household members share one budget?
+
+Answer: Open.
+
+[[q-po-002]]
+=== Q-PO-002: Is the confirmed product scope a private single-household budgeting app?
+
+Answer: Open.
+
+Confirmed interactively during bootstrap, but not yet ratified as the accepted
+product definition. Needs product-owner sign-off before dependent artifacts are
+reviewed.
+
+[[q-po-003]]
+=== Q-PO-003: Are mobile capture plus backend sufficient for v1, or is a web UI in scope?
+
+Answer: Open.
+
+== Open Questions For Architect
+
+[[q-arch-001]]
+=== Q-ARCH-001: Which technology stack is chosen for backend, mobile client, and datastore?
+
+Answer: Open.
+
+No stack has been decided; the techstack canvas holds placeholders.
+
+[[q-arch-002]]
+=== Q-ARCH-002: Are the three proposed ADRs the right initial decisions to pursue?
+
+Answer: Open.
+
+ADR-001 (backend API boundary), ADR-002 (mobile local-first entry), and ADR-003
+(server-owned budget calculation) are proposed drafts pending review.
+
+== Open Questions For Developer
+
+No open questions for this role.
+
+== Open Questions For Subject Matter Expert
+
+No open questions for this role.
+
+== Open Questions For Operations
+
+[[q-ops-001]]
+=== Q-OPS-001: Which backup retention period is required?
+
+Answer: Open.
+
+[[q-ops-002]]
+=== Q-OPS-002: What is the hosting and deployment target for the backend?
+
+Answer: Open.
+
+The deployment view holds placeholders until this is decided.
