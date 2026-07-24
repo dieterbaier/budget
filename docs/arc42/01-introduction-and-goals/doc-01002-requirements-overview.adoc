@@ -1,0 +1,49 @@
+---
+id: DOC-01002-requirements-overview
+type: Document
+title: Requirements Overview
+status: reviewed
+owner: product owner
+created: '2026-07-03'
+updated: '2026-07-24'
+reviewed: true
+generated: false
+summary: Scope for the private single-user actuals-tracking budget application.
+tags:
+- requirements
+relations: []
+metadata_version: '1.0'
+---
+[[requirements-overview]]
+== Requirements Overview
+
+The owner records transactions from bank statements — each with a booking date,
+amount, category, account, and type (expense, income, or transfer). Refunds are
+entered as a negative expense in the same category. The application organizes
+categories into groups and manages three accounts (current account, a
+call-money reserve account for non-monthly fixed costs, and a call-money savings
+account) whose balances are entered manually.
+
+Fixed-cost definitions carry an amount, a payment interval (monthly, quarterly,
+half-yearly, or yearly), and an anchor date; from a booking the next payment date
+and a monthly reserve amount are derived. A monthly income table holds salary and
+yields an average income for the overspending comparison.
+
+In scope for the first increments:
+
+* Bootstrap of accounts, category groups, categories, fixed costs, and balances.
+* Transaction entry and editing.
+* Current monthly expenditure (variable costs plus amortized fixed costs) with an
+  overspending signal against average income.
+* Spend per category group.
+* Reserve requirement for the non-monthly-fixed-cost account.
+* Cash runway from today to month end.
+* Net-worth tracking (life insurance, house value, account balances, investment
+  portfolio, and the latest statutory pension figures).
+* Pension projection (nominal), driven by a pension-relevance flag on
+  categories, costs, and fixed costs, and yielding the pension shortfall against
+  tracked net worth.
+
+Out of scope: bank/API synchronization, cash-payment tracking (beyond a
+`Barabhebung` booking), spending forecasts/planning, multi-user or shared
+budgets, offline capture, financial advice, and payment execution.

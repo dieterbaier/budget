@@ -1,0 +1,33 @@
+---
+id: DOC-02000-architecture-constraints
+type: Document
+title: Architecture Constraints
+status: reviewed
+owner: architecture
+created: '2026-07-03'
+updated: '2026-07-24'
+reviewed: true
+generated: false
+summary: Architecture, technology, and documentation constraints.
+tags:
+- arc42
+- constraints
+relations: []
+metadata_version: '1.0'
+---
+[[architecture-constraints]]
+= Architecture Constraints
+
+[cols="1,3", options="header"]
+|===
+| Constraint | Description
+| Single user | Exactly one user; no shared, multi-tenant, or collaborative data.
+| Actuals only | Records real transactions from bank statements; no forecasting or planning; cash is not tracked beyond a `Barabhebung` booking.
+| Clean Architecture | Hexagonal backend with a framework-free domain; datastore and delivery are adapters.
+| TDD and BDD | Features are specified in Gherkin (Cucumber-JVM) and implemented test-first.
+| Technology | Spring Boot (Java 21) backend built with Gradle (Kotlin DSL), React + TypeScript + Vite PWA, PostgreSQL. See ADR-004 to ADR-006.
+| Single currency | All amounts are EUR; money is stored as exact decimals.
+| Privacy by default | Self-hosted; no analytics or third-party telemetry.
+| API boundary | Clients use a versioned HTTP JSON API; no direct database access. See ADR-001.
+| Documentation format | Architecture source uses AsciiDoc with YAML metadata, validated by the toolkit.
+|===

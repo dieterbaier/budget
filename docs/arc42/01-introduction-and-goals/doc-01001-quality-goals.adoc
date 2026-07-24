@@ -1,0 +1,39 @@
+---
+id: DOC-01001-quality-goals
+type: Document
+title: Quality Goals
+status: reviewed
+owner: architecture
+created: '2026-07-03'
+updated: '2026-07-24'
+reviewed: true
+generated: false
+summary: Top quality goals for the private single-user Budget architecture.
+tags:
+- quality
+relations: []
+metadata_version: '1.0'
+---
+[[quality-goals]]
+== Quality Goals
+
+[cols="1,2,3", options="header"]
+|===
+| ID | Goal | Rationale
+
+| QG-001
+| Privacy
+| Personal spending data is self-hosted and must stay protected from unauthorized access.
+
+| QG-002
+| Data integrity
+| Totals and derived figures must reflect the recorded transactions without silent loss or duplication.
+
+| QG-003
+| Calculation correctness
+| Monthly expenditure, reserve requirements, and the pension projection must be correct and covered by tests.
+
+| QG-004
+| Usability
+| Recording a transaction from a bank statement must be fast enough to become a habit.
+|===

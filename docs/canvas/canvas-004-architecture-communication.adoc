@@ -1,0 +1,8 @@
+[[architecture-communication-canvas]]
+= Architecture Communication Canvas
+:id: CANVAS-004-architecture-communication
+
+Architecture decisions are communicated through ADRs, quality scenarios, risk
+records, and generated traceability views. Features are specified in Gherkin and
+implemented test-first (Cucumber-JVM at the application boundary, JUnit/AssertJ
+unit tests) so behavior and documentation stay aligned.

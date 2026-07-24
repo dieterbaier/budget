@@ -1,0 +1,137 @@
+---
+id: DOC-001-arc42
+type: Document
+title: Budget arc42 Architecture
+status: reviewed
+owner: project maintainers
+created: '2026-07-24'
+updated: '2026-07-24'
+reviewed: true
+generated: false
+summary: Assembled arc42 architecture documentation for the private single-user Budget application.
+derived_from:
+- type: prompt
+  description: >-
+    AI bootstrap of architecture documentation for the private Budget project via
+    the architecture-knowledge-toolkit bootstrap-project skill, then reviewed and
+    refined by the owner on 2026-07-24 into a private, single-user actuals-tracking
+    budget app with a server-owned domain and an installable PWA client.
+- type: conversation
+  description: >-
+    Scope and first technology decisions confirmed with the owner on 2026-07-24;
+    open items remain tracked in doc-005-questions-and-answers.adoc.
+tags:
+- arc42
+- budget
+relations:
+- type: documents
+  target: DOC-01000-introduction-and-goals
+  status: proposed
+  rationale: The assembled architecture includes the introduction and goals chapter.
+  evidence: docs/doc-001-arc42.adoc
+  reviewed: false
+- type: documents
+  target: DOC-02000-architecture-constraints
+  status: proposed
+  rationale: The assembled architecture includes the constraints chapter.
+  evidence: docs/doc-001-arc42.adoc
+  reviewed: false
+- type: documents
+  target: DOC-03000-system-scope-and-context
+  status: proposed
+  rationale: The assembled architecture includes the scope and context chapter.
+  evidence: docs/doc-001-arc42.adoc
+  reviewed: false
+- type: documents
+  target: DOC-04000-solution-strategy
+  status: proposed
+  rationale: The assembled architecture includes the solution strategy chapter.
+  evidence: docs/doc-001-arc42.adoc
+  reviewed: false
+- type: documents
+  target: DOC-05000-building-block-view
+  status: proposed
+  rationale: The assembled architecture includes the building block chapter.
+  evidence: docs/doc-001-arc42.adoc
+  reviewed: false
+- type: documents
+  target: DOC-06000-runtime-view
+  status: proposed
+  rationale: The assembled architecture includes the runtime chapter.
+  evidence: docs/doc-001-arc42.adoc
+  reviewed: false
+- type: documents
+  target: DOC-07000-deployment-view
+  status: proposed
+  rationale: The assembled architecture includes the deployment chapter.
+  evidence: docs/doc-001-arc42.adoc
+  reviewed: false
+- type: documents
+  target: DOC-08000-crosscutting-concepts
+  status: proposed
+  rationale: The assembled architecture includes the crosscutting concepts chapter.
+  evidence: docs/doc-001-arc42.adoc
+  reviewed: false
+- type: documents
+  target: DOC-09000-architecture-decisions
+  status: proposed
+  rationale: The assembled architecture includes the architecture decisions chapter.
+  evidence: docs/doc-001-arc42.adoc
+  reviewed: false
+- type: documents
+  target: DOC-10000-quality-requirements
+  status: proposed
+  rationale: The assembled architecture includes the quality requirements chapter.
+  evidence: docs/doc-001-arc42.adoc
+  reviewed: false
+- type: documents
+  target: DOC-11000-risks-and-technical-debt
+  status: proposed
+  rationale: The assembled architecture includes the risks and technical debt chapter.
+  evidence: docs/doc-001-arc42.adoc
+  reviewed: false
+- type: documents
+  target: DOC-12000-glossary
+  status: proposed
+  rationale: The assembled architecture includes the glossary chapter.
+  evidence: docs/doc-001-arc42.adoc
+  reviewed: false
+- type: documents
+  target: DOC-13000-appendix
+  status: proposed
+  rationale: The assembled architecture includes the appendix.
+  evidence: docs/doc-001-arc42.adoc
+  reviewed: false
+metadata_version: '1.0'
+---
+= [[budget-arc42]]Budget arc42 Architecture
+:toc:
+:toclevels: 2
+:sectnums:
+:skip-front-matter:
+
+This is the assembled arc42 architecture documentation for the private Budget
+application: a single-user actuals-tracking budget product that replaces the
+owner's Notion setup, with a server-owned domain, a versioned HTTP API, and an
+installable React PWA client.
+
+The scope and first technology decisions were reviewed and confirmed by the
+owner on 2026-07-24; content grounded in those decisions is marked `reviewed`.
+Any newly derived or still-uncertain content starts `draft`/`proposed` until
+confirmed. Remaining open items are tracked in
+xref:doc-005-questions-and-answers.adoc#canvas-questions-and-answers[the
+Questions and Answers document].
+
+include::arc42/doc-01000-introduction-and-goals.adoc[leveloffset=+1]
+include::arc42/doc-02000-architecture-constraints.adoc[leveloffset=+1]
+include::arc42/doc-03000-system-scope-and-context.adoc[leveloffset=+1]
+include::arc42/doc-04000-solution-strategy.adoc[leveloffset=+1]
+include::arc42/doc-05000-building-block-view.adoc[leveloffset=+1]
+include::arc42/doc-06000-runtime-view.adoc[leveloffset=+1]
+include::arc42/doc-07000-deployment-view.adoc[leveloffset=+1]
+include::arc42/doc-08000-crosscutting-concepts.adoc[leveloffset=+1]
+include::arc42/doc-09000-architecture-decisions.adoc[leveloffset=+1]
+include::arc42/doc-10000-quality-requirements.adoc[leveloffset=+1]
+include::arc42/doc-11000-risks-and-technical-debt.adoc[leveloffset=+1]
+include::arc42/doc-12000-glossary.adoc[leveloffset=+1]
+include::arc42/doc-13000-appendix.adoc[leveloffset=+1]

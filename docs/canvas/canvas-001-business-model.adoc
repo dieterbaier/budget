@@ -1,0 +1,8 @@
+[[business-model-canvas]]
+= Business Model Canvas
+:id: CANVAS-001-business-model
+
+Budget is a private, single-user product built for and operated by its owner.
+There is no commercial model, no other users, and no bank integration. Its value
+is replacing a paid Notion setup with a self-hosted application whose data the
+owner fully controls.

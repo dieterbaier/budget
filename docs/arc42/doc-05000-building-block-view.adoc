@@ -1,0 +1,62 @@
+---
+id: DOC-05000-building-block-view
+type: Document
+title: Building Block View
+status: reviewed
+owner: architecture
+created: '2026-07-03'
+updated: '2026-07-24'
+reviewed: true
+generated: false
+summary: Level-1 building blocks for the PWA, hexagonal backend, and database.
+tags:
+- arc42
+- building-blocks
+relations: []
+metadata_version: '1.0'
+---
+[[building-block-view]]
+= Building Block View
+
+[plantuml,budget-building-blocks,png]
+----
+@startuml
+!include <C4/C4_Component>
+Container(web, "Web PWA", "React + TypeScript", "Transaction entry, budget and pension views")
+Container(api, "HTTP Adapter", "Spring MVC (inbound)", "Versioned JSON API, single-user auth, validation")
+Component(inPort, "Use-Case Port", "Inbound port (interface)", "Application boundary the adapter depends on")
+Container(app, "Application Service", "Use-case implementation", "Orchestrates domain use cases; implements the inbound port")
+Container(domain, "Budget Domain", "Framework-free Java", "Money rules: expenditure, reserves, pension")
+Component(outPort, "Repository Port", "Outbound port (interface)", "Persistence boundary the application depends on")
+Container(persistence, "Persistence Adapter", "Spring Data JPA (outbound)", "Implements the repository port")
+ContainerDb(db, "PostgreSQL", "SQL", "Accounts, groups, categories, transactions, fixed costs, income, balances")
+Rel(web, api, "Uses", "HTTPS/JSON")
+Rel(api, inPort, "Calls")
+Rel(app, inPort, "Implements")
+Rel(app, domain, "Invokes")
+Rel(app, outPort, "Depends on")
+Rel(persistence, outPort, "Implements")
+Rel(persistence, db, "Reads/writes")
+@enduml
+----
+
+[cols="1,2,2,2", options="header"]
+|===
+| Building block | Responsibility | Interface | Storage location
+| Web PWA | Entry forms and budget/pension views | Backend API | `application/web`
+| HTTP Adapter | API boundary, auth, validation | Calls inbound use-case ports | `application/backend/.../adapter/in/web`
+| Use-case ports | Inbound application boundary | Interfaces implemented by services | `application/backend/.../application/port/in`
+| Application Service | Use-case orchestration | Implements inbound ports, depends on outbound ports | `application/backend/.../application/service`
+| Budget Domain | Money rules and calculations | Domain services | `application/backend/.../domain`
+| Repository ports | Outbound persistence boundary | Interfaces implemented by adapters | `application/backend/.../application/port/out`
+| Persistence Adapter | Repository implementations | Implements outbound ports | `application/backend/.../adapter/out/persistence`
+| PostgreSQL | Persistent records | SQL | Managed database
+|===
+
+Two port seams keep the core isolated. The HTTP adapter depends on an *inbound
+use-case port* that the application service implements; the application service
+depends on *outbound repository ports* that the persistence adapter implements.
+The domain depends on nothing outward. Every interaction with an infrastructure
+component (HTTP in, database out) therefore crosses a port implemented by an
+adapter, which keeps the money rules testable in isolation and the datastore
+swappable.

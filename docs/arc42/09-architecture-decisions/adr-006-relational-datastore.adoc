@@ -1,0 +1,98 @@
+---
+id: ADR-006-relational-datastore
+type: ADR
+title: Relational Datastore
+status: accepted
+owner: architecture
+created: '2026-07-24'
+updated: '2026-07-24'
+reviewed: true
+summary: PostgreSQL with Spring Data JPA and Flyway migrations, behind a persistence port.
+tags:
+- decision
+- persistence
+derived_from:
+- type: question
+  description: Which datastore is chosen?
+  anchor: q-arch-001
+relations:
+- type: addresses
+  target: QS-001-budget-total-integrity
+  status: accepted
+  rationale: A transactional relational store underpins consistent totals.
+  reviewed: true
+- type: relates_to
+  target: ADR-008-manual-account-balance-snapshots
+  status: accepted
+  rationale: The schema stores manually entered balance snapshots, not a derived ledger.
+  reviewed: true
+metadata_version: '1.0'
+---
+[[adr-006-relational-datastore]]
+== ADR-006: Relational Datastore
+
+=== Status
+
+Accepted. Confirmed by the owner on 2026-07-24.
+
+=== Decision
+
+Persistence uses PostgreSQL through Spring Data JPA, with Flyway managing schema
+migrations. Access sits behind an outbound persistence port so the concrete
+database is an adapter. Money is stored as exact decimal values (single currency,
+EUR).
+
+=== Decision Drivers
+
+* The domain is inherently relational (accounts, categories, groups,
+  transactions, fixed costs, income).
+* Versioned migrations (Flyway) are the first building block of the durability
+  and backup story.
+* The store must be trivially movable from a local instance to a hosted one.
+
+=== Considered Options
+
+==== PostgreSQL (chosen)
+
+Strong transactional guarantees and exact numeric types; runs the same locally
+and hosted.
+
+==== MySQL on Strato shared hosting
+
+Already available to the owner, but Strato shared hosting cannot run a long-lived
+Spring Boot JVM, so the app must be hosted elsewhere anyway; the hexagonal port
+makes MySQL a later swap if ever needed, so it is not the default.
+
+==== Embedded/file database (e.g. SQLite/H2)
+
+Simplest locally, but a weaker fit for the eventual always-on hosted deployment.
+
+=== Pugh Matrix
+
+[cols="2,1,1,1", options="header"]
+|===
+| Criterion | PostgreSQL | MySQL/Strato | Embedded
+| Fit to hosted target | +1 | 0 | -1
+| Exact money types | +1 | +1 | 0
+| Local/hosted parity | +1 | 0 | -1
+s| Sum s| 3 s| 1 s| -2
+|===
+
+=== Consequences
+
+==== Positive
+
+* One database technology from laptop to VPS; migrations are versioned from day
+  one.
+
+==== Negative
+
+* The already-available Strato MySQL is not used, so a host for both app and DB
+  is still required for multi-device use.
+
+==== Neutral or Follow-Up
+
+* Integration tests run against real PostgreSQL via Testcontainers, not an
+  in-memory substitute.
+
+include::generated/adr-006-relational-datastore-traceability.adoc[leveloffset=+1]

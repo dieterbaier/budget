@@ -1,0 +1,125 @@
+---
+id: ADR-009-domain-identity-and-ddd
+type: ADR
+title: Domain Identity And DDD Tactical Design
+status: accepted
+owner: architecture
+created: '2026-07-24'
+updated: '2026-07-24'
+reviewed: true
+summary: Model the domain with DDD tactical patterns; entity identity is a domain concept, never a persistence surrogate key.
+tags:
+- decision
+- domain-model
+- ddd
+derived_from:
+- type: question
+  description: What is the identity source for a Transaction?
+  anchor: q-arch-003
+relations:
+- type: relates_to
+  target: ADR-004-backend-stack-and-architecture
+  status: accepted
+  rationale: The hexagonal domain is modelled with DDD tactical building blocks.
+  reviewed: true
+- type: relates_to
+  target: ADR-003-server-owned-budget-calculation
+  status: accepted
+  rationale: The server-owned rules live on aggregates and value objects in the domain.
+  reviewed: true
+- type: relates_to
+  target: ADR-008-manual-account-balance-snapshots
+  status: accepted
+  rationale: Balance snapshots are value objects within the Account aggregate.
+  reviewed: true
+metadata_version: '1.0'
+---
+[[adr-009-domain-identity-and-ddd]]
+== ADR-009: Domain Identity And DDD Tactical Design
+
+=== Status
+
+Accepted. Confirmed by the owner on 2026-07-24.
+
+=== Decision
+
+The domain uses DDD tactical building blocks:
+
+* *Value objects* have no identity and compare by value: `Money`,
+  `PaymentInterval`, and the typed identifiers themselves.
+* *Entities* have identity expressed as a *domain* concept — a natural business
+  key where a stable one exists (`Category` by name, `Account` by IBAN/name,
+  `IncomeEntry` by month) or a domain-generated typed identifier (for example
+  `TransactionId` as a UUID) where none does.
+* *Aggregates* group entities under a root; the root is the unit of consistency
+  and the granularity of repositories.
+
+Persistence surrogate keys (JPA `@Id` columns), if any, stay inside the JPA
+entities and never appear in the domain model.
+
+=== Context
+
+The owner explicitly prefers business identity over technical identity. DDD's
+actual rule is not "no ids" but "entities have identity, value objects do not";
+the anti-pattern is letting a database autoincrement become the domain's notion
+of identity. A `Transaction` needs identity (two identical-looking expenses on
+the same day are distinct), but bank statements do not always carry a stable
+reference — hence the natural-or-generated identity rule and Q-ARCH-003.
+
+Initial aggregate map (refined as slices land):
+
+[cols="1,2,2", options="header"]
+|===
+| Aggregate root | Identity | Notes
+| Account | IBAN or name | Owns manually entered balance snapshots (value objects).
+| CategoryGroup | Name | Groups categories.
+| Category | Name | Reference entity; carries the pension-relevance flag.
+| Transaction | Bank reference or generated `TransactionId` | See Q-ARCH-003.
+| FixedCost | Generated id | References a category; has amount, interval, anchor date.
+| IncomeEntry | Month | One recorded monthly income per month.
+|===
+
+=== Considered Options
+
+==== Domain identity: natural keys plus typed ids (chosen)
+
+Entities carry business identity or a domain-generated typed id; the domain is
+free of persistence concerns.
+
+==== Leak the JPA surrogate `Long id` into the domain
+
+Simplest to persist, but ties identity to the database and violates the owner's
+preference and DDD.
+
+==== Treat transactions as identity-less value objects
+
+Impossible to edit or delete an individual transaction; loses required identity.
+
+=== Pugh Matrix
+
+[cols="2,1,1,1", options="header"]
+|===
+| Criterion | Domain identity | Leaked surrogate | Value-object txns
+| No technical id in domain | +1 | -1 | +1
+| Supports edit/delete | +1 | +1 | -1
+| Persistence independence | +1 | -1 | 0
+s| Sum s| 3 s| -1 s| 0
+|===
+
+=== Consequences
+
+==== Positive
+
+* The domain is expressed in business terms; identity is meaningful and testable.
+* Aggregates give clear repository boundaries.
+
+==== Negative
+
+* A typed-id/mapping layer is needed between domain identity and JPA rows.
+
+==== Neutral or Follow-Up
+
+* Introduce `TransactionId` with the edit/delete slice; decide its source in
+  Q-ARCH-003. Refine aggregate boundaries as accounts, groups, and pension land.
+
+include::generated/adr-009-domain-identity-and-ddd-traceability.adoc[leveloffset=+1]

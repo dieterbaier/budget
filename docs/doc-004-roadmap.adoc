@@ -1,0 +1,39 @@
+[[roadmap]]
+= Roadmap
+:id: DOC-004-roadmap
+
+== Increment 0 — Bootstrap Setup
+
+A short setup flow to seed the master data: accounts (current account, reserve
+call-money account for non-monthly fixed costs, savings call-money account),
+category groups, categories, fixed-cost definitions with amount, interval, and
+anchor date, and the current balance of each account. This replaces the manual
+Notion setup.
+
+== Increment 1 — Walking Skeleton
+
+Hexagonal Spring Boot backend, PostgreSQL, and an installable React PWA. Record a
+transaction from a bank statement (date, amount, category, account, type) and
+show the *current monthly expenditure* view with the overspending indicator
+against average monthly income. This is the single view the owner would miss
+most.
+
+== Increment 2 — Group And Reserve Views
+
+The *group view* (spend per category group) and the reserve requirement for the
+call-money account that funds non-monthly fixed costs, derived from fixed-cost
+amounts and anchor dates.
+
+== Increment 3 — Cash-Runway, Net Worth And Pension
+
+"How much must be on the current account from today until month end"; net-worth
+tracking (life insurance, house value, account balances, investment portfolio,
+latest statutory pension figures); and the nominal pension projection (current
+pot, retirement age, life expectancy, average inflation, entered nominal return,
+and the pension-relevance flag on costs) that yields the pension shortfall.
+
+== Later Increments
+
+Optional Notion/CSV import, richer trend history, backup automation, and — only
+if the owner wants app-store presence — a move beyond the PWA. Offline capture
+and multi-user sharing remain explicitly out of scope.

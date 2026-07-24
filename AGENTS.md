@@ -79,7 +79,7 @@ is not. Update this pin when the vendored tooling under `metamodel/`,
 
 Before architecture or SDLC workflow work:
 
-- inspect existing `src/docs/`, `metamodel/`, `templates/`, `scripts/`, and `skills/`
+- inspect existing `docs/`, `metamodel/`, `templates/`, `scripts/`, and `skills/`
 - use reviewed source files as architecture context; do not use derived output
   such as `generated/`, `build/`, `dist/`, `target/`, `out/`, rendered
   HTML/PDF, generated indexes, traceability views, or assembled documentation
@@ -116,12 +116,12 @@ are delegated to the toolkit.
 
 ## Validate And Generate
 
-Source artifacts under `src/docs/` are authoritative. Regenerate derived
+Source artifacts under `docs/` are authoritative. Regenerate derived
 fragments from source instead of editing anything under a `generated/` directory:
 
 ```sh
 ruby scripts/validate-metamodel.rb \
-  --docs src/docs \
+  --docs docs \
   --relations-schema metamodel/relations.schema.yaml \
   --generate
 ```

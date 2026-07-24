@@ -1,0 +1,88 @@
+---
+id: ADR-008-manual-account-balance-snapshots
+type: ADR
+title: Manual Account-Balance Snapshots
+status: accepted
+owner: architecture
+created: '2026-07-24'
+updated: '2026-07-24'
+reviewed: true
+summary: Account balances are manually entered snapshots; transactions drive analysis, not balances.
+tags:
+- decision
+- domain-model
+relations:
+- type: relates_to
+  target: ADR-003-server-owned-budget-calculation
+  status: accepted
+  rationale: Calculations treat balances as entered snapshots, not as a derived ledger sum.
+  reviewed: true
+metadata_version: '1.0'
+---
+[[adr-008-manual-account-balance-snapshots]]
+== ADR-008: Manual Account-Balance Snapshots
+
+=== Status
+
+Accepted. Confirmed by the owner on 2026-07-24.
+
+=== Decision
+
+An account balance is a value the owner enters occasionally ("as of date D,
+account A holds X"). The application does not derive balances from transactions.
+Transactions exist for categorization and analysis (monthly expenditure, group
+spend, reserve and pension inputs), not to reconstruct a running balance.
+
+=== Context
+
+The owner enters transactions from bank statements and deliberately does not
+record every cash payment (only a `Barabhebung` cash-withdrawal booking). The
+transaction set is therefore intentionally incomplete and can never reconcile
+exactly to the real balance. Modeling balance as a manual snapshot is both
+honest about the data and simpler than a reconciling ledger.
+
+=== Decision Drivers
+
+* Cash spending is out; the ledger would never balance.
+* The wanted answers (spend by category/group, reserves, cash runway) need
+  categorized transactions plus a known balance, not a derived one.
+* Transfers between the three accounts are recorded but never count as expenses.
+
+=== Considered Options
+
+==== Manual snapshot (chosen)
+
+Matches how the data actually arrives; no false precision.
+
+==== Derived running balance from transactions
+
+Would require capturing every cash payment; contradicts the owner's workflow.
+
+=== Pugh Matrix
+
+[cols="2,1,1", options="header"]
+|===
+| Criterion | Manual snapshot | Derived ledger
+| Fits real data | +1 | -1
+| Implementation simplicity | +1 | -1
+s| Sum s| 2 s| -2
+|===
+
+=== Consequences
+
+==== Positive
+
+* The model never claims a balance it cannot know; the cash-runway view builds on
+  the entered snapshot plus upcoming costs.
+
+==== Negative
+
+* Balances are only as fresh as the owner's last entry; the UI should show the
+  "as of" date.
+
+==== Neutral or Follow-Up
+
+* Transaction type must distinguish expense, income, and transfer so transfers
+  and refunds (negative expense in the same category) are handled correctly.
+
+include::generated/adr-008-manual-account-balance-snapshots-traceability.adoc[leveloffset=+1]

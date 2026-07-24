@@ -1,0 +1,80 @@
+---
+id: ADR-010-flyway-migrations
+type: ADR
+title: Flyway For Database Migrations
+status: accepted
+owner: architecture
+created: '2026-07-24'
+updated: '2026-07-24'
+reviewed: true
+summary: Plain-SQL, versioned Flyway migrations manage the schema; Hibernate validates against them.
+tags:
+- decision
+- persistence
+relations:
+- type: relates_to
+  target: ADR-006-relational-datastore
+  status: accepted
+  rationale: Flyway is how the PostgreSQL schema is versioned and evolved.
+  reviewed: true
+metadata_version: '1.0'
+---
+[[adr-010-flyway-migrations]]
+== ADR-010: Flyway For Database Migrations
+
+=== Status
+
+Accepted. Confirmed by the owner on 2026-07-24.
+
+=== Decision
+
+Schema changes are versioned, plain-SQL Flyway migrations (`V__` scripts).
+Hibernate runs with `ddl-auto: validate`, so the entities are checked against the
+Flyway-managed schema at startup and never generate it.
+
+=== Decision Drivers
+
+* The owner prefers Flyway over Liquibase.
+* Plain SQL keeps the schema transparent and PostgreSQL-native.
+* Versioned migrations are the backbone of the durability/backup story.
+
+=== Considered Options
+
+==== Flyway, plain SQL (chosen)
+
+Simple, transparent, ordered SQL scripts; minimal concepts.
+
+==== Liquibase
+
+Powerful (XML/YAML/JSON changelogs, richer refactorings), but adds an
+abstraction over SQL the owner does not want and more moving parts than a
+single-user app needs.
+
+==== Hibernate `ddl-auto: update`
+
+No migration files, but non-deterministic, unreviewable schema evolution and
+unsafe for real data.
+
+=== Pugh Matrix
+
+[cols="2,1,1,1", options="header"]
+|===
+| Criterion | Flyway | Liquibase | ddl-auto update
+| SQL transparency | +1 | 0 | -1
+| Simplicity | +1 | -1 | +1
+| Safe, reviewable evolution | +1 | +1 | -1
+s| Sum s| 3 s| 0 s| -1
+|===
+
+=== Consequences
+
+==== Positive
+
+* Every schema change is an explicit, ordered, reviewable SQL script.
+* `ddl-auto: validate` catches entity/schema drift at startup.
+
+==== Negative
+
+* Migrations are hand-written SQL (acceptable and intended here).
+
+include::generated/adr-010-flyway-migrations-traceability.adoc[leveloffset=+1]

@@ -1,0 +1,29 @@
+[[techstack-canvas]]
+= Techstack Canvas
+:id: CANVAS-005-techstack
+
+[cols="1,3", options="header"]
+|===
+| Layer | Decision
+
+| Backend
+| Spring Boot (Java 21), Clean/Hexagonal architecture, built with Gradle (Kotlin DSL). See xref:adr-004-backend-stack-and-architecture[ADR-004].
+
+| Domain rules
+| Server-owned budget, reserve, and pension calculations in the domain layer. See xref:adr-003-server-owned-budget-calculation[ADR-003].
+
+| API
+| Versioned HTTP JSON. See xref:adr-001-backend-api-boundary[ADR-001].
+
+| Web client
+| React + TypeScript + Vite, delivered as an installable PWA (covers desktop and mobile). See xref:adr-005-web-client-as-pwa[ADR-005].
+
+| Datastore
+| PostgreSQL with Spring Data JPA and Flyway migrations. See xref:adr-006-relational-datastore[ADR-006].
+
+| BDD / TDD
+| Gherkin features via Cucumber-JVM at the application boundary; JUnit 5, AssertJ, Mockito, Testcontainers.
+
+| Deployment
+| Single-user; local for the MVP, an always-on host (small VPS) once multi-device is wanted. See xref:adr-007-single-user-deployment-and-auth[ADR-007].
+|===

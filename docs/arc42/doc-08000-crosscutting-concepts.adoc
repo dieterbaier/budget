@@ -1,0 +1,97 @@
+---
+id: DOC-08000-crosscutting-concepts
+type: Document
+title: Crosscutting Concepts
+status: reviewed
+owner: architecture
+created: '2026-07-03'
+updated: '2026-07-24'
+reviewed: true
+generated: false
+summary: Domain model, money handling, security, testing, observability, and error handling.
+tags:
+- arc42
+- concepts
+relations:
+- type: addresses
+  target: R-001-private-data-exposure
+  status: accepted
+  rationale: Security and privacy controls mitigate personal data exposure.
+  evidence: docs/arc42/doc-08000-crosscutting-concepts.adoc
+  reviewed: true
+metadata_version: '1.0'
+---
+[[crosscutting-concepts]]
+= Crosscutting Concepts
+
+== Domain Model
+
+The domain is modelled with DDD tactical patterns (ADR-009): value objects,
+entities with *domain* identity, and aggregates. *Value objects* — `Money`,
+`PaymentInterval`, and the typed identifiers — have no identity and compare by
+value. *Aggregate roots* and their identity:
+
+* `Account` — identity by IBAN/name; owns manually entered balance snapshots
+  (value objects with an "as of" date).
+* `CategoryGroup` / `Category` — identity by name; `Category` carries the
+  *pension-relevance* flag.
+* `Transaction` — a booking with date, amount, category, account, and type
+  (expense/income/transfer); refunds are negative expenses in the same category.
+  It needs identity but has no guaranteed natural key, so it uses a bank reference
+  or a generated `TransactionId` (Q-ARCH-003).
+* `FixedCost` — amount, interval, anchor date, derived next payment date and
+  monthly reserve, plus a *pension-relevance* flag.
+* `IncomeEntry` — identity by month.
+* `Asset` — manually entered net-worth positions (life insurance, house value,
+  account balances, investment portfolio, latest statutory pension figures), and
+  the `PensionProjection` inputs.
+
+Balances and asset values are snapshots, not derived from transactions (ADR-008).
+Persistence surrogate keys stay inside the JPA entities and never appear in the
+domain (ADR-009).
+
+== Pension And Net Worth
+
+The pension projection works in *nominal* terms. Inputs are the current pension
+pot, retirement age, life expectancy, an estimated nominal return the owner
+enters (the rate a safe investment would yield today), and an inflation rate. The
+inflation rate is the average of Germany's historical annual rates, taken from
+https://www.global-rates.com/de/inflation/historisch/[global-rates.com].
+
+The expected monthly need in retirement is derived from current costs, but only
+those flagged pension-relevant: categories, individual costs, and fixed costs
+each carry a relevance flag, so items such as a mortgage repayment (assumed gone
+in retirement) are excluded. From the projected need over the retirement span and
+the owner's tracked net worth (`Asset` positions plus the latest pension
+figures), the domain computes the *pension shortfall* — how much is still
+missing.
+
+== Money Handling
+
+All amounts are EUR and stored as exact decimals (`BigDecimal` / `numeric`); no
+floating-point money. Amortization and reserve math round explicitly.
+
+== Security
+
+Single-user authentication: one credential, Argon2 password hashing, sessions
+over TLS only, server-side authorization on every endpoint, and no third-party
+telemetry. Logs never contain transaction descriptions or amounts tied to
+identifiers.
+
+== Testing
+
+Features are Gherkin scenarios run by Cucumber-JVM against the application
+boundary; the domain is unit-tested with JUnit 5, AssertJ, and Mockito; the
+persistence adapter is tested against real PostgreSQL via Testcontainers. Money
+rules are developed test-first.
+
+== Observability
+
+Backend logs carry request IDs, validation failures, and calculation errors,
+with personal financial detail redacted.
+
+== Error Handling
+
+Invalid input is rejected at the API boundary with clear messages; the PWA shows
+them inline. There is no offline queue — the client requires the backend to be
+reachable.

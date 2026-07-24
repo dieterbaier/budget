@@ -1,0 +1,42 @@
+---
+id: DOC-03000-system-scope-and-context
+type: Document
+title: System Scope And Context
+status: reviewed
+owner: architecture
+created: '2026-07-03'
+updated: '2026-07-24'
+reviewed: true
+generated: false
+summary: Business and technical context for the private single-user Budget app.
+tags:
+- arc42
+- context
+relations: []
+metadata_version: '1.0'
+---
+[[system-scope-and-context]]
+= System Scope And Context
+
+Budget is a self-contained, single-user system: a React PWA, a Spring Boot
+backend, and a PostgreSQL database. The only external input is the owner reading
+figures from bank statements and typing them in; there is no automated bank
+integration. Balances are entered by hand (see ADR-008).
+
+[plantuml,budget-context,png]
+----
+@startuml
+left to right direction
+actor "Owner (sole user)" as User
+rectangle "Bank statements\n(read by the owner)" as Bank
+rectangle "Budget" {
+  component "Web PWA" as Web
+  component "Backend API" as Api
+}
+database "PostgreSQL" as Db
+Bank ..> User : figures read manually
+User --> Web : enter transactions,\nview budget & pension
+Web --> Api : HTTPS/JSON
+Api --> Db : persist & query
+@enduml
+----

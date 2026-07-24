@@ -1,0 +1,102 @@
+---
+id: DOC-04000-solution-strategy
+type: Document
+title: Solution Strategy
+status: reviewed
+owner: architecture
+created: '2026-07-03'
+updated: '2026-07-24'
+reviewed: true
+generated: false
+summary: Main architectural approaches for the budget application.
+tags:
+- arc42
+- strategy
+relations:
+- type: documents
+  target: ADR-001-backend-api-boundary
+  status: accepted
+  rationale: The versioned HTTP API is the client boundary.
+  evidence: docs/arc42/09-architecture-decisions/adr-001-backend-api-boundary.adoc
+  reviewed: true
+- type: documents
+  target: ADR-003-server-owned-budget-calculation
+  status: accepted
+  rationale: The domain layer owns budget, reserve, and pension calculations.
+  evidence: docs/arc42/09-architecture-decisions/adr-003-server-owned-budget-calculation.adoc
+  reviewed: true
+- type: documents
+  target: ADR-004-backend-stack-and-architecture
+  status: accepted
+  rationale: Spring Boot with a hexagonal architecture is the backend strategy.
+  evidence: docs/arc42/09-architecture-decisions/adr-004-backend-stack-and-architecture.adoc
+  reviewed: true
+- type: documents
+  target: ADR-005-web-client-as-pwa
+  status: accepted
+  rationale: A single React PWA is the client strategy for desktop and mobile.
+  evidence: docs/arc42/09-architecture-decisions/adr-005-web-client-as-pwa.adoc
+  reviewed: true
+- type: documents
+  target: ADR-006-relational-datastore
+  status: accepted
+  rationale: PostgreSQL behind a persistence port is the storage strategy.
+  evidence: docs/arc42/09-architecture-decisions/adr-006-relational-datastore.adoc
+  reviewed: true
+- type: documents
+  target: ADR-007-single-user-deployment-and-auth
+  status: accepted
+  rationale: Local-then-hosted single-user deployment is the operational strategy.
+  evidence: docs/arc42/09-architecture-decisions/adr-007-single-user-deployment-and-auth.adoc
+  reviewed: true
+- type: documents
+  target: ADR-009-domain-identity-and-ddd
+  status: accepted
+  rationale: DDD tactical design with domain identity shapes the backend domain.
+  evidence: docs/arc42/09-architecture-decisions/adr-009-domain-identity-and-ddd.adoc
+  reviewed: true
+- type: documents
+  target: ADR-012-explicit-bean-configuration
+  status: accepted
+  rationale: Explicit bean wiring keeps the Clean Architecture core framework-free.
+  evidence: docs/arc42/09-architecture-decisions/adr-012-explicit-bean-configuration.adoc
+  reviewed: true
+metadata_version: '1.0'
+---
+[[solution-strategy]]
+= Solution Strategy
+
+The backend is the system of record: a Spring Boot service in a Clean/Hexagonal
+layout whose framework-free domain owns every money rule (monthly expenditure and
+overspending, fixed-cost amortization, account reserves, cash runway, pension
+projection). A single React + TypeScript PWA renders those results over a
+versioned HTTP JSON API and serves both desktop and phone. Data lives in
+PostgreSQL behind a persistence port, so the store can move from a local instance
+to a hosted one without touching the domain. Account balances are manually
+entered snapshots, not a derived ledger.
+
+Features are specified in Gherkin and built test-first: Cucumber-JVM exercises use
+cases at the application boundary; JUnit 5, AssertJ, and Mockito cover the domain;
+Testcontainers exercises the PostgreSQL adapter.
+
+The first increment is a walking skeleton: bootstrap the master data, record a
+transaction, and show the current monthly expenditure with the overspending
+signal.
+
+== Implementing Clean Architecture In The Backend
+
+A few implementation decisions realize the Clean/Hexagonal intent, each recorded
+with its rationale as an ADR:
+
+* *DDD tactical design* — the domain is value objects and aggregates whose
+  entities carry *domain* identity (a business key, or a generated typed id where
+  none exists), never a persistence surrogate key. See
+  xref:adr-009-domain-identity-and-ddd[ADR-009].
+* *Explicit bean configuration* — the application and domain layers have no Spring
+  annotations; they are wired by explicit `@Bean` methods, and only the adapters
+  are component-scanned, so the core stays framework-free and plain-Java testable.
+  See xref:adr-012-explicit-bean-configuration[ADR-012].
+* *Flyway migrations* — the schema evolves through versioned, plain-SQL scripts,
+  with Hibernate in `validate` mode. See xref:adr-010-flyway-migrations[ADR-010].
+* *No Lombok* — plain Java (records plus explicit code) instead of an annotation
+  processor. See xref:adr-011-no-lombok[ADR-011].

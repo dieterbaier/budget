@@ -1,0 +1,39 @@
+---
+id: QS-002-expense-entry-latency
+type: QualityScenario
+title: Transaction Entry Latency
+status: reviewed
+owner: architecture
+created: '2026-07-03'
+updated: '2026-07-24'
+reviewed: true
+summary: Recording a transaction should feel fast enough for daily use.
+tags:
+- quality
+- usability
+relations:
+- type: refines
+  target: DOC-01001-quality-goals
+  status: accepted
+  rationale: The scenario concretizes QG-004 Usability.
+  evidence: docs/arc42/01-introduction-and-goals/doc-01001-quality-goals.adoc
+  reviewed: true
+metadata_version: '1.0'
+---
+[[qs-002-expense-entry-latency]]
+== QS-002: Transaction Entry Latency
+
+=== Scenario
+
+[cols="1,3", options="header"]
+|===
+| Element | Description
+| Source | Owner.
+| Stimulus | Records a transaction with amount, category, account, and date.
+| Artifact | Web PWA and backend API.
+| Environment | Normal network conditions (local or hosted).
+| Response | The PWA confirms the saved transaction and shows the updated monthly figure.
+| Response Measure | Assumption: p95 interaction time stays below 2 seconds after the user submits the form.
+|===
+
+include::generated/qs-002-expense-entry-latency-traceability.adoc[leveloffset=+1]

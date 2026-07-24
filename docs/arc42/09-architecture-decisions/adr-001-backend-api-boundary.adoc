@@ -1,0 +1,78 @@
+---
+id: ADR-001-backend-api-boundary
+type: ADR
+title: Backend API Boundary
+status: accepted
+owner: architecture
+created: '2026-07-03'
+updated: '2026-07-24'
+reviewed: true
+summary: The backend exposes a versioned HTTP JSON API as the single client boundary.
+tags:
+- decision
+- api
+relations:
+- type: addresses
+  target: QS-002-expense-entry-latency
+  status: accepted
+  rationale: A stable API boundary supports predictable client transaction entry.
+  evidence: docs/arc42/10-quality-requirements/qs-002-expense-entry-latency.adoc
+  reviewed: true
+metadata_version: '1.0'
+---
+[[adr-001-backend-api-boundary]]
+== ADR-001: Backend API Boundary
+
+=== Status
+
+Accepted. Confirmed by the owner on 2026-07-24.
+
+=== Decision
+
+The backend exposes a versioned HTTP JSON API as the single boundary between the
+web PWA and the domain. The same contract serves the phone when the PWA is
+installed on mobile.
+
+=== Context
+
+The application has one backend system of record and, for now, one client (the
+PWA). Keeping a clean HTTP boundary rather than letting the client reach the
+database directly preserves the hexagonal design and keeps a future second
+client (or an always-on hosted deployment) a configuration change rather than a
+rewrite.
+
+=== Considered Options
+
+==== HTTP JSON API
+
+Simple to consume from the PWA; the natural driving adapter for a hexagonal
+backend.
+
+==== GraphQL
+
+Flexible for clients, but more machinery than a single-user, single-client app
+needs.
+
+==== Client reads the database directly
+
+Removes a hop but leaks domain rules into the client and would be unsafe over
+the internet in the later hosted deployment.
+
+=== Pugh Matrix
+
+[cols="2,1,1,1", options="header"]
+|===
+| Criterion | HTTP JSON | GraphQL | Direct DB access
+| Simplicity | +1 | 0 | +1
+| Domain-rule ownership | +1 | +1 | -1
+| Safe when hosted | +1 | +1 | -1
+s| Sum s| 3 s| 2 s| -1
+|===
+
+=== Consequences
+
+* The PWA (desktop and mobile) shares one backend contract.
+* API versioning must be managed deliberately.
+* Direct database access from clients is explicitly excluded.
+
+include::generated/adr-001-backend-api-boundary-traceability.adoc[leveloffset=+1]

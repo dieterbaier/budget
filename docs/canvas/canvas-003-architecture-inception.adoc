@@ -1,0 +1,11 @@
+[[architecture-inception-canvas]]
+= Architecture Inception Canvas
+:id: CANVAS-003-architecture-inception
+
+The central architectural concern is a small, correct system of record: a
+hexagonal backend that owns all budget, reserve, and pension calculations, a
+relational store for transactions and master data, manually entered account
+balances (transactions are not a full ledger), and a single thin PWA client.
+Reliable calculation and clean boundaries matter more than scale; there is one
+user and no offline or multi-device concurrency to reconcile in the first
+increment.

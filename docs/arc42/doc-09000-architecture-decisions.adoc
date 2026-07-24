@@ -1,0 +1,94 @@
+---
+id: DOC-09000-architecture-decisions
+type: Document
+title: Architecture Decisions
+status: reviewed
+owner: architecture
+created: '2026-07-03'
+updated: '2026-07-24'
+reviewed: true
+generated: false
+summary: Accepted ADRs for the private single-user Budget architecture.
+tags:
+- arc42
+- decisions
+relations:
+- type: documents
+  target: ADR-001-backend-api-boundary
+  status: accepted
+  rationale: The chapter contains this ADR.
+  evidence: docs/arc42/doc-09000-architecture-decisions.adoc
+  reviewed: true
+- type: documents
+  target: ADR-003-server-owned-budget-calculation
+  status: accepted
+  rationale: The chapter contains this ADR.
+  evidence: docs/arc42/doc-09000-architecture-decisions.adoc
+  reviewed: true
+- type: documents
+  target: ADR-004-backend-stack-and-architecture
+  status: accepted
+  rationale: The chapter contains this ADR.
+  evidence: docs/arc42/doc-09000-architecture-decisions.adoc
+  reviewed: true
+- type: documents
+  target: ADR-005-web-client-as-pwa
+  status: accepted
+  rationale: The chapter contains this ADR.
+  evidence: docs/arc42/doc-09000-architecture-decisions.adoc
+  reviewed: true
+- type: documents
+  target: ADR-006-relational-datastore
+  status: accepted
+  rationale: The chapter contains this ADR.
+  evidence: docs/arc42/doc-09000-architecture-decisions.adoc
+  reviewed: true
+- type: documents
+  target: ADR-007-single-user-deployment-and-auth
+  status: accepted
+  rationale: The chapter contains this ADR.
+  evidence: docs/arc42/doc-09000-architecture-decisions.adoc
+  reviewed: true
+- type: documents
+  target: ADR-008-manual-account-balance-snapshots
+  status: accepted
+  rationale: The chapter contains this ADR.
+  evidence: docs/arc42/doc-09000-architecture-decisions.adoc
+  reviewed: true
+- type: documents
+  target: ADR-009-domain-identity-and-ddd
+  status: accepted
+  rationale: The chapter contains this ADR.
+  evidence: docs/arc42/doc-09000-architecture-decisions.adoc
+  reviewed: true
+- type: documents
+  target: ADR-010-flyway-migrations
+  status: accepted
+  rationale: The chapter contains this ADR.
+  evidence: docs/arc42/doc-09000-architecture-decisions.adoc
+  reviewed: true
+- type: documents
+  target: ADR-011-no-lombok
+  status: accepted
+  rationale: The chapter contains this ADR.
+  evidence: docs/arc42/doc-09000-architecture-decisions.adoc
+  reviewed: true
+- type: documents
+  target: ADR-012-explicit-bean-configuration
+  status: accepted
+  rationale: The chapter contains this ADR.
+  evidence: docs/arc42/doc-09000-architecture-decisions.adoc
+  reviewed: true
+metadata_version: '1.0'
+---
+[[architecture-decisions]]
+= Architecture Decisions
+
+The decisions below were confirmed by the owner on 2026-07-24. The withdrawn
+ADR-002 (mobile local-first offline entry) has been removed because offline
+capture is out of scope.
+
+include::09-architecture-decisions/generated/doc-09001-adr-index.adoc[]
+include::09-architecture-decisions/generated/open-questions.adoc[]
+
+include::generated/doc-09000-architecture-decisions-includes.adoc[]

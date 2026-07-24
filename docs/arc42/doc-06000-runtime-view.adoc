@@ -1,0 +1,73 @@
+---
+id: DOC-06000-runtime-view
+type: Document
+title: Runtime View
+status: reviewed
+owner: architecture
+created: '2026-07-03'
+updated: '2026-07-24'
+reviewed: true
+generated: false
+summary: Runtime scenarios for transaction entry and monthly-expenditure calculation.
+tags:
+- arc42
+- runtime
+relations: []
+metadata_version: '1.0'
+---
+[[runtime-view]]
+= Runtime View
+
+== Record A Transaction
+
+Both boundaries are crossed through ports. The HTTP adapter depends on an
+*inbound use-case port* that the application service implements; the application
+service depends on an *outbound repository port* that the persistence adapter
+implements. The application service never touches PostgreSQL directly, and the
+HTTP adapter never touches the service directly — each speaks only to a port.
+This keeps every infrastructure interaction behind an adapter, as Clean/Hexagonal
+architecture requires.
+
+[plantuml,transaction-entry-runtime,png]
+----
+@startuml
+actor Owner
+participant "Web PWA" as Web
+participant "HTTP Adapter\n(inbound)" as Api
+participant "Use-Case Port\n(inbound)" as InPort
+participant "Application Service" as App
+participant "Budget Domain" as Domain
+participant "Repository Port\n(outbound)" as OutPort
+participant "Persistence Adapter\n(outbound)" as Repo
+database "PostgreSQL" as Db
+Owner -> Web: Enter transaction (date, amount, category, account, type)
+Web -> Api: POST /transactions
+Api -> InPort: recordTransaction(command)
+InPort -> App: (implemented by)
+App -> Domain: Validate (expense / income / transfer, refund = negative)
+App -> OutPort: save(transaction)
+OutPort -> Repo: (implemented by)
+Repo -> Db: INSERT
+Db --> Repo: ok
+Repo --> App: saved
+App -> OutPort: load month data for summary
+OutPort -> Repo: query
+Repo -> Db: SELECT
+Db --> Repo: rows
+Repo --> App: transactions
+App -> Domain: compute monthly summary
+App --> Api: Updated monthly summary
+Api --> Web: 201 Created + summary
+@enduml
+----
+
+== Current Monthly Expenditure
+
+On request, the application loads the month's data through the repository port and
+asks the domain to sum the current month's variable costs, add each fixed cost
+amortized to its monthly average (yearly ÷ 12, quarterly ÷ 3, and so on), exclude
+transfers, apply refunds as negative amounts in their category, and compare the
+total against the average monthly income to produce the overspending signal. The
+same domain services feed the group view, the reserve requirement for the
+non-monthly-fixed-cost account, and the pension projection. All figures are
+computed on the backend (ADR-003); the PWA only renders them.
