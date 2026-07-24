@@ -36,7 +36,12 @@ skeleton).
 - `AGENTS.md`, `.github/copilot-instructions.md`, `general-semantic-contracts.md`
   — thin AI contracts that delegate method guidance to the toolkit.
 
-## Run the backend locally
+## Run the application
+
+The application lives under `application/`. The backend is runnable today; the
+web PWA and any further parts are documented here as the project evolves.
+
+### Run the backend locally
 
 The backend needs a PostgreSQL. Start it from the compose file, then run the app
 with the `local` profile (which points at `localhost:5432` and seeds sample
@@ -51,15 +56,21 @@ docker compose up -d        # or: podman compose up -d
 Then query the current monthly expenditure:
 
 ```sh
+# read the current monthly expenditure
 curl 'http://localhost:8080/api/monthly-expenditure?month=2026-07'
 # {"month":"2026-07","variableCosts":900.00,"fixedCostsMonthly":100.00,
 #  "total":1000.00,"averageIncome":950.00,"difference":50.00,"overspending":true}
+
+# record a transaction (the category must already exist)
+curl -X POST 'http://localhost:8080/api/transactions' \
+  -H 'Content-Type: application/json' \
+  -d '{"date":"2026-07-15","amount":42.00,"category":"Groceries","type":"EXPENSE"}'
 ```
 
 Stop and clean up with `docker compose down` (or `podman compose down`). Tests
 run without any of this — they use Testcontainers (`./gradlew test`).
 
-## Validate and generate
+## Validate and generate the documentation
 
 ```sh
 ruby scripts/validate-metamodel.rb \
@@ -77,7 +88,13 @@ Or via the docs-toolbox task runner (pinned container image):
 DOCS_TOOLBOX_LOCAL=1 ./build.sh generate   # use host toolchain instead
 ```
 
-## Agent adapters
+Generated AsciiDoc fragments are written next to their sources under each
+chapter's `generated/` directory (these are derived output, not edited by hand).
+`./build.sh build` additionally renders the assembled arc42 documentation to
+`build/architecture/index.html` — open that file in a browser to read it as a
+rendered artifact.
+
+## AI agent adapters
 
 ```sh
 node scripts/build-agent-adapters.js   # regenerate adapters/
