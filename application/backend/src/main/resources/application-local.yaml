@@ -1,0 +1,8 @@
+# Local development profile. Point the app at the PostgreSQL started from
+# compose.yaml (see the README "Run locally" section). Activated automatically by
+# `./gradlew bootRun`; the LocalDataSeeder then loads sample data.
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/budget
+    username: budget
+    password: budget

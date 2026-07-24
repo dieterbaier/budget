@@ -38,3 +38,9 @@ dependencies {
 tasks.withType<Test> {
     useJUnitPlatform()
 }
+
+tasks.named<org.springframework.boot.gradle.tasks.run.BootRun>("bootRun") {
+    // Activate the local profile (datasource + demo data seeder). Start the
+    // database first with `docker compose up -d` / `podman compose up -d`.
+    systemProperty("spring.profiles.active", "local")
+}
