@@ -9,7 +9,10 @@ import eu.dieterbaier.budget.adapter.out.persistence.entity.FixedCostEntity;
 import eu.dieterbaier.budget.adapter.out.persistence.entity.IncomeEntryEntity;
 import eu.dieterbaier.budget.adapter.out.persistence.entity.TransactionEntity;
 import eu.dieterbaier.budget.application.port.in.GetMonthlyExpenditureUseCase;
+import eu.dieterbaier.budget.application.port.in.RecordTransactionCommand;
+import eu.dieterbaier.budget.application.port.in.RecordTransactionUseCase;
 import eu.dieterbaier.budget.domain.model.Money;
+import eu.dieterbaier.budget.domain.model.TransactionType;
 import eu.dieterbaier.budget.domain.service.MonthlyExpenditure;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -41,6 +44,8 @@ class MonthlyExpenditurePersistenceIntegrationTest {
 
     @Autowired
     private GetMonthlyExpenditureUseCase useCase;
+    @Autowired
+    private RecordTransactionUseCase recordTransaction;
     @Autowired
     private CategoryJpaRepository categories;
     @Autowired
@@ -81,6 +86,19 @@ class MonthlyExpenditurePersistenceIntegrationTest {
         assertThat(result.total()).isEqualTo(Money.of("1000.00"));
         assertThat(result.averageIncome()).isEqualTo(Money.of("950.00"));
         assertThat(result.isOverspending()).isTrue();
+    }
+
+    @Test
+    void recordsTransactionThroughWritePortAndReflectsInExpenditure() {
+        categories.save(new CategoryEntity("Groceries", true));
+
+        recordTransaction.record(new RecordTransactionCommand(
+                LocalDate.of(2026, 7, 3), new BigDecimal("250.00"), "Groceries", TransactionType.EXPENSE));
+
+        MonthlyExpenditure result = useCase.forMonth(YearMonth.of(2026, 7));
+
+        assertThat(result.variableCosts()).isEqualTo(Money.of("250.00"));
+        assertThat(result.total()).isEqualTo(Money.of("250.00"));
     }
 
     private static TransactionEntity expense(LocalDate date, String amount, CategoryEntity category) {

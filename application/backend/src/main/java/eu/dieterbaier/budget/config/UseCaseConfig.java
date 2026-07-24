@@ -1,10 +1,13 @@
 package eu.dieterbaier.budget.config;
 
 import eu.dieterbaier.budget.application.port.in.GetMonthlyExpenditureUseCase;
+import eu.dieterbaier.budget.application.port.in.RecordTransactionUseCase;
+import eu.dieterbaier.budget.application.port.out.CategoryRepository;
 import eu.dieterbaier.budget.application.port.out.FixedCostRepository;
 import eu.dieterbaier.budget.application.port.out.IncomeRepository;
 import eu.dieterbaier.budget.application.port.out.TransactionRepository;
 import eu.dieterbaier.budget.application.service.MonthlyExpenditureService;
+import eu.dieterbaier.budget.application.service.RecordTransactionService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -22,5 +25,12 @@ public class UseCaseConfig {
             FixedCostRepository fixedCostRepository,
             IncomeRepository incomeRepository) {
         return new MonthlyExpenditureService(transactionRepository, fixedCostRepository, incomeRepository);
+    }
+
+    @Bean
+    public RecordTransactionUseCase recordTransactionUseCase(
+            CategoryRepository categoryRepository,
+            TransactionRepository transactionRepository) {
+        return new RecordTransactionService(categoryRepository, transactionRepository);
     }
 }

@@ -9,4 +9,6 @@ import java.util.List;
 public interface TransactionRepository {
 
     List<Transaction> findByMonth(YearMonth month);
+
+    void save(Transaction transaction);
 }

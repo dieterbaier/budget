@@ -17,9 +17,12 @@ import java.util.List;
 public class TransactionPersistenceAdapter implements TransactionRepository {
 
     private final TransactionJpaRepository jpaRepository;
+    private final CategoryJpaRepository categoryJpaRepository;
 
-    public TransactionPersistenceAdapter(TransactionJpaRepository jpaRepository) {
+    public TransactionPersistenceAdapter(TransactionJpaRepository jpaRepository,
+                                         CategoryJpaRepository categoryJpaRepository) {
         this.jpaRepository = jpaRepository;
+        this.categoryJpaRepository = categoryJpaRepository;
     }
 
     @Override
@@ -28,6 +31,19 @@ public class TransactionPersistenceAdapter implements TransactionRepository {
                 .stream()
                 .map(TransactionPersistenceAdapter::toDomain)
                 .toList();
+    }
+
+    @Override
+    public void save(Transaction transaction) {
+        CategoryEntity category = categoryJpaRepository.findByName(transaction.category().name())
+                .orElseThrow(() -> new IllegalStateException(
+                        "Category not found while saving transaction: " + transaction.category().name()));
+
+        jpaRepository.save(new TransactionEntity(
+                transaction.date(),
+                transaction.amount().amount(),
+                category,
+                transaction.type().name()));
     }
 
     private static Transaction toDomain(TransactionEntity entity) {

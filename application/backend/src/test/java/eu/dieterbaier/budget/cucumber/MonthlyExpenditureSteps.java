@@ -99,8 +99,17 @@ public class MonthlyExpenditureSteps {
 
     @When("I calculate the monthly expenditure for {yearMonth}")
     public void iCalculateTheMonthlyExpenditureFor(YearMonth month) {
-        TransactionRepository transactionRepository = queryMonth ->
-                transactions.stream().filter(t -> YearMonth.from(t.date()).equals(queryMonth)).toList();
+        TransactionRepository transactionRepository = new TransactionRepository() {
+            @Override
+            public List<Transaction> findByMonth(YearMonth queryMonth) {
+                return transactions.stream().filter(t -> YearMonth.from(t.date()).equals(queryMonth)).toList();
+            }
+
+            @Override
+            public void save(Transaction transaction) {
+                transactions.add(transaction);
+            }
+        };
         FixedCostRepository fixedCostRepository = () -> List.copyOf(fixedCosts);
         IncomeRepository incomeRepository = () -> averageIncome;
 
