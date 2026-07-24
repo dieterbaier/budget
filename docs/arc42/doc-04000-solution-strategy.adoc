@@ -49,6 +49,18 @@ relations:
   rationale: Local-then-hosted single-user deployment is the operational strategy.
   evidence: docs/arc42/09-architecture-decisions/adr-007-single-user-deployment-and-auth.adoc
   reviewed: true
+- type: documents
+  target: ADR-009-domain-identity-and-ddd
+  status: accepted
+  rationale: DDD tactical design with domain identity shapes the backend domain.
+  evidence: docs/arc42/09-architecture-decisions/adr-009-domain-identity-and-ddd.adoc
+  reviewed: true
+- type: documents
+  target: ADR-012-explicit-bean-configuration
+  status: accepted
+  rationale: Explicit bean wiring keeps the Clean Architecture core framework-free.
+  evidence: docs/arc42/09-architecture-decisions/adr-012-explicit-bean-configuration.adoc
+  reviewed: true
 metadata_version: '1.0'
 ---
 [[solution-strategy]]
@@ -70,3 +82,21 @@ Testcontainers exercises the PostgreSQL adapter.
 The first increment is a walking skeleton: bootstrap the master data, record a
 transaction, and show the current monthly expenditure with the overspending
 signal.
+
+== Implementing Clean Architecture In The Backend
+
+A few implementation decisions realize the Clean/Hexagonal intent, each recorded
+with its rationale as an ADR:
+
+* *DDD tactical design* — the domain is value objects and aggregates whose
+  entities carry *domain* identity (a business key, or a generated typed id where
+  none exists), never a persistence surrogate key. See
+  xref:adr-009-domain-identity-and-ddd[ADR-009].
+* *Explicit bean configuration* — the application and domain layers have no Spring
+  annotations; they are wired by explicit `@Bean` methods, and only the adapters
+  are component-scanned, so the core stays framework-free and plain-Java testable.
+  See xref:adr-012-explicit-bean-configuration[ADR-012].
+* *Flyway migrations* — the schema evolves through versioned, plain-SQL scripts,
+  with Hibernate in `validate` mode. See xref:adr-010-flyway-migrations[ADR-010].
+* *No Lombok* — plain Java (records plus explicit code) instead of an annotation
+  processor. See xref:adr-011-no-lombok[ADR-011].

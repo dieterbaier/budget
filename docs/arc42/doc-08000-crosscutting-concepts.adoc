@@ -26,16 +26,29 @@ metadata_version: '1.0'
 
 == Domain Model
 
-Core entities: `Account` (with a manually entered balance snapshot and its "as
-of" date), `CategoryGroup`, `Category` (carries a *pension-relevance* flag),
-`Transaction` (date, amount, category, account, type of expense/income/transfer,
-and its own *pension-relevance* flag; refunds are negative expenses in the same
-category), `FixedCost` (amount, interval, anchor date, derived next payment date
-and monthly reserve, plus a *pension-relevance* flag), `IncomeEntry`, `Asset`
-(manually entered net-worth positions: life insurance, house value, account
-balances, investment portfolio, and the latest statutory pension figures), and
-the `PensionProjection` inputs. Balances and asset values are snapshots, not
-derived from transactions (ADR-008).
+The domain is modelled with DDD tactical patterns (ADR-009): value objects,
+entities with *domain* identity, and aggregates. *Value objects* — `Money`,
+`PaymentInterval`, and the typed identifiers — have no identity and compare by
+value. *Aggregate roots* and their identity:
+
+* `Account` — identity by IBAN/name; owns manually entered balance snapshots
+  (value objects with an "as of" date).
+* `CategoryGroup` / `Category` — identity by name; `Category` carries the
+  *pension-relevance* flag.
+* `Transaction` — a booking with date, amount, category, account, and type
+  (expense/income/transfer); refunds are negative expenses in the same category.
+  It needs identity but has no guaranteed natural key, so it uses a bank reference
+  or a generated `TransactionId` (Q-ARCH-003).
+* `FixedCost` — amount, interval, anchor date, derived next payment date and
+  monthly reserve, plus a *pension-relevance* flag.
+* `IncomeEntry` — identity by month.
+* `Asset` — manually entered net-worth positions (life insurance, house value,
+  account balances, investment portfolio, latest statutory pension figures), and
+  the `PensionProjection` inputs.
+
+Balances and asset values are snapshots, not derived from transactions (ADR-008).
+Persistence surrogate keys stay inside the JPA entities and never appear in the
+domain (ADR-009).
 
 == Pension And Net Worth
 

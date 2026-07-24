@@ -38,8 +38,20 @@ No open questions for this role.
 
 == Open Questions For Architect
 
-No open questions for this role. The stack (Q-ARCH-001) and initial ADR set
-(Q-ARCH-002) are decided; see the answered questions below.
+The stack (Q-ARCH-001) and initial ADR set (Q-ARCH-002) are decided; see the
+answered questions below.
+
+[[q-arch-003]]
+=== Q-ARCH-003: What is the identity source for a Transaction?
+
+Answer: Open.
+
+A `Transaction` is an entity and needs identity (two identical-looking expenses
+on the same day are distinct). If the owner's bank export carries a stable
+unique reference (an end-to-end/transaction id), use it as the natural key;
+otherwise the domain generates a `TransactionId` (UUID). This depends on the
+actual bank statement format and is decided when the edit/delete slice
+introduces transaction identity. See xref:adr-009-domain-identity-and-ddd[ADR-009].
 
 == Open Questions For Developer
 

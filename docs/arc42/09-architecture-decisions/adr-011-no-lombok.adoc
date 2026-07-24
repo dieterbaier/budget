@@ -1,0 +1,74 @@
+---
+id: ADR-011-no-lombok
+type: ADR
+title: No Lombok
+status: accepted
+owner: architecture
+created: '2026-07-24'
+updated: '2026-07-24'
+reviewed: true
+summary: Use plain Java (records and explicit code) instead of Lombok.
+tags:
+- decision
+- backend
+relations:
+- type: relates_to
+  target: ADR-004-backend-stack-and-architecture
+  status: accepted
+  rationale: A convention for the Java backend codebase.
+  reviewed: true
+metadata_version: '1.0'
+---
+[[adr-011-no-lombok]]
+== ADR-011: No Lombok
+
+=== Status
+
+Accepted. Confirmed by the owner on 2026-07-24.
+
+=== Decision
+
+The backend does not use Lombok. Value objects and DTOs are Java `record`s;
+entities use plain, explicit constructors and accessors.
+
+=== Decision Drivers
+
+* The owner prefers not to use Lombok.
+* Java 21 `record`s already remove most boilerplate for value objects and DTOs.
+* Avoid a compile-time annotation processor / agent and its IDE-plugin coupling.
+
+=== Considered Options
+
+==== Plain Java with records (chosen)
+
+No extra tooling; records cover value objects and DTOs; entities are explicit.
+
+==== Lombok
+
+Less entity boilerplate, but adds an annotation processor and agent, an IDE
+plugin dependency, and hidden generated code — cost the owner does not want for a
+codebase this size.
+
+=== Pugh Matrix
+
+[cols="2,1,1", options="header"]
+|===
+| Criterion | Plain Java | Lombok
+| Build/tooling simplicity | +1 | -1
+| Explicit, greppable code | +1 | 0
+| Boilerplate reduction | 0 | +1
+s| Sum s| 2 s| 0
+|===
+
+=== Consequences
+
+==== Positive
+
+* No annotation-processor/agent; the code is exactly what you read.
+
+==== Negative
+
+* Slightly more boilerplate in JPA entities (constructors/getters), accepted as
+  a fair trade.
+
+include::generated/adr-011-no-lombok-traceability.adoc[leveloffset=+1]

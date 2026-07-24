@@ -1,0 +1,86 @@
+---
+id: ADR-012-explicit-bean-configuration
+type: ADR
+title: Explicit Bean Configuration For The Core
+status: accepted
+owner: architecture
+created: '2026-07-24'
+updated: '2026-07-24'
+reviewed: true
+summary: The framework-free application/domain core is wired with explicit @Bean methods; only adapters are component-scanned.
+tags:
+- decision
+- backend
+- architecture
+relations:
+- type: relates_to
+  target: ADR-004-backend-stack-and-architecture
+  status: accepted
+  rationale: This realizes the framework-free core of the hexagonal architecture.
+  reviewed: true
+- type: relates_to
+  target: ADR-003-server-owned-budget-calculation
+  status: accepted
+  rationale: The domain services stay free of Spring so the rules are plain-Java testable.
+  reviewed: true
+metadata_version: '1.0'
+---
+[[adr-012-explicit-bean-configuration]]
+== ADR-012: Explicit Bean Configuration For The Core
+
+=== Status
+
+Accepted. Confirmed by the owner on 2026-07-24.
+
+=== Decision
+
+Application services and the domain carry no Spring annotations. They are
+registered as beans by explicit `@Bean` factory methods in a `@Configuration`
+class (`UseCaseConfig`). Component scanning (`@RestController`, `@Repository`) is
+used only in the adapter ring.
+
+=== Decision Drivers
+
+* Keep the domain and application layers free of any framework dependency, so the
+  core is plain Java that can be constructed and unit-tested with `new`.
+* Make the wiring explicit and greppable rather than implicit via classpath scan.
+* The owner prefers explicit configuration over implicit annotations for the core.
+
+=== Considered Options
+
+==== Explicit @Bean config for the core, scan the adapters (chosen)
+
+Framework-free core; wiring is visible in one place; adapters stay idiomatic.
+
+==== Component-scan everything (`@Service` on the core)
+
+Less config code, but couples the domain/application to Spring and weakens the
+plain-Java testability that the hexagonal design is meant to give.
+
+==== Framework in the domain (Spring in entities)
+
+Rejected outright; the domain must not depend on the framework.
+
+=== Pugh Matrix
+
+[cols="2,1,1,1", options="header"]
+|===
+| Criterion | Explicit core config | Scan everything | Framework in domain
+| Framework-free core | +1 | -1 | -1
+| Plain-Java testability | +1 | 0 | -1
+| Wiring explicitness | +1 | -1 | -1
+s| Sum s| 3 s| -2 s| -3
+|===
+
+=== Consequences
+
+==== Positive
+
+* The core has zero Spring imports; the Cucumber tests wire it with `new`.
+* One configuration class shows how use cases are assembled from ports.
+
+==== Negative
+
+* A little wiring code to maintain as use cases are added (small and explicit).
+
+include::generated/adr-012-explicit-bean-configuration-traceability.adoc[leveloffset=+1]
