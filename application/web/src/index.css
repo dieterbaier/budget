@@ -1,0 +1,91 @@
+:root {
+  font-family: system-ui, -apple-system, sans-serif;
+  color: #1f2933;
+  background: #f7f9fb;
+}
+
+main {
+  max-width: 40rem;
+  margin: 0 auto;
+  padding: 1.5rem 1rem 4rem;
+}
+
+h1 {
+  margin-bottom: 1rem;
+}
+
+h2 {
+  margin-top: 2rem;
+  font-size: 1.1rem;
+}
+
+.month-picker,
+form label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin-bottom: 0.75rem;
+  font-size: 0.9rem;
+}
+
+input,
+select,
+button {
+  font: inherit;
+  padding: 0.5rem;
+  border: 1px solid #cbd2d9;
+  border-radius: 0.4rem;
+}
+
+button {
+  background: #1f2933;
+  color: #fff;
+  cursor: pointer;
+  border: none;
+}
+
+.figures {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+  margin: 0;
+}
+
+.figures div {
+  background: #fff;
+  border: 1px solid #e4e7eb;
+  border-radius: 0.5rem;
+  padding: 0.75rem;
+}
+
+.figures dt {
+  font-size: 0.8rem;
+  color: #616e7c;
+}
+
+.figures dd {
+  margin: 0.25rem 0 0;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.signal {
+  margin-top: 1rem;
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+}
+
+.signal.over {
+  background: #fdecea;
+  color: #a61b1b;
+}
+
+.signal.ok {
+  background: #e6f4ea;
+  color: #1b7a3d;
+}
+
+.error {
+  color: #a61b1b;
+}

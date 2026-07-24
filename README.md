@@ -29,6 +29,8 @@ skeleton).
   `doc-005-questions-and-answers.adoc` — product clarification.
 - `application/backend/` — the Spring Boot (Java 21, Gradle) backend, built with
   its own toolchain (`cd application/backend && ./gradlew test`).
+- `application/web/` — the React + TypeScript PWA (Vite), the single client for
+  desktop and mobile (`cd application/web && npm test`).
 - `metamodel/`, `templates/`, `scripts/`, `build.sh` — executable documentation
   tooling vendored from the toolkit (kept in sync; see the recorded reference in
   `AGENTS.md`).
@@ -69,6 +71,20 @@ curl -X POST 'http://localhost:8080/api/transactions' \
 
 Stop and clean up with `docker compose down` (or `podman compose down`). Tests
 run without any of this — they use Testcontainers (`./gradlew test`).
+
+### Run the web PWA locally
+
+With the backend running, start the Vite dev server. It proxies `/api` to
+`http://localhost:8080`, so the PWA is same-origin in dev (no CORS) and in prod:
+
+```sh
+cd application/web
+npm install
+npm run dev          # http://localhost:5173
+```
+
+`npm test` runs the component tests (Vitest + Testing Library); `npm run build`
+produces the installable PWA (service worker + manifest) in `dist/`.
 
 ## Validate and generate the documentation
 
