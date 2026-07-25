@@ -5,8 +5,8 @@ title: Explicit Bean Configuration For The Core
 status: accepted
 owner: architecture
 created: '2026-07-24'
-updated: '2026-07-24'
-reviewed: true
+updated: '2026-07-25'
+reviewed: false
 summary: The framework-free application/domain core is wired with explicit @Bean methods; only adapters are component-scanned.
 tags:
 - decision
@@ -41,8 +41,13 @@ used only in the adapter ring.
 
 === Decision Drivers
 
-* Keep the domain and application layers free of any framework dependency, so the
-  core is plain Java that can be constructed and unit-tested with `new`.
+* Keep the domain and application layers free of any compile-time framework
+  dependency, so the core carries no Spring imports.
+* Keep annotations from creeping into the core. A component-scanned `@Service`
+  with constructor injection is still an ordinary class that a test can build
+  with `new`, so scanning would not by itself cost testability — but an
+  annotation already on the class makes `@Transactional`, `@Value` or field
+  injection the natural next step, and those do.
 * Make the wiring explicit and greppable rather than implicit via classpath scan.
 * The owner prefers explicit configuration over implicit annotations for the core.
 
@@ -54,8 +59,10 @@ Framework-free core; wiring is visible in one place; adapters stay idiomatic.
 
 ==== Component-scan everything (`@Service` on the core)
 
-Less config code, but couples the domain/application to Spring and weakens the
-plain-Java testability that the hexagonal design is meant to give.
+Less config code. Constructor-injected `@Service` classes would still be
+`new`-able in tests, so the immediate testability cost is small; the cost is a
+Spring import in the core and the more invasive annotations that tend to follow
+it.
 
 ==== Framework in the domain (Spring in entities)
 
