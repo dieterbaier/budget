@@ -114,6 +114,37 @@ override a specific toolkit rule; they never silently duplicate toolkit rules.
 This project currently has no local skills; all architecture and SDLC semantics
 are delegated to the toolkit.
 
+## Pull Request Workflow
+
+Changes reach `main` only through pull requests; `main` is protected and refuses
+direct pushes.
+
+The workflow itself belongs to the toolkit — resolve and follow it rather than
+improvising:
+
+- `skills/implement-issue-workflow/SKILL.md` — branch `issue_<number>` from an
+  up-to-date `main`, implement, verify, commit, push, open the pull request, and
+  integrate with `gh pr merge <number> --rebase --delete-branch`.
+- `skills/commit-message/SKILL.md` — commit text.
+- `skills/pr-review/SKILL.md` — reviewing a pull request.
+- `skills/post-merge-sync/SKILL.md` — returning to `main` and cleaning up.
+- `skills/slice-issues/SKILL.md` with `skills/references/issue-labels.md` —
+  slicing an issue and typing/labelling the slices.
+
+`CONTRIBUTING.md` records what is specific to this repository — issue-first
+work, linear history, and which checks must pass — and is the only place that
+states project policy. Do not restate it here or in a local skill.
+
+Two consequences worth knowing before acting:
+
+- Merge commits and squash merges are disabled on the repository, so a rebase is
+  the only integration that will succeed. When a branch falls behind, rebase it
+  onto `main` and push with `--force-with-lease`; never merge `main` into a
+  branch.
+- The required `PR validation` check runs only the areas a change touches
+  (`.github/workflows/pr-validation.yml`). Run the matching command locally
+  before pushing.
+
 ## Validate And Generate
 
 Source artifacts under `docs/` are authoritative. Regenerate derived

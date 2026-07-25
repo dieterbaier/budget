@@ -51,6 +51,9 @@ Product and architecture rationale stays in `docs/` — the roadmap in
 `docs/doc-005-questions-and-answers.adoc`. Issues reference those records rather
 than restating them.
 
+Work starts from an issue and lands on `main` through a rebased pull request —
+see [CONTRIBUTING.md](CONTRIBUTING.md).
+
 ## Run the application
 
 The application lives under `application/`. The backend is runnable today; the
