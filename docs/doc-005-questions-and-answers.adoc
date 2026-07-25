@@ -32,6 +32,8 @@ The corresponding technology decisions are recorded in ADR-001 and ADR-003
 through ADR-008. Content confirmed in that session is marked `reviewed`;
 newly derived or still-uncertain content stays `draft`/`proposed`.
 
+include::arc42/09-architecture-decisions/generated/open-questions.adoc[]
+
 == Open Questions For Product Owner
 
 No open questions for this role.
