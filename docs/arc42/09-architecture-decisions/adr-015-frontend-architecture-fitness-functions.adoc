@@ -1,0 +1,163 @@
+---
+id: ADR-015-frontend-architecture-fitness-functions
+type: ADR
+title: Frontend Architecture Fitness Functions
+status: proposed
+owner: architecture
+created: '2026-07-25'
+updated: '2026-07-25'
+reviewed: false
+summary: ESLint with eslint-plugin-boundaries enforces the feature boundaries and gates the web job of PR validation.
+derived_from:
+- type: prompt
+  description: The owner asked for the web client's architectural style to be enforced the way the backend's is, and confirmed linting as a wanted dependency in its own right.
+tags:
+- decision
+- frontend
+- architecture
+- testing
+relations:
+- type: relates_to
+  target: ADR-013-architecture-fitness-functions
+  status: proposed
+  rationale: Extends the same intent to the client; that ADR covers the backend's ArchUnit rules and this one the client's lint rules.
+  reviewed: false
+- type: relates_to
+  target: ADR-014-frontend-architecture-style-and-stack
+  status: proposed
+  rationale: Turns the structure that ADR records into an enforced property.
+  reviewed: false
+metadata_version: '1.0'
+---
+[[adr-015-frontend-architecture-fitness-functions]]
+== ADR-015: Frontend Architecture Fitness Functions
+
+=== Status
+
+Proposed. The choice was made by the owner in a design interview on 2026-07-25;
+this record of it is AI-drafted and is not accepted architecture truth until the
+owner has reviewed the text.
+
+=== Decision
+
+The boundary rules of
+xref:adr-014-frontend-architecture-style-and-stack[ADR-014] are enforced by
+ESLint, using `eslint-plugin-boundaries` for the element rules and
+`import/no-cycle` for the acyclic requirement. Each rule carries a message
+naming the decision it protects, so a failing lint run reports which decision
+was broken.
+
+`npm run lint` runs them. A lint step is added to the `web` job of
+`.github/workflows/pr-validation.yml`, beside `npm test` and the PWA build, so
+the rules gate integration into `main`.
+
+The escape hatch is ESLint's own: a deliberate exception is an
+`// eslint-disable-next-line boundaries/...` comment carrying a reason. Unlike
+the backend's `-PexcludeTags=architecture`, it is per-line rather than
+wholesale, so it appears in the diff and has to survive review.
+
+=== Context
+
+xref:adr-013-architecture-fitness-functions[ADR-013] settled the general
+argument for this project: a documented decision that nothing checks decays
+silently, and the check has to gate integration. It settled it for the backend
+only — its rules are ArchUnit, its gate is `./gradlew test`, and neither reaches
+`application/web`.
+
+The client has no linter at all today. That makes this decision cheaper than it
+looks: the plugin is an addition to a configuration file that has to be written
+anyway, not a new toolchain adopted to serve one rule.
+
+The rules to express are the three in ADR-014 — no deep imports across
+features, `shared/ui` stays presentational, dependencies point inward — plus the
+acyclic requirement.
+
+=== Decision Drivers
+
+* ESLint is wanted in this project independently of the boundary rules.
+* The rules must be expressible as they were written, not approximated.
+* The check must gate integration, per ADR-013.
+* An architecture violation is cheapest to fix while it is being typed.
+
+=== Considered Options
+
+==== ESLint with `eslint-plugin-boundaries` (chosen)
+
+One plugin on a configuration file the project needs regardless. The plugin's
+model — declare element types by path pattern, then declare the allowed edges
+between them — maps directly onto ADR-014's three rules, and its
+`boundaries/no-private` rule is exactly the deep-import ban.
+
+It brings one thing ArchUnit cannot: the violation appears in the editor as the
+import is typed. Its weakness is the same as ArchUnit's, and worth stating in
+the same words ADR-013 used — it is a check, not a structural guarantee. The
+import remains writable; it just cannot merge.
+
+==== dependency-cruiser
+
+A dedicated architecture checker rather than a lint plugin: stronger cycle
+analysis than `import/no-cycle`, rules in one readable config, and it can emit a
+module graph as SVG. That graph is a genuine draw in a repository that already
+renders its architecture documentation — it would slot into the building block
+view as a generated figure.
+
+It is nevertheless a second toolchain and a second config beside the ESLint one
+the project still needs, stating rules that overlap. Two checkers with
+overlapping rules drift apart, which is the duplication ADR-013 avoided by
+choosing a single checker. The dependency graph is worth revisiting on its own
+merits later, as documentation rather than as enforcement.
+
+==== A package per feature, via npm workspaces
+
+Strictly stronger for the deep-import rule: with each feature its own package
+exposing only its entry point, a deep import cannot resolve at all — the same
+relationship the Gradle module split had to ArchUnit in ADR-013.
+
+It cannot express the other rules. "`shared/ui` is presentational" is a rule
+about what a module *does*, not about which package it sits in, and no
+resolution mechanism will catch it. It also imposes a workspace layout, a
+build-order concern and per-package configuration on a client of roughly twenty
+components, to enforce one rule out of four.
+
+=== Pugh Matrix
+
+[cols="2,1,1,1", options="header"]
+|===
+| Criterion | ESLint | dependency-cruiser | Workspaces
+| Expressiveness across the recorded rules | +1 | +1 | -1
+| Toolchain cost | +1 | -1 | -1
+| Strength of the boundary guarantee | 0 | 0 | +1
+s| Sum s| 2 s| 0 s| -1
+|===
+
+=== Consequences
+
+==== Positive
+
+* A broken boundary fails the build and the message names the decision.
+* The same run also catches the ordinary defects a linter catches, which the
+  project had no tool for at all.
+* Violations surface in the editor, so most are fixed before a commit exists.
+
+==== Negative
+
+* Unlike ADR-013, this one *does* change CI: the `web` job gains a step, and the
+  `CONTRIBUTING.md` checks table gains a command. Folding the lint into
+  `npm test` would have avoided that, at the cost of hiding a gate inside a
+  script named for something else.
+* `import/no-cycle` is the slow rule in any ESLint configuration. On this
+  codebase that is not measurable; on a much larger one it would be.
+* An `eslint-disable` comment is easier to write than a rule exception, so the
+  quiet-allowance risk ADR-013 records applies here with less friction.
+
+==== Neutral or Follow-Up
+
+* The rule group is recorded as xref:con-005-feature-boundaries[CON-005], whose
+  `evidence` points at `application/web/eslint.config.js`.
+* No rule yet enforces that `shared` stays small. That is the gap ADR-014's
+  consequences name, and neither this tool nor its alternatives closes it — it
+  stays a review concern.
+* dependency-cruiser remains available later as a *documentation* generator for
+  the building block view, which is a different decision from enforcement.
+
+include::generated/adr-015-frontend-architecture-fitness-functions-traceability.adoc[leveloffset=+1]

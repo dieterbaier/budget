@@ -1,0 +1,66 @@
+---
+id: CON-005-feature-boundaries
+type: Constraint
+title: Feature Boundaries
+status: proposed
+owner: architecture
+created: '2026-07-25'
+updated: '2026-07-25'
+reviewed: false
+summary: Features are reached through their public API, the feature graph is acyclic, and shared UI stays presentational, checked by ESLint.
+tags:
+- constraint
+- frontend
+- architecture
+- fitness-function
+relations:
+- type: refines
+  target: ADR-015-frontend-architecture-fitness-functions
+  status: proposed
+  rationale: The rule group that ADR-015 introduces.
+  evidence: application/web/eslint.config.js
+  reviewed: false
+- type: verifies
+  target: ADR-014-frontend-architecture-style-and-stack
+  status: proposed
+  rationale: Fails the build when a feature boundary, the dependency direction, or the presentational rule is broken.
+  evidence: application/web/eslint.config.js
+  reviewed: false
+metadata_version: '1.0'
+---
+[[con-005-feature-boundaries]]
+== CON-005: Feature Boundaries
+
+A feature owns its interior. Other features see only what its `index.ts`
+exports, shared code knows nothing about features, and the graph between
+features has no cycles.
+
+[cols="2,3", options="header"]
+|===
+| Rule | Enforces
+| A feature is imported only through its public API | xref:adr-014-frontend-architecture-style-and-stack[ADR-014]
+| Dependencies point inward: app to features to shared | xref:adr-014-frontend-architecture-style-and-stack[ADR-014]
+| Shared UI imports no feature, API, or query module | xref:adr-014-frontend-architecture-style-and-stack[ADR-014]
+| The feature graph is acyclic | xref:adr-014-frontend-architecture-style-and-stack[ADR-014]
+|===
+
+`src/main.tsx` is the entry point and belongs to no element. It mounts the app
+shell and nothing else, so the element rules ignore it rather than inventing a
+layer to hold it — the same treatment `BudgetApplication` receives in
+xref:con-002-hexagonal-boundaries[CON-002].
+
+`src/app` is the composition root, and it is the only place allowed to know
+every feature at once: it mounts the providers and, once
+xref:adr-014-frontend-architecture-style-and-stack[ADR-014]'s router trigger
+fires, the routes. That privilege is deliberately narrow — it reaches features
+through the same public API everyone else uses, so being the composition root
+buys it breadth, not depth.
+
+The presentational rule is the part of Atomic Design that survived ADR-014, and
+it is stated as a dependency rule rather than as a naming convention on purpose:
+"this component fetches nothing" is checkable, whereas "this component is a
+molecule" is not.
+
+Checked by `application/web/eslint.config.js`.
+
+include::generated/con-005-feature-boundaries-traceability.adoc[leveloffset=+1]
