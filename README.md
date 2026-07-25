@@ -126,3 +126,10 @@ node scripts/check-agent-adapters.js   # fail if adapters are stale
 Generated files under `**/generated/` and the `adapters/` wrappers are derived
 output, not primary editing surfaces. Edit source artifacts or the generators and
 regenerate.
+
+## License
+
+Source code and architecture documentation in this repository are licensed under
+the [MIT License](LICENSE). The application is *about* private data, but no
+budget data lives here — the repository contains only throwaway local
+development credentials and sample data.
