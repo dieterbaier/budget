@@ -58,15 +58,13 @@ domain, and infrastructure sits behind ports.
 rule considers only dependencies between the declared layers, so the boot class
 is ignored rather than forcing a layer to be invented for it.
 
-=== Deliberate Exception
-
-The rule that keeps adapters away from use-case implementations excludes
-application *exceptions*. `ApiExceptionHandler` maps `UnknownCategoryException`
-to a status code, which is a legitimate thing for an inbound adapter to do — but
-that exception sits in `application.service` rather than in
-`application.port.in`, so it looks like a dependency on the implementation
-package. Moving it into the port package would let the exclusion go; see the
-follow-up in xref:adr-013-architecture-fitness-functions[ADR-013].
+The rule that keeps adapters away from use-case implementations carries no
+exceptions. `UnknownCategoryException` is what would have forced one:
+`ApiExceptionHandler` maps it to a status code, which is a legitimate thing for
+an inbound adapter to do, but the exception sat in `application.service` and so
+looked like a dependency on the implementation package. It was moved to
+`application.port.in`, where it belongs — a caller has to handle it, so it is
+part of the use case's contract — and the rule stayed strict.
 
 Checked by
 `application/backend/src/test/java/eu/dieterbaier/budget/architecture/HexagonalArchitectureTest.java`.

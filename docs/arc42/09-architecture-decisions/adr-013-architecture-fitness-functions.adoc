@@ -119,16 +119,17 @@ s| Sum s| 2 s| -1 s| 0
 * The rules are a check, not a structural guarantee. A determined change can
   still add the import; it just cannot merge.
 * Every deliberate exception has to be written into a rule, where it becomes a
-  quiet allowance unless it is commented. Two exist today — see CON-002 and
-  CON-003.
+  quiet allowance unless it is commented. One exists today — see CON-003.
 
 ==== Neutral or Follow-Up
 
 * The Gradle module split stays available as a later decision if the single
   module starts to feel loose. It would complement these rules, not replace
   them.
-* `UnknownCategoryException` sits in `application.service` but is part of the
-  inbound port contract, which is why CON-002 has to exclude application
-  exceptions. Moving it to `application.port.in` would remove the exception.
+* The first rule written already changed the code rather than only describing
+  it: `UnknownCategoryException` was moved from `application.service` to
+  `application.port.in`, because the alternative was an exception in CON-002.
+  Expect more of this — a rule that needs an exception is often pointing at a
+  misplaced class.
 
 include::generated/adr-013-architecture-fitness-functions-traceability.adoc[leveloffset=+1]

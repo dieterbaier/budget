@@ -2,6 +2,7 @@ package eu.dieterbaier.budget.application.service;
 
 import eu.dieterbaier.budget.application.port.in.RecordTransactionCommand;
 import eu.dieterbaier.budget.application.port.in.RecordTransactionUseCase;
+import eu.dieterbaier.budget.application.port.in.UnknownCategoryException;
 import eu.dieterbaier.budget.application.port.out.CategoryRepository;
 import eu.dieterbaier.budget.application.port.out.TransactionRepository;
 import eu.dieterbaier.budget.domain.model.Category;
