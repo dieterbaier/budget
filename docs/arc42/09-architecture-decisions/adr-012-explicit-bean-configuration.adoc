@@ -6,7 +6,7 @@ status: accepted
 owner: architecture
 created: '2026-07-24'
 updated: '2026-07-25'
-reviewed: false
+reviewed: true
 summary: The framework-free application/domain core is wired with explicit @Bean methods; only adapters are component-scanned.
 tags:
 - decision
