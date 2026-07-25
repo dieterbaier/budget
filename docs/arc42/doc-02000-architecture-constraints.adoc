@@ -5,14 +5,38 @@ title: Architecture Constraints
 status: reviewed
 owner: architecture
 created: '2026-07-03'
-updated: '2026-07-24'
+updated: '2026-07-25'
 reviewed: true
 generated: false
 summary: Architecture, technology, and documentation constraints.
 tags:
 - arc42
 - constraints
-relations: []
+relations:
+- type: documents
+  target: CON-001-framework-free-core
+  status: proposed
+  rationale: The chapter contains this constraint.
+  evidence: docs/arc42/doc-02000-architecture-constraints.adoc
+  reviewed: false
+- type: documents
+  target: CON-002-hexagonal-boundaries
+  status: proposed
+  rationale: The chapter contains this constraint.
+  evidence: docs/arc42/doc-02000-architecture-constraints.adoc
+  reviewed: false
+- type: documents
+  target: CON-003-persistence-isolation
+  status: proposed
+  rationale: The chapter contains this constraint.
+  evidence: docs/arc42/doc-02000-architecture-constraints.adoc
+  reviewed: false
+- type: documents
+  target: CON-004-plain-java
+  status: proposed
+  rationale: The chapter contains this constraint.
+  evidence: docs/arc42/doc-02000-architecture-constraints.adoc
+  reviewed: false
 metadata_version: '1.0'
 ---
 [[architecture-constraints]]
@@ -31,3 +55,10 @@ metadata_version: '1.0'
 | API boundary | Clients use a versioned HTTP JSON API; no direct database access. See ADR-001.
 | Documentation format | Architecture source uses AsciiDoc with YAML metadata, validated by the toolkit.
 |===
+
+The constraints below are the ones a build can check. Each is enforced by
+ArchUnit rules that run with the backend test suite and name the decision they
+protect, so breaking one fails the pull request rather than being noticed in
+review. See xref:adr-013-architecture-fitness-functions[ADR-013].
+
+include::generated/doc-02000-architecture-constraints-includes.adoc[]

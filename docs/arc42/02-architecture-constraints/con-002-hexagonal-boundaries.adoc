@@ -1,0 +1,74 @@
+---
+id: CON-002-hexagonal-boundaries
+type: Constraint
+title: Hexagonal Boundaries
+status: proposed
+owner: architecture
+created: '2026-07-25'
+reviewed: false
+summary: Dependencies point inwards, outbound ports are interfaces, and adapters reach use cases only through ports.
+tags:
+- constraint
+- backend
+- architecture
+- fitness-function
+relations:
+- type: refines
+  target: ADR-013-architecture-fitness-functions
+  status: proposed
+  rationale: One of the rule groups that ADR-013 introduces.
+  evidence: application/backend/src/test/java/eu/dieterbaier/budget/architecture/HexagonalArchitectureTest.java
+  reviewed: false
+- type: verifies
+  target: ADR-004-backend-stack-and-architecture
+  status: proposed
+  rationale: Fails the build when the layer dependency direction or the port shape is broken.
+  evidence: application/backend/src/test/java/eu/dieterbaier/budget/architecture/HexagonalArchitectureTest.java
+  reviewed: false
+- type: verifies
+  target: ADR-001-backend-api-boundary
+  status: proposed
+  rationale: Keeps the HTTP controllers inside the inbound web adapter.
+  evidence: application/backend/src/test/java/eu/dieterbaier/budget/architecture/HexagonalArchitectureTest.java
+  reviewed: false
+- type: verifies
+  target: ADR-012-explicit-bean-configuration
+  status: proposed
+  rationale: Keeps the use-case implementations known only to the bean configuration.
+  evidence: application/backend/src/test/java/eu/dieterbaier/budget/architecture/HexagonalArchitectureTest.java
+  reviewed: false
+metadata_version: '1.0'
+---
+[[con-002-hexagonal-boundaries]]
+== CON-002: Hexagonal Boundaries
+
+The domain knows nothing outside itself, the application layer knows only the
+domain, and infrastructure sits behind ports.
+
+[cols="2,3", options="header"]
+|===
+| Rule | Enforces
+| Dependencies point inwards | xref:adr-004-backend-stack-and-architecture[ADR-004]
+| Outbound ports are interfaces | xref:adr-004-backend-stack-and-architecture[ADR-004]
+| Adapters use ports, not use-case implementations | xref:adr-012-explicit-bean-configuration[ADR-012]
+| HTTP controllers live in the inbound web adapter | xref:adr-001-backend-api-boundary[ADR-001]
+|===
+
+`BudgetApplication` sits in the root package and belongs to no layer. The layer
+rule considers only dependencies between the declared layers, so the boot class
+is ignored rather than forcing a layer to be invented for it.
+
+=== Deliberate Exception
+
+The rule that keeps adapters away from use-case implementations excludes
+application *exceptions*. `ApiExceptionHandler` maps `UnknownCategoryException`
+to a status code, which is a legitimate thing for an inbound adapter to do — but
+that exception sits in `application.service` rather than in
+`application.port.in`, so it looks like a dependency on the implementation
+package. Moving it into the port package would let the exclusion go; see the
+follow-up in xref:adr-013-architecture-fitness-functions[ADR-013].
+
+Checked by
+`application/backend/src/test/java/eu/dieterbaier/budget/architecture/HexagonalArchitectureTest.java`.
+
+include::generated/con-002-hexagonal-boundaries-traceability.adoc[leveloffset=+1]

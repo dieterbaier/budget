@@ -1,0 +1,134 @@
+---
+id: ADR-013-architecture-fitness-functions
+type: ADR
+title: Automated Architecture Fitness Functions
+status: proposed
+owner: architecture
+created: '2026-07-25'
+reviewed: false
+summary: ArchUnit rules run with the normal test suite and fail the build when a recorded architecture decision is broken.
+derived_from:
+- type: prompt
+  description: The owner asked for automated checks that validate the architecture decisions and solution strategy, and break the build when they are violated — "trust is good, but checks are better".
+tags:
+- decision
+- backend
+- architecture
+- testing
+relations:
+- type: relates_to
+  target: ADR-004-backend-stack-and-architecture
+  status: proposed
+  rationale: The checks turn the hexagonal structure this ADR records into an enforced property.
+  reviewed: false
+metadata_version: '1.0'
+---
+[[adr-013-architecture-fitness-functions]]
+== ADR-013: Automated Architecture Fitness Functions
+
+=== Status
+
+Proposed. AI-assisted; not architecture truth until the owner accepts it.
+
+=== Decision
+
+The recorded architecture decisions are enforced by ArchUnit rules that run as
+ordinary JUnit tests in the backend's `test` task. Each rule names the ADR it
+enforces, so a failing build reports which decision was broken. The rules are
+grouped into `Constraint` artifacts
+(xref:con-001-framework-free-core[CON-001] to
+xref:con-004-plain-java[CON-004]) whose metadata carries a `verifies` relation
+to the decision and an `evidence` path to the test that checks it.
+
+The rules carry ArchUnit's `@ArchTag("architecture")`, so a refactor in progress
+can switch them off deliberately with
+`./gradlew test -PexcludeTags=architecture`. They are on by default.
+
+=== Context
+
+xref:adr-004-backend-stack-and-architecture[ADR-004],
+xref:adr-009-domain-identity-and-ddd[ADR-009],
+xref:adr-011-no-lombok[ADR-011] and
+xref:adr-012-explicit-bean-configuration[ADR-012] describe structural properties
+of the backend, but nothing enforced them. The core happened to be clean when
+this ADR was written — every import under `domain` and `application` was either
+JDK or a project package — which made it the cheapest possible moment to lock
+that property in rather than to recover it later.
+
+=== Decision Drivers
+
+* A documented decision that nothing checks decays silently; the first Spring
+  import in the core would arrive as a convenience and be noticed much later.
+* Whatever enforces the decisions must gate integration into `main`. It does not
+  have to be a separate gate: `./gradlew test` is already what the required
+  `PR validation` check runs for backend changes.
+* The enforcement must be able to express *all* the recorded decisions, not only
+  package dependencies — annotation placement, JPA entity location, and port
+  shape are decisions too.
+* The owner has used ArchUnit before.
+
+=== Considered Options
+
+==== ArchUnit rules in the test suite (chosen)
+
+One test dependency, no build plugin, and bytecode analysis that sees
+annotations as well as dependencies. Fast enough on this codebase that running
+it on every build costs nothing measurable next to the Testcontainers suite.
+Its weakness is honest: it is a check, not a structural guarantee — the import
+is still writable, it just fails afterwards.
+
+==== Gradle multi-module split (domain, application, adapter)
+
+Strictly stronger for the framework-free core: with Spring absent from the
+domain module's compile classpath, the import cannot be written at all. It
+cannot express the other decisions — annotation placement, entity location, port
+shape — and it re-opens the module layout that ADR-004 deliberately deferred, so
+it would restructure the build, the source paths, and the CI job to enforce one
+decision out of four.
+
+==== jQAssistant
+
+Cypher constraints that can live inside the AsciiDoc documents themselves, which
+would fit this repository's docs-as-code metamodel better than anything else
+considered. It costs an embedded Neo4j store and a Maven-oriented plugin story on
+a Gradle build — a large amount of machinery for a backend of roughly forty
+classes.
+
+=== Pugh Matrix
+
+[cols="2,1,1,1", options="header"]
+|===
+| Criterion | ArchUnit | Module split | jQAssistant
+| Expressiveness across the recorded decisions | +1 | -1 | +1
+| Toolchain cost | +1 | -1 | -1
+| Strength of the framework-free guarantee | 0 | +1 | 0
+s| Sum s| 2 s| -1 s| 0
+|===
+
+=== Consequences
+
+==== Positive
+
+* A violated decision fails the build and the message names the ADR.
+* The `Constraint` artifacts make the enforcement visible from the documentation:
+  each decision's generated traceability view shows what checks it.
+* No CI change. The rules ride the `PR validation` check that already exists.
+
+==== Negative
+
+* The rules are a check, not a structural guarantee. A determined change can
+  still add the import; it just cannot merge.
+* Every deliberate exception has to be written into a rule, where it becomes a
+  quiet allowance unless it is commented. Two exist today — see CON-002 and
+  CON-003.
+
+==== Neutral or Follow-Up
+
+* The Gradle module split stays available as a later decision if the single
+  module starts to feel loose. It would complement these rules, not replace
+  them.
+* `UnknownCategoryException` sits in `application.service` but is part of the
+  inbound port contract, which is why CON-002 has to exclude application
+  exceptions. Moving it to `application.port.in` would remove the exception.
+
+include::generated/adr-013-architecture-fitness-functions-traceability.adoc[leveloffset=+1]

@@ -5,7 +5,7 @@ title: Architecture Decisions
 status: reviewed
 owner: architecture
 created: '2026-07-03'
-updated: '2026-07-24'
+updated: '2026-07-25'
 reviewed: true
 generated: false
 summary: Accepted ADRs for the private single-user Budget architecture.
@@ -79,6 +79,12 @@ relations:
   rationale: The chapter contains this ADR.
   evidence: docs/arc42/doc-09000-architecture-decisions.adoc
   reviewed: true
+- type: documents
+  target: ADR-013-architecture-fitness-functions
+  status: proposed
+  rationale: The chapter contains this ADR.
+  evidence: docs/arc42/doc-09000-architecture-decisions.adoc
+  reviewed: false
 metadata_version: '1.0'
 ---
 [[architecture-decisions]]

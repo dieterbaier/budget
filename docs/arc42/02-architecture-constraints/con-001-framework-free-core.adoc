@@ -1,0 +1,63 @@
+---
+id: CON-001-framework-free-core
+type: Constraint
+title: Framework-Free Core
+status: proposed
+owner: architecture
+created: '2026-07-25'
+reviewed: false
+summary: The domain and application layers carry no framework dependency and no framework annotation, checked by ArchUnit.
+tags:
+- constraint
+- backend
+- architecture
+- fitness-function
+relations:
+- type: refines
+  target: ADR-013-architecture-fitness-functions
+  status: proposed
+  rationale: One of the rule groups that ADR-013 introduces.
+  evidence: application/backend/src/test/java/eu/dieterbaier/budget/architecture/FrameworkFreeCoreTest.java
+  reviewed: false
+- type: verifies
+  target: ADR-012-explicit-bean-configuration
+  status: proposed
+  rationale: Fails the build when a core class gains a framework import or annotation.
+  evidence: application/backend/src/test/java/eu/dieterbaier/budget/architecture/FrameworkFreeCoreTest.java
+  reviewed: false
+- type: verifies
+  target: ADR-004-backend-stack-and-architecture
+  status: proposed
+  rationale: Checks the framework-free core that the hexagonal style requires.
+  evidence: application/backend/src/test/java/eu/dieterbaier/budget/architecture/FrameworkFreeCoreTest.java
+  reviewed: false
+metadata_version: '1.0'
+---
+[[con-001-framework-free-core]]
+== CON-001: Framework-Free Core
+
+No class under `eu.dieterbaier.budget.domain` or `eu.dieterbaier.budget.application`
+may depend on Spring, Jakarta, Hibernate, or Jackson, and none may carry a Spring
+or Jakarta annotation.
+
+[cols="2,3", options="header"]
+|===
+| Rule | Enforces
+| The core has no compile-time framework dependency | xref:adr-012-explicit-bean-configuration[ADR-012]
+| The core carries no framework annotations | xref:adr-012-explicit-bean-configuration[ADR-012]
+|===
+
+The second rule overlaps the first, because an annotation is also a dependency.
+It is kept separate because it is the one that fails most clearly for the mistake
+ADR-012 actually anticipates: a `@Service` landing on an application service,
+after which `@Transactional` and field injection become the natural next step.
+
+Hibernate and Jackson are listed alongside the two frameworks ADR-012 names.
+Neither is a decision in its own right; they are the dependencies that usually
+arrive next, smuggled in by a persistence or serialization convenience on a
+domain type.
+
+Checked by
+`application/backend/src/test/java/eu/dieterbaier/budget/architecture/FrameworkFreeCoreTest.java`.
+
+include::generated/con-001-framework-free-core-traceability.adoc[leveloffset=+1]
