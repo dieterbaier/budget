@@ -38,6 +38,19 @@ skeleton).
 - `AGENTS.md`, `.github/copilot-instructions.md`, `general-semantic-contracts.md`
   — thin AI contracts that delegate method guidance to the toolkit.
 
+## Backlog
+
+Planned work is tracked as GitHub issues:
+**<https://github.com/dieterbaier/budget/issues>**. Epics carry their slices as
+real sub-issues, and every issue is typed and labelled per the toolkit's
+`skills/references/issue-labels.md` taxonomy (`type:` and `area:` prefixes), so
+the backlog can be filtered without reading issue bodies.
+
+Product and architecture rationale stays in `docs/` — the roadmap in
+`docs/doc-004-roadmap.adoc` and the open questions in
+`docs/doc-005-questions-and-answers.adoc`. Issues reference those records rather
+than restating them.
+
 ## Run the application
 
 The application lives under `application/`. The backend is runnable today; the
