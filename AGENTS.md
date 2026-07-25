@@ -116,8 +116,11 @@ are delegated to the toolkit.
 
 ## Pull Request Workflow
 
-Changes reach `main` only through pull requests; `main` is protected and refuses
-direct pushes.
+Changes reach `main` through pull requests. `main` is protected — a required
+`PR validation` check, linear history, no force-pushes — but the protection does
+not apply to admins, so it will not stop a direct push by the repository owner.
+Treat it as the rule regardless: never push to `main` on an agent's own
+initiative.
 
 The workflow itself belongs to the toolkit — resolve and follow it rather than
 improvising:
