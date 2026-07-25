@@ -25,8 +25,25 @@ them.
 - Commit messages follow the toolkit's `skills/commit-message/SKILL.md`:
   `issue_<number>: <imperative summary>`, 50 characters or less on the first
   line, with the body explaining *why*.
-- `main` is protected: it takes no direct pushes, and every change arrives
-  through a pull request.
+- Every change arrives on `main` through a pull request.
+
+## What branch protection enforces
+
+`main` is protected. The rules are:
+
+- The `PR validation` check must pass, and the branch must be up to date with
+  `main` before integrating.
+- History must stay linear — GitHub rejects anything that would add a merge
+  commit.
+- No force-pushes to `main`, and `main` cannot be deleted.
+- Unresolved review conversations block integration.
+
+Admins are **not** included in these rules (`enforce_admins: false`). That is
+deliberate: a solo maintainer who cannot repair a broken `main` without first
+dismantling the protection is worse off, not safer. It also means the repository
+owner *can* push straight to `main` — the guardrail is real for the workflow, but
+it is an escape hatch, not a wall. Use it for repairs, not for saving a pull
+request.
 
 ## History stays linear
 
