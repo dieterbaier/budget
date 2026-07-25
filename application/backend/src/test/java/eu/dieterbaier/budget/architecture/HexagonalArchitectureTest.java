@@ -20,9 +20,31 @@ import com.tngtech.archunit.lang.ArchRule;
 class HexagonalArchitectureTest {
 
     /**
-     * {@code BudgetApplication} sits in the root package and belongs to no layer;
-     * {@code consideringOnlyDependenciesInLayers} ignores it rather than forcing a
-     * layer to be invented for the boot class.
+     * Read {@code mayOnlyBeAccessedByLayers} as "may only be accessed <em>by</em>
+     * these layers" — it constrains a layer's <em>callers</em>, never what that
+     * layer itself may reach. Each clause below therefore lists who is allowed to
+     * point <em>at</em> the named layer:
+     *
+     * <ul>
+     *   <li>Domain — everyone may depend on it. It is the centre.
+     *   <li>Application — everyone except the domain, which must not know it.
+     *   <li>Adapters — only Development. Nothing inside the hexagon may point
+     *       outwards at infrastructure; adapters are reached through ports and
+     *       wired by Spring's component scan, so no inner layer needs to name
+     *       one. {@code LocalDataSeeder} is the single exception (see CON-003).
+     *   <li>Configuration, Development — nobody. They are the outermost edge.
+     * </ul>
+     *
+     * <p>Adapters depending on the application and domain layers is permitted by
+     * the first two clauses, not restricted by the third: a controller calling a
+     * use-case port is the Domain/Application layer <em>being accessed by</em>
+     * Adapters. Verified both ways — an application class returning an adapter
+     * type fails this rule, while the adapters that legitimately import ports and
+     * domain types today pass it.
+     *
+     * <p>{@code BudgetApplication} sits in the root package and belongs to no
+     * layer; {@code consideringOnlyDependenciesInLayers} ignores it rather than
+     * forcing a layer to be invented for the boot class.
      */
     @ArchTest
     static final ArchRule dependencies_point_inwards = layeredArchitecture()

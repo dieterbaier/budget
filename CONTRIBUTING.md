@@ -85,3 +85,23 @@ Run the relevant one locally before pushing; they are the same commands CI uses.
 Once a documentation change lands on `main`, a separate workflow republishes the
 rendered architecture documentation to
 <https://dieterbaier.github.io/budget/>.
+
+## Architecture rules
+
+The backend's architecture decisions are enforced by ArchUnit rules that run as
+ordinary tests, so `./gradlew test` is what gates them and the table above needs
+no extra entry. Two conveniences exist for working on them:
+
+```sh
+./gradlew architectureTest                 # only the rules, ~1s, no PostgreSQL
+./gradlew test -PexcludeTags=architecture  # everything except the rules
+```
+
+The first is for iterating on the rules or getting a fast architecture verdict;
+it skips Testcontainers entirely. The second is the deliberate escape hatch for a
+refactor in progress — the rules are on by default and a violation must not reach
+`main`, so use it while restructuring, not to get a pull request green.
+
+A failing rule names the decision it protects in its message. The rule groups are
+recorded as `CON-001` to `CON-004` in the architecture constraints chapter, and
+the choice of tool is `ADR-013`.
