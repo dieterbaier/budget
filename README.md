@@ -110,6 +110,12 @@ chapter's `generated/` directory (these are derived output, not edited by hand).
 `build/architecture/index.html` — open that file in a browser to read it as a
 rendered artifact.
 
+The same `./build.sh build` runs in CI on every push to `main` that touches the
+documentation sources, and the result is published to GitHub Pages:
+**<https://dieterbaier.github.io/budget/>** (see
+`.github/workflows/publish-architecture-docs.yml`). Because the build validates
+before it renders, a broken model fails the workflow instead of publishing.
+
 ## AI agent adapters
 
 ```sh

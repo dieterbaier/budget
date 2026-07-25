@@ -1,0 +1,62 @@
+# Render the assembled arc42 documentation and publish it to GitHub Pages.
+#
+# The rendering itself is delegated to ./build.sh, which runs the pinned
+# docs-toolbox container image — the same reproducible toolchain used locally,
+# so CI cannot drift from a developer machine. Docker is preinstalled on the
+# GitHub-hosted runner, which is all build.sh needs to find an engine.
+name: Publish architecture documentation
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - docs/**
+      - metamodel/**
+      - scripts/**
+      - templates/**
+      - build.sh
+      - .github/workflows/publish-architecture-docs.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Never run two Pages deployments at once, and let an in-flight deployment
+# finish rather than cancelling it half-published.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Render arc42 HTML
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # `build` = validate metadata + relations, regenerate derived fragments,
+      # then render docs/doc-001-arc42.adoc to build/architecture/index.html.
+      # A validation failure fails the job, so a broken model never publishes.
+      - name: Build architecture documentation
+        run: ./build.sh build
+
+      # Asciidoctor Diagram's cache is build scaffolding, not part of the site.
+      - name: Strip diagram cache from the site
+        run: rm -rf build/architecture/.asciidoctor
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: build/architecture
+
+  deploy:
+    name: Deploy to GitHub Pages
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
