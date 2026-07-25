@@ -34,7 +34,7 @@ jobs:
     name: Render arc42 HTML
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       # `build` = validate metadata + relations, regenerate derived fragments,
       # then render docs/doc-001-arc42.adoc to build/architecture/index.html.
@@ -46,7 +46,7 @@ jobs:
       - name: Strip diagram cache from the site
         run: rm -rf build/architecture/.asciidoctor
 
-      - uses: actions/upload-pages-artifact@v3
+      - uses: actions/upload-pages-artifact@v5
         with:
           path: build/architecture
 
@@ -59,4 +59,4 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5
