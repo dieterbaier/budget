@@ -22,6 +22,12 @@ import java.time.LocalDate;
  * on {@code ./gradlew bootRun} so the monthly-expenditure endpoint returns real
  * numbers. The figures mirror the tests: month 2026-07 has 900 variable + 100
  * amortized fixed = 1000 total against an average income of 950 (overspending).
+ *
+ * <p>This class writes JPA entities directly instead of going through the
+ * outbound ports, which CON-003 otherwise forbids. It is the one exception that
+ * constraint allows, on the grounds that it is local-profile-only and never
+ * appears in a request path — see CON-003 and ADR-013. Anything that ships to a
+ * user goes through a port.
  */
 @Component
 @Profile("local")
