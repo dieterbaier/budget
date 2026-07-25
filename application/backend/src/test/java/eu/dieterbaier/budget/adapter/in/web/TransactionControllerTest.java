@@ -1,7 +1,7 @@
 package eu.dieterbaier.budget.adapter.in.web;
 
 import eu.dieterbaier.budget.application.port.in.RecordTransactionUseCase;
-import eu.dieterbaier.budget.application.service.UnknownCategoryException;
+import eu.dieterbaier.budget.application.port.in.UnknownCategoryException;
 import eu.dieterbaier.budget.domain.model.Category;
 import eu.dieterbaier.budget.domain.model.Money;
 import eu.dieterbaier.budget.domain.model.Transaction;

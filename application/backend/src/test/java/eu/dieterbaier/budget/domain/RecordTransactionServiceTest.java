@@ -4,7 +4,7 @@ import eu.dieterbaier.budget.application.port.in.RecordTransactionCommand;
 import eu.dieterbaier.budget.application.port.out.CategoryRepository;
 import eu.dieterbaier.budget.application.port.out.TransactionRepository;
 import eu.dieterbaier.budget.application.service.RecordTransactionService;
-import eu.dieterbaier.budget.application.service.UnknownCategoryException;
+import eu.dieterbaier.budget.application.port.in.UnknownCategoryException;
 import eu.dieterbaier.budget.domain.model.Category;
 import eu.dieterbaier.budget.domain.model.Money;
 import eu.dieterbaier.budget.domain.model.Transaction;

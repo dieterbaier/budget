@@ -1,8 +1,5 @@
 package eu.dieterbaier.budget.architecture;
 
-import static com.tngtech.archunit.base.DescribedPredicate.not;
-import static com.tngtech.archunit.core.domain.JavaClass.Predicates.assignableTo;
-import static com.tngtech.archunit.core.domain.JavaClass.Predicates.resideInAPackage;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
 import static com.tngtech.archunit.library.Architectures.layeredArchitecture;
@@ -52,18 +49,10 @@ class HexagonalArchitectureTest {
             .because("ADR-004: every infrastructure interaction is reached through a port that an "
                     + "outbound adapter implements, so the datastore stays swappable");
 
-    /**
-     * Application exceptions are excluded: they are part of the contract an
-     * inbound adapter maps to a status code, not a use-case implementation. That
-     * they currently live in {@code application.service} rather than
-     * {@code application.port.in} is what forces the exclusion.
-     */
     @ArchTest
     static final ArchRule adapters_use_ports_not_use_case_implementations = noClasses()
             .that().resideInAPackage("..budget.adapter..")
-            .should().dependOnClassesThat(
-                    resideInAPackage("..budget.application.service..")
-                            .and(not(assignableTo(Throwable.class))))
+            .should().dependOnClassesThat().resideInAPackage("..budget.application.service..")
             .because("ADR-012: adapters receive use cases through their port interfaces; only "
                     + "UseCaseConfig knows which implementation sits behind a port");
 

@@ -1,6 +1,6 @@
 package eu.dieterbaier.budget.adapter.in.web;
 
-import eu.dieterbaier.budget.application.service.UnknownCategoryException;
+import eu.dieterbaier.budget.application.port.in.UnknownCategoryException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
