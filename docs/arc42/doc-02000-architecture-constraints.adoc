@@ -37,6 +37,12 @@ relations:
   rationale: The chapter contains this constraint.
   evidence: docs/arc42/doc-02000-architecture-constraints.adoc
   reviewed: true
+- type: documents
+  target: CON-005-feature-boundaries
+  status: proposed
+  rationale: The chapter contains this constraint.
+  evidence: docs/arc42/doc-02000-architecture-constraints.adoc
+  reviewed: false
 metadata_version: '1.0'
 ---
 [[architecture-constraints]]
@@ -56,9 +62,12 @@ metadata_version: '1.0'
 | Documentation format | Architecture source uses AsciiDoc with YAML metadata, validated by the toolkit.
 |===
 
-The constraints below are the ones a build can check. Each is enforced by
-ArchUnit rules that run with the backend test suite and name the decision they
-protect, so breaking one fails the pull request rather than being noticed in
-review. See xref:adr-013-architecture-fitness-functions[ADR-013].
+The constraints below are the ones a build can check. Each names the decision it
+protects, so breaking one fails the pull request rather than being noticed in
+review. The tool differs by side of the system: CON-001 to CON-004 are ArchUnit
+rules running with the backend test suite
+(xref:adr-013-architecture-fitness-functions[ADR-013]), and CON-005 is an ESLint
+configuration running with the web client's lint step
+(xref:adr-015-frontend-architecture-fitness-functions[ADR-015]).
 
 include::generated/doc-02000-architecture-constraints-includes.adoc[]

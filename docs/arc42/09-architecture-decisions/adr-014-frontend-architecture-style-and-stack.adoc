@@ -1,0 +1,212 @@
+---
+id: ADR-014-frontend-architecture-style-and-stack
+type: ADR
+title: Frontend Architecture Style And Stack
+status: proposed
+owner: architecture
+created: '2026-07-25'
+updated: '2026-07-25'
+reviewed: false
+summary: The web client is organized feature-first, features are reached through a public API, and each library is adopted against a named trigger.
+derived_from:
+- type: prompt
+  description: The owner asked for a recorded architectural style for the web client, as the backend has, and named Atomic Design and a pages/components/api/queries split as candidates.
+tags:
+- decision
+- frontend
+- architecture
+relations:
+- type: relates_to
+  target: ADR-005-web-client-as-pwa
+  status: proposed
+  rationale: Gives the React PWA that ADR chose an internal structure and a library set.
+  reviewed: false
+- type: relates_to
+  target: ADR-004-backend-stack-and-architecture
+  status: proposed
+  rationale: Applies the same intent — a structure that names the domain and keeps its boundaries explicit — to the client.
+  reviewed: false
+- type: addresses
+  target: QS-002-expense-entry-latency
+  status: proposed
+  rationale: A query cache serves the already-loaded monthly figure immediately and refreshes it on invalidation, which is the confirm-and-update step the scenario measures.
+  reviewed: false
+metadata_version: '1.0'
+---
+[[adr-014-frontend-architecture-style-and-stack]]
+== ADR-014: Frontend Architecture Style And Stack
+
+=== Status
+
+Proposed. The choices below were made by the owner in a design interview on
+2026-07-25; this record of them is AI-drafted and is not accepted architecture
+truth until the owner has reviewed the text.
+
+=== Decision
+
+`application/web/src` is organized *feature-first*. Each feature is a directory
+named after a concept from the budget domain and privately owns the parts that
+serve it — its API calls, its query hooks, its components, its page:
+
+[source]
+----
+src/
+  app/                       router, providers, layout shell
+  features/
+    transactions/
+      api/  queries/  components/  index.ts
+    monthly-expenditure/
+      api/  queries/  components/  index.ts
+    ...
+  shared/
+    api/                     the HTTP helper and error mapping
+    ui/                      presentational components
+    format/                  formatting helpers
+----
+
+Three rules hold the structure together:
+
+. A feature is reached only through its `index.ts`. No module may import a path
+  *inside* another feature, and the feature graph must stay acyclic.
+. `shared/ui` is presentational only: props in, events out. It may not import
+  any feature, nor any API or query module.
+. Dependencies point inward — `app` may use features and shared, a feature may
+  use shared and another feature's public API, shared may only use shared.
+
+The library set is adopted against named triggers rather than all at once:
+
+[cols="2,1,3", options="header"]
+|===
+| Library | When | Why then
+| TanStack Query | now | The refetch workaround and the hand-rolled request state already exist in the code.
+| UnoCSS | now | The single global stylesheet is already a shared mutable surface.
+| React Router | issue #8 | The second route is the first thing a router can route between.
+| axios | issue #6, if needed | An auth interceptor is the one job the plain helper cannot do well.
+|===
+
+=== Context
+
+The backend's structure is a decision (ADR-004) that is checked (ADR-013). The
+web client's was not: `src` grew into `components/` and `api/` with two
+components in it, and nothing recorded or enforced that shape.
+
+The code shows what the absence costs. `App.tsx` keeps a `reloadToken` counter
+and passes it into `MonthlyExpenditureView`, which lists it as a `useEffect`
+dependency purely so that recording a transaction forces a refetch — a cache
+invalidation written by hand, in two components, through a prop. The same
+component hand-rolls loading, error and data state plus an `active` flag to
+discard a stale response. Styling for every component lives in one global
+`src/index.css`.
+
+None of that is wrong at two components. It does not survive twelve. The open
+backlog carries master data (issues #8 to #11), transaction editing (#13, #14),
+four budget views (#15 to #18) and authentication (#6) — so the structure is
+about to be set by accident, and this is the last moment it is cheap to set it
+on purpose. That is the argument ADR-013 made about the backend core, applied
+one increment earlier: there, the property already held and was locked in; here,
+it does not yet hold and the correction costs about 150 lines.
+
+The owner named Atomic Design and a `pages/components/api/queries` split as
+candidates, both drawn from a customer project. Neither transfers unchanged, for
+reasons the options below record.
+
+=== Decision Drivers
+
+* The tree should name the product. The backend's packages read `domain.model`,
+  `Transaction`, `FixedCost`, `MonthlyExpenditure`; opening the client should be
+  the same experience.
+* Where a thing goes must be answerable without a judgment call, because the
+  judgment call is what erodes a structure over twelve issues.
+* Whatever is decided must be machine-checkable. ADR-013 already settled that a
+  decision nothing checks decays quietly.
+* Every dependency must earn its place against this project, not against the
+  owner's other projects.
+
+=== Considered Options
+
+==== Feature-first with public-API boundaries (chosen)
+
+`src/features` reads as the product, and the boundary rule is expressible to a
+linter, which is what makes it a style rather than a convention. It also
+generalizes what the owner already does by instinct — colocating page-specific
+queries and components under the page that owns them — into the default rather
+than the exception, which removes the recurring "general or specific?" question
+at the top level.
+
+Its cost is honest: a feature's `index.ts` has to be maintained, and the first
+genuinely shared component will provoke an argument about whether it belongs in
+`shared/ui` or in the feature that first needed it. The acyclic rule turns that
+argument into a build failure rather than a preference, which is the point.
+
+==== Technical-role first: `pages`, `components`, `api`, `queries`
+
+The customer project's shape, and the most familiar. Page-specific things nest
+under their page; general ones sit at the top.
+
+It fails the first driver outright — `src` reads as "a React app", not as a
+budget — and it keeps the general-versus-specific decision alive for every
+component and every query, which is precisely the ambiguity the owner already
+suspects is unresolved on the customer project. A linter can check very little
+of it, because "general" is not a structural property.
+
+==== Atomic Design
+
+Components classified by presentational abstraction: atoms, molecules,
+organisms, templates, pages.
+
+It is a taxonomy for design systems with many reused primitives, and this client
+will have on the order of twenty components. It answers a different question
+than the one being asked: it has nothing to say about where an `api` or a
+`queries` module goes, so a second organizing axis would still be needed
+alongside it. And its central distinction — "is this a molecule or an
+organism?" — is not checkable by any tool, so it could not be enforced even if
+adopted.
+
+The idea underneath it does earn its place, and is kept: the split between
+presentational components and connected ones. That is rule 2 above, and unlike
+the taxonomy it *is* structural, so a linter can hold it.
+
+=== Pugh Matrix
+
+[cols="2,1,1,1", options="header"]
+|===
+| Criterion | Feature-first | Technical-role | Atomic Design
+| The structure names the domain | +1 | -1 | -1
+| Placement is unambiguous | +1 | -1 | 0
+| Machine-checkable | +1 | -1 | -1
+s| Sum s| 3 s| -3 s| -2
+|===
+
+=== Consequences
+
+==== Positive
+
+* `src/features` lists the budget's concepts, so the client and the backend
+  describe the same domain in the same words.
+* A feature can be read, changed or deleted without tracing its parts across
+  four top-level directories.
+* The boundary is a lint error in the editor as it is typed — feedback the
+  backend's ArchUnit rules cannot give, because they run at build time.
+
+==== Negative
+
+* Barrel files are maintenance, and a careless `export *` would re-expose the
+  internals the rule exists to hide.
+* Restructuring now rewrites both existing components and their tests for no
+  user-visible gain. The gain is entirely in the twelve issues that follow.
+* The `shared` directory has no rule keeping it small. Nothing stops it becoming
+  the place the domain quietly moves to, and no linter will notice.
+
+==== Neutral or Follow-Up
+
+* React Router and axios are decided but not installed. The triggers are named
+  above and in the issues themselves, so the ADR does not describe code that
+  does not exist.
+* Whether feature directories eventually need a nesting level — grouping the
+  four budget views under one parent — is deliberately left open. It is a
+  question worth answering with six features in hand, not two.
+* The rules stated here are enforced by
+  xref:adr-015-frontend-architecture-fitness-functions[ADR-015]; the rule group
+  is recorded as xref:con-005-feature-boundaries[CON-005].
+
+include::generated/adr-014-frontend-architecture-style-and-stack-traceability.adoc[leveloffset=+1]

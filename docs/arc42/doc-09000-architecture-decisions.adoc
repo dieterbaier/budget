@@ -85,14 +85,29 @@ relations:
   rationale: The chapter contains this ADR.
   evidence: docs/arc42/doc-09000-architecture-decisions.adoc
   reviewed: true
+- type: documents
+  target: ADR-014-frontend-architecture-style-and-stack
+  status: proposed
+  rationale: The chapter contains this ADR.
+  evidence: docs/arc42/doc-09000-architecture-decisions.adoc
+  reviewed: false
+- type: documents
+  target: ADR-015-frontend-architecture-fitness-functions
+  status: proposed
+  rationale: The chapter contains this ADR.
+  evidence: docs/arc42/doc-09000-architecture-decisions.adoc
+  reviewed: false
 metadata_version: '1.0'
 ---
 [[architecture-decisions]]
 = Architecture Decisions
 
-The decisions below were confirmed by the owner on 2026-07-24. The withdrawn
-ADR-002 (mobile local-first offline entry) has been removed because offline
-capture is out of scope.
+Most of the decisions below were confirmed by the owner on 2026-07-24, and
+ADR-013 on 2026-07-25. ADR-014 and ADR-015 are still `proposed`: the choices
+they record were made by the owner, but the records themselves are AI-drafted
+and await review. Each ADR's own status section says which it is, and the index
+below carries the status. The withdrawn ADR-002 (mobile local-first offline
+entry) has been removed because offline capture is out of scope.
 
 include::09-architecture-decisions/generated/doc-09001-adr-index.adoc[]
 == Open Questions

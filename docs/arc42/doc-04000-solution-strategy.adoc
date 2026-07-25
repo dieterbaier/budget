@@ -67,6 +67,18 @@ relations:
   rationale: Automated checks are how the strategy stays true as the code grows.
   evidence: docs/arc42/09-architecture-decisions/adr-013-architecture-fitness-functions.adoc
   reviewed: true
+- type: documents
+  target: ADR-014-frontend-architecture-style-and-stack
+  status: proposed
+  rationale: Feature-first structure with public-API boundaries is the client strategy.
+  evidence: docs/arc42/09-architecture-decisions/adr-014-frontend-architecture-style-and-stack.adoc
+  reviewed: false
+- type: documents
+  target: ADR-015-frontend-architecture-fitness-functions
+  status: proposed
+  rationale: Lint rules are how the client strategy stays true as the client grows.
+  evidence: docs/arc42/09-architecture-decisions/adr-015-frontend-architecture-fitness-functions.adoc
+  reviewed: false
 metadata_version: '1.0'
 ---
 [[solution-strategy]]
@@ -112,3 +124,42 @@ run with the backend test suite and fail the build when one of them is broken,
 each rule naming the decision it protects. The rule groups are recorded as
 constraints in xref:architecture-constraints[]; the choice of tool and of when
 they run is xref:adr-013-architecture-fitness-functions[ADR-013].
+
+== Structuring The Web Client
+
+The client applies the same intent as the backend — a structure that names the
+domain, with boundaries that are explicit rather than remembered — through means
+that suit a React application.
+
+`application/web/src` is organized *feature-first*: a directory per budget
+concept, each privately owning its API calls, query hooks, components and page,
+so `src/features` lists transactions, categories, fixed costs and the budget
+views rather than listing React file types. A feature is reached only through
+its `index.ts`, which makes that barrel the client's equivalent of a port: the
+public surface is deliberate, and the interior is free to change. `src/app`
+composes the features into the running application and `src/shared` holds only
+what is genuinely cross-cutting, with `shared/ui` restricted to presentational
+components that fetch nothing.
+
+Two candidate styles were rejected and the reasons recorded, because both are
+common enough to be proposed again: a `pages`/`components`/`api`/`queries` split,
+which describes React rather than the budget and leaves "general or specific?"
+open for every addition; and Atomic Design, whose atoms/molecules/organisms
+taxonomy is not checkable and answers a different question than where a feature's
+data access belongs. The one idea worth keeping from it — presentational
+components separated from connected ones — survives as a dependency rule.
+See xref:adr-014-frontend-architecture-style-and-stack[ADR-014].
+
+Libraries are adopted against a named trigger rather than by habit. TanStack
+Query replaces a hand-written refetch token and per-component request state;
+UnoCSS retires a single global stylesheet that every feature would otherwise
+have to edit. React Router waits for the second route, and axios waits for the
+authentication work that would give an interceptor something to do — a decision
+recorded now, taken later.
+
+This structure is checked the way the backend's is. ESLint with
+`eslint-plugin-boundaries` fails the build on a deep import into another
+feature's interior, on a cycle between features, and on shared UI reaching for a
+feature or an API module. The rule group is
+xref:con-005-feature-boundaries[CON-005]; the choice of tool is
+xref:adr-015-frontend-architecture-fitness-functions[ADR-015].
