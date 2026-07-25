@@ -18,6 +18,7 @@ repositories {
 }
 
 val cucumberVersion = "7.18.1"
+val archunitVersion = "1.4.1"
 
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
@@ -34,10 +35,24 @@ dependencies {
     testImplementation("io.cucumber:cucumber-java:$cucumberVersion")
     testImplementation("io.cucumber:cucumber-junit-platform-engine:$cucumberVersion")
     testImplementation("org.junit.platform:junit-platform-suite:1.10.3")
+    testImplementation("com.tngtech.archunit:archunit-junit5:$archunitVersion")
 }
 
 tasks.withType<Test> {
-    useJUnitPlatform()
+    useJUnitPlatform {
+        // The architecture rules are ordinary tests, so they run on every build and
+        // gate the pull request through the existing `PR validation` check. Tagging
+        // them keeps a deliberate escape hatch for a refactor in progress:
+        //   ./gradlew test -PexcludeTags=architecture
+        val excluded = (findProperty("excludeTags") as String?)
+            .orEmpty()
+            .split(',')
+            .map(String::trim)
+            .filter(String::isNotEmpty)
+        if (excluded.isNotEmpty()) {
+            excludeTags(*excluded.toTypedArray())
+        }
+    }
 }
 
 tasks.named<org.springframework.boot.gradle.tasks.run.BootRun>("bootRun") {
