@@ -16,6 +16,13 @@ import org.springframework.stereotype.Service;
  * annotation, so its intent is readable without running the rule against a
  * deliberately broken core.
  *
+ * <p>To ban another framework, add it to
+ * {@link FrameworkFreeCoreTest#FRAMEWORK_PACKAGES} and nowhere else — that one
+ * list feeds both the dependency rule and the annotation predicate. Nothing here
+ * needs editing: {@link #every_framework_the_dependency_rule_lists_is_matched_as_an_annotation()}
+ * iterates the list, so it covers the new entry automatically and fails if the
+ * two rules ever stop sharing it.
+ *
  * <p>These are plain JUnit tests, not ArchUnit rules — they check the predicate,
  * not the architecture — so they carry JUnit's {@code @Tag} rather than
  * {@code @ArchTag} and are excluded by the same
