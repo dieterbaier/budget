@@ -1,10 +1,10 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { RecordTransactionForm } from './RecordTransactionForm'
-import * as client from '../api/client'
+import * as api from '../api/transactions'
 
-vi.mock('../api/client', async (importOriginal) => ({
-  ...(await importOriginal<typeof import('../api/client')>()),
+vi.mock('../api/transactions', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('../api/transactions')>()),
   recordTransaction: vi.fn(),
 }))
 
@@ -12,7 +12,7 @@ describe('RecordTransactionForm', () => {
   beforeEach(() => vi.clearAllMocks())
 
   it('submits the entered transaction and notifies the parent', async () => {
-    vi.mocked(client.recordTransaction).mockResolvedValue()
+    vi.mocked(api.recordTransaction).mockResolvedValue()
     const onRecorded = vi.fn()
 
     render(<RecordTransactionForm onRecorded={onRecorded} />)
@@ -23,7 +23,7 @@ describe('RecordTransactionForm', () => {
     fireEvent.click(screen.getByRole('button', { name: /record/i }))
 
     await waitFor(() =>
-      expect(client.recordTransaction).toHaveBeenCalledWith({
+      expect(api.recordTransaction).toHaveBeenCalledWith({
         date: '2026-07-15',
         amount: 42,
         category: 'Groceries',
@@ -34,7 +34,7 @@ describe('RecordTransactionForm', () => {
   })
 
   it('shows the API error and does not notify the parent on failure', async () => {
-    vi.mocked(client.recordTransaction).mockRejectedValue(new Error('Unknown category: Nope'))
+    vi.mocked(api.recordTransaction).mockRejectedValue(new Error('Unknown category: Nope'))
     const onRecorded = vi.fn()
 
     render(<RecordTransactionForm onRecorded={onRecorded} />)
