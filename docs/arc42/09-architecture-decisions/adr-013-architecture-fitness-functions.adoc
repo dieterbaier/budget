@@ -45,6 +45,10 @@ The rules carry ArchUnit's `@ArchTag("architecture")`, so a refactor in progress
 can switch them off deliberately with
 `./gradlew test -PexcludeTags=architecture`. They are on by default.
 
+`./gradlew architectureTest` runs the rules alone, in about a second, without
+starting PostgreSQL. It is a convenience for working on them, not a gate — the
+gate is `test`, which is what the required `PR validation` check runs.
+
 === Context
 
 xref:adr-004-backend-stack-and-architecture[ADR-004],

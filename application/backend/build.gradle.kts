@@ -44,14 +44,35 @@ tasks.withType<Test> {
         // gate the pull request through the existing `PR validation` check. Tagging
         // them keeps a deliberate escape hatch for a refactor in progress:
         //   ./gradlew test -PexcludeTags=architecture
-        val excluded = (findProperty("excludeTags") as String?)
-            .orEmpty()
+        // `toString()` rather than a cast: a Gradle property is Any?, so `as String?`
+        // would throw ClassCastException on a non-string value from gradle.properties
+        // or the environment.
+        val excluded = project.findProperty("excludeTags")?.toString().orEmpty()
             .split(',')
             .map(String::trim)
             .filter(String::isNotEmpty)
         if (excluded.isNotEmpty()) {
             excludeTags(*excluded.toTypedArray())
         }
+    }
+}
+
+// Convenience only -- the rules already run in `test`, which is what gates the
+// pull request. This exists so a maintainer can get the architecture verdict in
+// about a second without waiting for Testcontainers to start PostgreSQL.
+tasks.register<Test>("architectureTest") {
+    description = "Runs only the ArchUnit architecture rules (see ADR-013)."
+    group = LifecycleBasePlugin.VERIFICATION_GROUP
+    testClassesDirs = sourceSets["test"].output.classesDirs
+    classpath = sourceSets["test"].runtimeClasspath
+    useJUnitPlatform {
+        includeTags("architecture")
+    }
+    filter {
+        // `CucumberTest` is a JUnit Platform @Suite, and a suite whose filter
+        // matches nothing fails with NoTestsDiscoveredException rather than being
+        // skipped. Excluding it here keeps the tag the real selector.
+        excludeTestsMatching("eu.dieterbaier.budget.CucumberTest")
     }
 }
 
