@@ -89,6 +89,7 @@ ADR-002 (mobile local-first offline entry) has been removed because offline
 capture is out of scope.
 
 include::09-architecture-decisions/generated/doc-09001-adr-index.adoc[]
-include::09-architecture-decisions/generated/open-questions.adoc[]
+== Open Questions
+see: xref:open-questions[Appendix]
 
 include::generated/doc-09000-architecture-decisions-includes.adoc[]
