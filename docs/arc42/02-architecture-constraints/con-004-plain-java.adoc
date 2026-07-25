@@ -2,10 +2,11 @@
 id: CON-004-plain-java
 type: Constraint
 title: Plain Java
-status: proposed
+status: reviewed
 owner: architecture
 created: '2026-07-25'
-reviewed: false
+updated: '2026-07-25'
+reviewed: true
 summary: No annotation processor generates code and no dependency arrives by field injection.
 tags:
 - constraint
@@ -15,22 +16,22 @@ tags:
 relations:
 - type: refines
   target: ADR-013-architecture-fitness-functions
-  status: proposed
+  status: accepted
   rationale: One of the rule groups that ADR-013 introduces.
   evidence: application/backend/src/test/java/eu/dieterbaier/budget/architecture/PlainJavaTest.java
-  reviewed: false
+  reviewed: true
 - type: verifies
   target: ADR-011-no-lombok
-  status: proposed
+  status: accepted
   rationale: Fails the build the moment a Lombok annotation appears.
   evidence: application/backend/src/test/java/eu/dieterbaier/budget/architecture/PlainJavaTest.java
-  reviewed: false
+  reviewed: true
 - type: verifies
   target: ADR-012-explicit-bean-configuration
-  status: proposed
+  status: accepted
   rationale: Constructor injection is what keeps every class buildable with new in a test.
   evidence: application/backend/src/test/java/eu/dieterbaier/budget/architecture/PlainJavaTest.java
-  reviewed: false
+  reviewed: true
 metadata_version: '1.0'
 ---
 [[con-004-plain-java]]

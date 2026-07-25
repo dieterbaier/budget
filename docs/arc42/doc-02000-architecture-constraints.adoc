@@ -15,28 +15,28 @@ tags:
 relations:
 - type: documents
   target: CON-001-framework-free-core
-  status: proposed
+  status: accepted
   rationale: The chapter contains this constraint.
   evidence: docs/arc42/doc-02000-architecture-constraints.adoc
-  reviewed: false
+  reviewed: true
 - type: documents
   target: CON-002-hexagonal-boundaries
-  status: proposed
+  status: accepted
   rationale: The chapter contains this constraint.
   evidence: docs/arc42/doc-02000-architecture-constraints.adoc
-  reviewed: false
+  reviewed: true
 - type: documents
   target: CON-003-persistence-isolation
-  status: proposed
+  status: accepted
   rationale: The chapter contains this constraint.
   evidence: docs/arc42/doc-02000-architecture-constraints.adoc
-  reviewed: false
+  reviewed: true
 - type: documents
   target: CON-004-plain-java
-  status: proposed
+  status: accepted
   rationale: The chapter contains this constraint.
   evidence: docs/arc42/doc-02000-architecture-constraints.adoc
-  reviewed: false
+  reviewed: true
 metadata_version: '1.0'
 ---
 [[architecture-constraints]]
