@@ -59,6 +59,17 @@ domain, and infrastructure sits behind ports.
 rule considers only dependencies between the declared layers, so the boot class
 is ignored rather than forcing a layer to be invented for it.
 
+The adapter ring is declared as reachable from the development layer only, not as
+unreachable outright. The stricter form is the better intent and was tried: it
+fails with 28 violations, every one of them `LocalDataSeeder` reaching the JPA
+repositories. Passing it would mean deleting the seeder or adding save methods to
+`CategoryRepository`, `FixedCostRepository` and `IncomeRepository` — widening
+three production ports to serve a local-profile convenience. Naming the
+development layer is the narrower price: no layer inside the hexagon may name an
+adapter, and the seeder alone may. See
+xref:con-003-persistence-isolation[CON-003] for the same exception seen from the
+persistence side.
+
 The rule that keeps adapters away from use-case implementations carries no
 exceptions. `UnknownCategoryException` is what would have forced one:
 `ApiExceptionHandler` maps it to a status code, which is a legitimate thing for
