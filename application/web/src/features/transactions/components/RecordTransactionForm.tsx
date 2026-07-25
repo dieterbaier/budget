@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { recordTransaction, type TransactionType } from '../api/client'
+import { recordTransaction, type TransactionType } from '../api/transactions'
 
 interface Props {
   onRecorded: () => void

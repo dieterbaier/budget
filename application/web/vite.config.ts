@@ -1,4 +1,5 @@
 /// <reference types="vitest" />
+import { fileURLToPath, URL } from 'node:url'
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
@@ -25,6 +26,14 @@ export default defineConfig({
       },
     }),
   ],
+  // `@` is the src root. Cross-element imports are written against it so a
+  // boundary violation reads as one (`@/features/x/components/y`) instead of
+  // hiding behind a run of `../`.
+  resolve: {
+    alias: {
+      '@': fileURLToPath(new URL('./src', import.meta.url)),
+    },
+  },
   server: {
     proxy: {
       '/api': 'http://localhost:8080',

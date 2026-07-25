@@ -1,7 +1,11 @@
 import { useState } from 'react'
-import { MonthlyExpenditureView } from './components/MonthlyExpenditureView'
-import { RecordTransactionForm } from './components/RecordTransactionForm'
+import { MonthlyExpenditureView } from '@/features/monthly-expenditure'
+import { RecordTransactionForm } from '@/features/transactions'
 
+// The composition root. This is the only place allowed to know several features
+// at once, and it reaches each of them through its public API like everyone
+// else — breadth, not depth (CON-005). The router lands here when the second
+// route exists (ADR-014).
 export function App() {
   const [month, setMonth] = useState('2026-07')
   const [reloadToken, setReloadToken] = useState(0)

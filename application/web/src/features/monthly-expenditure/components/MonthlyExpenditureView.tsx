@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
-import { getMonthlyExpenditure, type MonthlyExpenditure } from '../api/client'
-import { formatEur } from '../format'
+import { formatEur } from '@/shared/format/money'
+import { getMonthlyExpenditure, type MonthlyExpenditure } from '../api/monthlyExpenditure'
 
 interface Props {
   month: string
