@@ -2,10 +2,11 @@
 id: CON-003-persistence-isolation
 type: Constraint
 title: Persistence Isolation
-status: proposed
+status: reviewed
 owner: architecture
 created: '2026-07-25'
-reviewed: false
+updated: '2026-07-25'
+reviewed: true
 summary: JPA entities and Spring Data repositories stay inside the outbound persistence adapter and never leave it.
 tags:
 - constraint
@@ -15,22 +16,22 @@ tags:
 relations:
 - type: refines
   target: ADR-013-architecture-fitness-functions
-  status: proposed
+  status: accepted
   rationale: One of the rule groups that ADR-013 introduces.
   evidence: application/backend/src/test/java/eu/dieterbaier/budget/architecture/PersistenceIsolationTest.java
-  reviewed: false
+  reviewed: true
 - type: verifies
   target: ADR-009-domain-identity-and-ddd
-  status: proposed
+  status: accepted
   rationale: Keeps persistence surrogate keys inside the JPA entities, out of the domain model.
   evidence: application/backend/src/test/java/eu/dieterbaier/budget/architecture/PersistenceIsolationTest.java
-  reviewed: false
+  reviewed: true
 - type: verifies
   target: ADR-006-relational-datastore
-  status: proposed
+  status: accepted
   rationale: Keeps PostgreSQL access inside the outbound adapter that implements the port.
   evidence: application/backend/src/test/java/eu/dieterbaier/budget/architecture/PersistenceIsolationTest.java
-  reviewed: false
+  reviewed: true
 metadata_version: '1.0'
 ---
 [[con-003-persistence-isolation]]

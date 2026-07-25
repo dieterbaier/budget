@@ -2,10 +2,11 @@
 id: ADR-013-architecture-fitness-functions
 type: ADR
 title: Automated Architecture Fitness Functions
-status: proposed
+status: accepted
 owner: architecture
 created: '2026-07-25'
-reviewed: false
+updated: '2026-07-25'
+reviewed: true
 summary: ArchUnit rules run with the normal test suite and fail the build when a recorded architecture decision is broken.
 derived_from:
 - type: prompt
@@ -18,9 +19,9 @@ tags:
 relations:
 - type: relates_to
   target: ADR-004-backend-stack-and-architecture
-  status: proposed
+  status: accepted
   rationale: The checks turn the hexagonal structure this ADR records into an enforced property.
-  reviewed: false
+  reviewed: true
 metadata_version: '1.0'
 ---
 [[adr-013-architecture-fitness-functions]]
@@ -28,7 +29,7 @@ metadata_version: '1.0'
 
 === Status
 
-Proposed. AI-assisted; not architecture truth until the owner accepts it.
+Accepted. Confirmed by the owner on 2026-07-25.
 
 === Decision
 

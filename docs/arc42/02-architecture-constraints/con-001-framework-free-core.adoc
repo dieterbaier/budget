@@ -2,10 +2,11 @@
 id: CON-001-framework-free-core
 type: Constraint
 title: Framework-Free Core
-status: proposed
+status: reviewed
 owner: architecture
 created: '2026-07-25'
-reviewed: false
+updated: '2026-07-25'
+reviewed: true
 summary: The domain and application layers carry no framework dependency and no framework annotation, checked by ArchUnit.
 tags:
 - constraint
@@ -15,22 +16,22 @@ tags:
 relations:
 - type: refines
   target: ADR-013-architecture-fitness-functions
-  status: proposed
+  status: accepted
   rationale: One of the rule groups that ADR-013 introduces.
   evidence: application/backend/src/test/java/eu/dieterbaier/budget/architecture/FrameworkFreeCoreTest.java
-  reviewed: false
+  reviewed: true
 - type: verifies
   target: ADR-012-explicit-bean-configuration
-  status: proposed
+  status: accepted
   rationale: Fails the build when a core class gains a framework import or annotation.
   evidence: application/backend/src/test/java/eu/dieterbaier/budget/architecture/FrameworkFreeCoreTest.java
-  reviewed: false
+  reviewed: true
 - type: verifies
   target: ADR-004-backend-stack-and-architecture
-  status: proposed
+  status: accepted
   rationale: Checks the framework-free core that the hexagonal style requires.
   evidence: application/backend/src/test/java/eu/dieterbaier/budget/architecture/FrameworkFreeCoreTest.java
-  reviewed: false
+  reviewed: true
 metadata_version: '1.0'
 ---
 [[con-001-framework-free-core]]

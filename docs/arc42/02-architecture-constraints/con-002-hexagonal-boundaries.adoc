@@ -2,10 +2,11 @@
 id: CON-002-hexagonal-boundaries
 type: Constraint
 title: Hexagonal Boundaries
-status: proposed
+status: reviewed
 owner: architecture
 created: '2026-07-25'
-reviewed: false
+updated: '2026-07-25'
+reviewed: true
 summary: Dependencies point inwards, outbound ports are interfaces, and adapters reach use cases only through ports.
 tags:
 - constraint
@@ -15,28 +16,28 @@ tags:
 relations:
 - type: refines
   target: ADR-013-architecture-fitness-functions
-  status: proposed
+  status: accepted
   rationale: One of the rule groups that ADR-013 introduces.
   evidence: application/backend/src/test/java/eu/dieterbaier/budget/architecture/HexagonalArchitectureTest.java
-  reviewed: false
+  reviewed: true
 - type: verifies
   target: ADR-004-backend-stack-and-architecture
-  status: proposed
+  status: accepted
   rationale: Fails the build when the layer dependency direction or the port shape is broken.
   evidence: application/backend/src/test/java/eu/dieterbaier/budget/architecture/HexagonalArchitectureTest.java
-  reviewed: false
+  reviewed: true
 - type: verifies
   target: ADR-001-backend-api-boundary
-  status: proposed
+  status: accepted
   rationale: Keeps the HTTP controllers inside the inbound web adapter.
   evidence: application/backend/src/test/java/eu/dieterbaier/budget/architecture/HexagonalArchitectureTest.java
-  reviewed: false
+  reviewed: true
 - type: verifies
   target: ADR-012-explicit-bean-configuration
-  status: proposed
+  status: accepted
   rationale: Keeps the use-case implementations known only to the bean configuration.
   evidence: application/backend/src/test/java/eu/dieterbaier/budget/architecture/HexagonalArchitectureTest.java
-  reviewed: false
+  reviewed: true
 metadata_version: '1.0'
 ---
 [[con-002-hexagonal-boundaries]]
