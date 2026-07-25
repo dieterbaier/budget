@@ -1,0 +1,61 @@
+---
+id: CON-004-plain-java
+type: Constraint
+title: Plain Java
+status: proposed
+owner: architecture
+created: '2026-07-25'
+reviewed: false
+summary: No annotation processor generates code and no dependency arrives by field injection.
+tags:
+- constraint
+- backend
+- architecture
+- fitness-function
+relations:
+- type: refines
+  target: ADR-013-architecture-fitness-functions
+  status: proposed
+  rationale: One of the rule groups that ADR-013 introduces.
+  evidence: application/backend/src/test/java/eu/dieterbaier/budget/architecture/PlainJavaTest.java
+  reviewed: false
+- type: verifies
+  target: ADR-011-no-lombok
+  status: proposed
+  rationale: Fails the build the moment a Lombok annotation appears.
+  evidence: application/backend/src/test/java/eu/dieterbaier/budget/architecture/PlainJavaTest.java
+  reviewed: false
+- type: verifies
+  target: ADR-012-explicit-bean-configuration
+  status: proposed
+  rationale: Constructor injection is what keeps every class buildable with new in a test.
+  evidence: application/backend/src/test/java/eu/dieterbaier/budget/architecture/PlainJavaTest.java
+  reviewed: false
+metadata_version: '1.0'
+---
+[[con-004-plain-java]]
+== CON-004: Plain Java
+
+What is read is what is compiled, and what a class needs arrives through its
+constructor.
+
+[cols="2,3", options="header"]
+|===
+| Rule | Enforces
+| No class uses Lombok | xref:adr-011-no-lombok[ADR-011]
+| No class uses field injection | xref:adr-012-explicit-bean-configuration[ADR-012]
+|===
+
+Lombok is not on the dependency list, so the first rule checks something that
+cannot happen by accident today. It is a tripwire rather than a guard: it fails
+when someone adds the dependency and the first `@Data`, instead of later, once
+the annotations have spread far enough to make removing them a project.
+
+The field-injection rule is ArchUnit's own, covering `@Autowired`, `@Inject` and
+`@Resource` on fields. It applies to the whole backend, not only the core — the
+adapters are constructor-injected today and this keeps them that way.
+
+Checked by
+`application/backend/src/test/java/eu/dieterbaier/budget/architecture/PlainJavaTest.java`.
+
+include::generated/con-004-plain-java-traceability.adoc[leveloffset=+1]

@@ -1,0 +1,64 @@
+---
+id: CON-003-persistence-isolation
+type: Constraint
+title: Persistence Isolation
+status: proposed
+owner: architecture
+created: '2026-07-25'
+reviewed: false
+summary: JPA entities and Spring Data repositories stay inside the outbound persistence adapter and never leave it.
+tags:
+- constraint
+- backend
+- architecture
+- fitness-function
+relations:
+- type: refines
+  target: ADR-013-architecture-fitness-functions
+  status: proposed
+  rationale: One of the rule groups that ADR-013 introduces.
+  evidence: application/backend/src/test/java/eu/dieterbaier/budget/architecture/PersistenceIsolationTest.java
+  reviewed: false
+- type: verifies
+  target: ADR-009-domain-identity-and-ddd
+  status: proposed
+  rationale: Keeps persistence surrogate keys inside the JPA entities, out of the domain model.
+  evidence: application/backend/src/test/java/eu/dieterbaier/budget/architecture/PersistenceIsolationTest.java
+  reviewed: false
+- type: verifies
+  target: ADR-006-relational-datastore
+  status: proposed
+  rationale: Keeps PostgreSQL access inside the outbound adapter that implements the port.
+  evidence: application/backend/src/test/java/eu/dieterbaier/budget/architecture/PersistenceIsolationTest.java
+  reviewed: false
+metadata_version: '1.0'
+---
+[[con-003-persistence-isolation]]
+== CON-003: Persistence Isolation
+
+The JPA entities are a storage detail. What crosses a port is the domain model.
+
+[cols="2,3", options="header"]
+|===
+| Rule | Enforces
+| JPA entities live only in the persistence adapter | xref:adr-009-domain-identity-and-ddd[ADR-009]
+| Spring Data repositories live only in the persistence adapter | xref:adr-006-relational-datastore[ADR-006]
+| JPA entities do not escape the persistence adapter | xref:adr-009-domain-identity-and-ddd[ADR-009]
+|===
+
+The third rule is not implied by the layer direction of
+xref:con-002-hexagonal-boundaries[CON-002]. A controller returning a JPA entity
+is one adapter reaching into another, which the layer rule permits — this is the
+rule that catches it, and with it the surrogate key leaking into the API.
+
+=== Deliberate Exception
+
+`LocalDataSeeder` writes entities directly through the JPA repositories. It runs
+only under the `local` profile to make `./gradlew bootRun` return real numbers,
+and never appears in a request path, so it is excluded rather than forced through
+the ports.
+
+Checked by
+`application/backend/src/test/java/eu/dieterbaier/budget/architecture/PersistenceIsolationTest.java`.
+
+include::generated/con-003-persistence-isolation-traceability.adoc[leveloffset=+1]

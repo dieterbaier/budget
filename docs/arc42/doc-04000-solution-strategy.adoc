@@ -5,7 +5,7 @@ title: Solution Strategy
 status: reviewed
 owner: architecture
 created: '2026-07-03'
-updated: '2026-07-24'
+updated: '2026-07-25'
 reviewed: true
 generated: false
 summary: Main architectural approaches for the budget application.
@@ -61,6 +61,12 @@ relations:
   rationale: Explicit bean wiring keeps the Clean Architecture core framework-free.
   evidence: docs/arc42/09-architecture-decisions/adr-012-explicit-bean-configuration.adoc
   reviewed: true
+- type: documents
+  target: ADR-013-architecture-fitness-functions
+  status: proposed
+  rationale: Automated checks are how the strategy stays true as the code grows.
+  evidence: docs/arc42/09-architecture-decisions/adr-013-architecture-fitness-functions.adoc
+  reviewed: false
 metadata_version: '1.0'
 ---
 [[solution-strategy]]
@@ -100,3 +106,9 @@ with its rationale as an ADR:
   with Hibernate in `validate` mode. See xref:adr-010-flyway-migrations[ADR-010].
 * *No Lombok* — plain Java (records plus explicit code) instead of an annotation
   processor. See xref:adr-011-no-lombok[ADR-011].
+
+Those four are documentation, and documentation decays quietly. ArchUnit rules
+run with the backend test suite and fail the build when one of them is broken,
+each rule naming the decision it protects. The rule groups are recorded as
+constraints in xref:architecture-constraints[]; the choice of tool and of when
+they run is xref:adr-013-architecture-fitness-functions[ADR-013].
