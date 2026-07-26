@@ -58,7 +58,7 @@ metadata_version: '1.0'
 | Technology | Spring Boot (Java 21) backend built with Gradle (Kotlin DSL), React + TypeScript + Vite PWA, PostgreSQL. See ADR-004 to ADR-006.
 | Single currency | All amounts are EUR; money is stored as exact decimals.
 | Privacy by default | Self-hosted; no analytics or third-party telemetry.
-| API boundary | Clients use a versioned HTTP JSON API; no direct database access. See ADR-001.
+| API boundary | Clients use an HTTP JSON API; no direct database access. See ADR-001 and ADR-017.
 | Documentation format | Architecture source uses AsciiDoc with YAML metadata, validated by the toolkit.
 |===
 

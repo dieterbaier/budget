@@ -5,7 +5,7 @@ title: Budget arc42 Architecture
 status: reviewed
 owner: project maintainers
 created: '2026-07-24'
-updated: '2026-07-24'
+updated: '2026-07-26'
 reviewed: true
 generated: false
 summary: Assembled arc42 architecture documentation for the private single-user Budget application.
@@ -112,7 +112,7 @@ metadata_version: '1.0'
 
 This is the assembled arc42 architecture documentation for the private Budget
 application: a single-user actuals-tracking budget product that replaces the
-owner's Notion setup, with a server-owned domain, a versioned HTTP API, and an
+owner's Notion setup, with a server-owned domain, an HTTP JSON API, and an
 installable React PWA client.
 
 The scope and first technology decisions were reviewed and confirmed by the
