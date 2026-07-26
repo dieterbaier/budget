@@ -2,11 +2,11 @@
 id: ADR-017-unversioned-api
 type: ADR
 title: Unversioned API For A Co-Released Client
-status: proposed
+status: accepted
 owner: architecture
 created: '2026-07-26'
 updated: '2026-07-26'
-reviewed: false
+reviewed: true
 summary: 'Refines ADR-001: the HTTP API stays at /api with no version segment, because versioning coordinates units with independent release cycles and this system has none.'
 derived_from:
 - type: prompt
@@ -18,19 +18,19 @@ tags:
 relations:
 - type: refines
   target: ADR-001-backend-api-boundary
-  status: proposed
+  status: accepted
   rationale: Narrows the versioning aspect of that decision; its other choices, HTTP JSON over GraphQL and no direct database access, are untouched.
-  reviewed: false
+  reviewed: true
 - type: relates_to
   target: ADR-016-frontend-response-validation
-  status: proposed
+  status: accepted
   rationale: Response validation at the client's seam is what actually answers the stale-client problem that versioning was meant to address.
-  reviewed: false
+  reviewed: true
 - type: relates_to
   target: ADR-005-web-client-as-pwa
-  status: proposed
+  status: accepted
   rationale: The installable PWA is the client whose cached bundle creates the stale-client window in the first place.
-  reviewed: false
+  reviewed: true
 metadata_version: '1.0'
 ---
 [[adr-017-unversioned-api]]
@@ -38,9 +38,11 @@ metadata_version: '1.0'
 
 === Status
 
-Proposed. The choice was made by the owner in a design discussion on 2026-07-26;
-this record of it is AI-drafted and is not accepted architecture truth until the
-owner has reviewed the text.
+Accepted. The choice was made by the owner in a design discussion on 2026-07-26,
+and the owner reviewed and confirmed this record of it the same day. The review
+also asked that a refinement be declared on both sides rather than left to a
+relation, which is why this ADR and ADR-001 each open their Decision section by
+naming the other.
 
 === Decision
 
