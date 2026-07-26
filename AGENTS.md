@@ -9,13 +9,16 @@ Apply instructions in this order:
 
 1. User instruction
 2. This project `AGENTS.md`
-3. Relevant toolkit skill, for example `skills/bootstrap-project/SKILL.md`,
+3. Relevant local skill under `skills/` — currently only
+   `skills/refine-adr/SKILL.md`, for recording a decision that narrows part of an
+   already-accepted ADR
+4. Relevant toolkit skill, for example `skills/bootstrap-project/SKILL.md`,
    `skills/implement-issue-workflow/SKILL.md`, `skills/commit-message/SKILL.md`,
    `skills/pr-review/SKILL.md`, `skills/slice-issues/SKILL.md`,
    `skills/post-merge-sync/SKILL.md`,
    `skills/adr/SKILL.md`, `skills/quality-scenario/SKILL.md`, or
    `skills/risk/SKILL.md`
-4. Toolkit `general-semantic-contracts.md`
+5. Toolkit `general-semantic-contracts.md`
 
 Use the toolkit for:
 
@@ -111,8 +114,15 @@ Any local `skills/**/SKILL.md` or task contract covers project-specific work
 only. Local skills and contracts extend the toolkit — their bodies read the
 toolkit baseline first, then add the project-specific steps — or explicitly
 override a specific toolkit rule; they never silently duplicate toolkit rules.
-This project currently has no local skills; all architecture and SDLC semantics
-are delegated to the toolkit.
+
+This project has one local skill, `skills/refine-adr/SKILL.md`. It extends the
+toolkit's ADR workflow for the case where a new ADR narrows part of an
+already-accepted one: the toolkit's `refines` relation records the fact, and the
+skill adds how to make it visible to a reader who is not looking at a generated
+traceability view. Everything else — including the ADR workflow it builds on —
+stays delegated to the toolkit. If the rule proves general rather than
+project-specific, it belongs upstream and this skill should be deleted in favour
+of the toolkit's.
 
 ## Pull Request Workflow
 
