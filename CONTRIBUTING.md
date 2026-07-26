@@ -92,7 +92,7 @@ rendered architecture documentation to
 has nowhere to write down why:
 
 ```json
-"overrides": { "minimatch": "^10.2.5" }
+"overrides": { "filelist": { "minimatch": "^10.2.5" } }
 ```
 
 `vite-plugin-pwa` reaches `brace-expansion@2.x` through
@@ -101,16 +101,27 @@ carry a denial-of-service advisory. The fix is only in `brace-expansion@5`, whic
 is ESM-only, so overriding *that* package directly satisfies `npm audit` and
 breaks the library: `minimatch@5` then fails with `expand is not a function` the
 first time a glob contains a brace. Overriding `minimatch` to 10 instead brings a
-version that already expects `brace-expansion@5`, and the brace path keeps
-working.
+version that already expects `brace-expansion@5`.
 
-Both were tested by running the affected code, not by reading the audit output —
-the build passes either way, because this project's own globs never take that
-path.
+The override is scoped to `filelist` rather than declared globally. `filelist` is
+the only consumer in the tree that asks for `minimatch@^5`; every other one —
+`eslint`, `typescript-eslint`, `eslint-plugin-import-x`, `glob` — already asks for
+`^10`. A global override therefore changes nothing today, but it would state a
+policy the project does not hold, and would silently force `minimatch@10` on some
+future dependency that asks for `^3`. That is the same class of latent breakage
+this override exists to avoid.
+
+**`npm audit` cannot see whether this is right.** It reports zero for the broken
+override and the correct one alike, and so does the build, because this project's
+own globs never take that path. `application/web/dependency-tree.test.ts` runs the
+expansion on every `npm test` and fails with `expand is not a function` when the
+override is wrong. Change the override, and trust that test rather than the audit
+number.
 
 Remove the override once `vite-plugin-pwa` ships a `workbox-build` that no longer
-pulls the vulnerable chain. It exists to unblock a transitive advisory, not
-because this project has an opinion about `minimatch`.
+pulls the vulnerable chain — the test should keep passing without it. It exists to
+unblock a transitive advisory, not because this project has an opinion about
+`minimatch`.
 
 ## Architecture rules
 

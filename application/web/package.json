@@ -41,6 +41,8 @@
     "vitest": "^4"
   },
   "overrides": {
-    "minimatch": "^10.2.5"
+    "filelist": {
+      "minimatch": "^10.2.5"
+    }
   }
 }
