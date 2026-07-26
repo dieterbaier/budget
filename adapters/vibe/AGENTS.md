@@ -2,18 +2,26 @@
 # Vibe Adapter
 
 This is a thin Vibe-specific wrapper for the budget repository.
-budget keeps no local agent skills of its own; architecture and
-software-development-lifecycle semantics are delegated to the
-architecture-knowledge-toolkit.
+Keep project semantics in repository-root `general-semantic-contracts.md`
+and canonical `skills/**/SKILL.md` files. Architecture and
+software-development-lifecycle work not covered by a local skill is delegated to
+the architecture-knowledge-toolkit.
 
 When Vibe performs architecture-sensitive or AI-assisted work in this
 repository:
 
 1. Read repository-root `AGENTS.md`.
 2. Read repository-root `general-semantic-contracts.md`.
-3. Follow the toolkit lookup order in `AGENTS.md`, then read the relevant
-   canonical `skills/**/SKILL.md` from the architecture-knowledge-toolkit.
+3. Select and read the relevant skill: a local skill from the list below when
+   one applies, otherwise the matching canonical `skills/**/SKILL.md` from the
+   architecture-knowledge-toolkit (see the toolkit lookup order in `AGENTS.md`).
 4. Treat this adapter as routing guidance only.
+
+## Local Skills
+
+Paths are relative to the budget repository root.
+
+- `refine-adr`: `skills/refine-adr/SKILL.md`
 
 ## Toolkit Source Of Truth
 
