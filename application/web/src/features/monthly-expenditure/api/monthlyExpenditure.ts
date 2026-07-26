@@ -1,4 +1,4 @@
-import { z } from 'zod'
+import * as z from 'zod/mini'
 import { apiGet } from '@/shared/api/http'
 
 // The schema is the single definition of this response: the type is inferred
