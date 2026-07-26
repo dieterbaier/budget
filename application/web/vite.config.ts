@@ -1,6 +1,8 @@
-/// <reference types="vitest" />
 import { fileURLToPath, URL } from 'node:url'
-import { defineConfig } from 'vite'
+// `defineConfig` comes from vitest/config, not vite. Vitest 4 dropped the
+// triple-slash reference that used to widen Vite's own config type to accept a
+// `test` block; importing it from here is what types that block now.
+import { defineConfig } from 'vitest/config'
 import react from '@vitejs/plugin-react'
 import UnoCSS from 'unocss/vite'
 import { VitePWA } from 'vite-plugin-pwa'
