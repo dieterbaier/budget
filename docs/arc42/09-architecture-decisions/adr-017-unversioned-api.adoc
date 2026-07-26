@@ -1,0 +1,168 @@
+---
+id: ADR-017-unversioned-api
+type: ADR
+title: Unversioned API For A Co-Released Client
+status: proposed
+owner: architecture
+created: '2026-07-26'
+updated: '2026-07-26'
+reviewed: false
+summary: The HTTP API stays at /api with no version segment, because versioning coordinates units with independent release cycles and this system has none.
+derived_from:
+- type: prompt
+  description: The owner asked whether a versioned HTTP API is still worth having, given the argument that had just rejected a generated backend/frontend contract.
+tags:
+- decision
+- backend
+- architecture
+relations:
+- type: refines
+  target: ADR-001-backend-api-boundary
+  status: proposed
+  rationale: Narrows the versioning aspect of that decision; its other choices, HTTP JSON over GraphQL and no direct database access, are untouched.
+  reviewed: false
+- type: relates_to
+  target: ADR-016-frontend-response-validation
+  status: proposed
+  rationale: Response validation at the client's seam is what actually answers the stale-client problem that versioning was meant to address.
+  reviewed: false
+- type: relates_to
+  target: ADR-005-web-client-as-pwa
+  status: proposed
+  rationale: The installable PWA is the client whose cached bundle creates the stale-client window in the first place.
+  reviewed: false
+metadata_version: '1.0'
+---
+[[adr-017-unversioned-api]]
+== ADR-017: Unversioned API For A Co-Released Client
+
+=== Status
+
+Proposed. The choice was made by the owner in a design discussion on 2026-07-26;
+this record of it is AI-drafted and is not accepted architecture truth until the
+owner has reviewed the text.
+
+=== Decision
+
+The HTTP API stays at `/api`. No version segment is introduced, and no other
+versioning scheme is adopted. `MonthlyExpenditureController` and
+`TransactionController` keep their `@RequestMapping("/api")`.
+
+xref:adr-001-backend-api-boundary[ADR-001] decided "a versioned HTTP JSON API"
+and listed "API versioning must be managed deliberately" among its consequences.
+This narrows that: everything else ADR-001 decided — an HTTP JSON API rather
+than GraphQL, and no direct database access from clients — stands unchanged.
+
+The documents that described the API as versioned are corrected to match, since
+none of them described the code as it was.
+
+=== Context
+
+Nothing ever implemented the versioning ADR-001 decided. Both controllers map
+`/api`, with no version segment anywhere, and no fitness function noticed —
+xref:con-001-framework-free-core[CON-001] to
+xref:con-005-feature-boundaries[CON-005] check structure and boundaries, not the
+shape of the API. Four documents asserted a property the code did not have.
+
+The gap surfaced from a different direction. While designing
+xref:adr-016-frontend-response-validation[ADR-016], a generated backend/frontend
+contract was rejected because a generated contract coordinates units with
+*independent release cycles*, and this PWA is built from the same commit as the
+backend and ships with it. The owner then asked whether that argument does not
+apply equally to API versioning. It does. Rejecting one mechanism and
+implementing the other was an inconsistency, not two separate judgements.
+
+=== Decision Drivers
+
+* A mechanism should be adopted for a problem this system actually has.
+* The stale-bundle window is real and needs *an* answer, whichever mechanism
+  provides it.
+* Documentation that asserts an untrue property decays and misleads, which is
+  the argument xref:adr-013-architecture-fitness-functions[ADR-013] was written
+  from.
+
+=== Considered Options
+
+==== No versioning; the API stays at `/api` (chosen)
+
+Matches what the code does and what this system is. There is one client, it is
+built from the same commit as the server, and it is deployed with it. There is
+no consumer whose upgrade the maintainer does not control, and
+xref:adr-007-single-user-deployment-and-auth[ADR-007] fixes the application as
+private and single-user, so there will not be one by accident.
+
+==== A version segment: `/api/v1`
+
+The obvious default, and cheap — five lines of production code. It was proposed
+and rejected on inspection, because it does not do what it appears to do.
+
+A version segment protects a stale client only if the retired version keeps
+being served. This project would never maintain `/api/v1` alongside `/api/v2`:
+one maintainer, one client, both deployed together. Renaming a field under
+`/api/v1` therefore breaks a cached client exactly as badly as renaming it under
+`/api`. The segment would be a label rather than a compatibility guarantee — and
+a label that invites the belief that renames are safe *because* the API is
+versioned. That is the false-safety failure this repository has already met once,
+in a cycle rule that passed while it was blind.
+
+The usual counter — cheap now, expensive later — does not hold either. It is
+expensive later only when consumers exist whose upgrade you do not control.
+Here the one consumer lives in the same repository, so adding the segment stays a
+five-line change indefinitely.
+
+==== Header or content-negotiation versioning
+
+Avoids URL churn and is the more sophisticated mechanism. It fails for the same
+reason as the path segment, and adds negotiation logic to every request to
+express a property that is not needed.
+
+=== Pugh Matrix
+
+[cols="2,1,1,1", options="header"]
+|===
+| Criterion | No versioning | `/api/v1` | Header versioning
+| Solves a problem this system has | 0 | 0 | 0
+| Free of false safety | +1 | -1 | -1
+| Cost to build and carry | +1 | 0 | -1
+s| Sum s| 2 s| -1 s| -2
+|===
+
+The first row is zero across the board on purpose: no option here protects a
+stale client, because none of them keeps an old version running. That is the
+finding, and it is why the decision turns on the other two rows.
+
+=== Consequences
+
+==== Positive
+
+* The documentation and the code agree. Four documents no longer assert a
+  property the system does not have.
+* No false safety: nothing suggests a field can be renamed without consequence.
+* Nothing to build, run, or maintain.
+
+==== Negative
+
+* If a second client ever appears, adding a version segment then means changing
+  this client too. That cost is small and stays small while both live in one
+  repository.
+* An observer who expects a versioned API — a reasonable default for HTTP
+  services — has to read this ADR to learn why there is not one. That is the
+  cost of a deliberate omission over a conventional inclusion.
+
+==== Neutral or Follow-Up
+
+* The stale-bundle window is answered, but by
+  xref:adr-016-frontend-response-validation[ADR-016] rather than here. A cached
+  client meeting a changed payload fails at its HTTP seam, naming the field and
+  the expected and received types. That covers the case versioning misses
+  entirely: the same path returning the same field with a different type.
+* The conditions that would reverse this are structural, not a matter of scale: a
+  second client, an external or third-party consumer, separate repositories, or
+  client and server released independently of one another. The API growing
+  larger is not one of them.
+* No fitness function guards this decision. A rule asserting the *absence* of a
+  version segment would protect nothing, and the temptation it would guard
+  against — adding one — is harmless. If versioning is ever adopted, that is the
+  moment for a rule.
+
+include::generated/adr-017-unversioned-api-traceability.adoc[leveloffset=+1]

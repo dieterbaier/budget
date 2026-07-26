@@ -16,7 +16,7 @@ relations:
 - type: documents
   target: ADR-001-backend-api-boundary
   status: accepted
-  rationale: The versioned HTTP API is the client boundary.
+  rationale: The HTTP JSON API is the client boundary.
   evidence: docs/arc42/09-architecture-decisions/adr-001-backend-api-boundary.adoc
   reviewed: true
 - type: documents
@@ -85,6 +85,12 @@ relations:
   rationale: Validating responses at the client's HTTP seam is part of the client strategy.
   evidence: docs/arc42/09-architecture-decisions/adr-016-frontend-response-validation.adoc
   reviewed: true
+- type: documents
+  target: ADR-017-unversioned-api
+  status: proposed
+  rationale: An unversioned API for a co-released client is part of the boundary strategy.
+  evidence: docs/arc42/09-architecture-decisions/adr-017-unversioned-api.adoc
+  reviewed: false
 metadata_version: '1.0'
 ---
 [[solution-strategy]]
@@ -93,11 +99,20 @@ metadata_version: '1.0'
 The backend is the system of record: a Spring Boot service in a Clean/Hexagonal
 layout whose framework-free domain owns every money rule (monthly expenditure and
 overspending, fixed-cost amortization, account reserves, cash runway, pension
-projection). A single React + TypeScript PWA renders those results over a
-versioned HTTP JSON API and serves both desktop and phone. Data lives in
-PostgreSQL behind a persistence port, so the store can move from a local instance
-to a hosted one without touching the domain. Account balances are manually
-entered snapshots, not a derived ledger.
+projection). A single React + TypeScript PWA renders those results over an HTTP
+JSON API and serves both desktop and phone. Data lives in PostgreSQL behind a
+persistence port, so the store can move from a local instance to a hosted one
+without touching the domain. Account balances are manually entered snapshots,
+not a derived ledger.
+
+That API is deliberately unversioned. Versioning coordinates units with
+independent release cycles, and there are none here: the PWA is built from the
+same commit as the backend and ships with it, so a retired version would never
+be kept running for anyone. The stale-bundle window an installed PWA does create
+is answered where it actually occurs — the client validates every response at its
+HTTP seam, so a changed payload fails there naming the field rather than
+rendering as nonsense. See xref:adr-017-unversioned-api[ADR-017] and
+xref:adr-016-frontend-response-validation[ADR-016].
 
 Features are specified in Gherkin and built test-first: Cucumber-JVM exercises use
 cases at the application boundary; JUnit 5, AssertJ, and Mockito cover the domain;
