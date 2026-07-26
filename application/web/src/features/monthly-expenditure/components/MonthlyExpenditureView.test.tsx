@@ -30,6 +30,27 @@ describe('MonthlyExpenditureView', () => {
     expect(screen.getByText('Total')).toBeInTheDocument()
   })
 
+  // The green path had no test at all: every case asserted overspending, so the
+  // "within income" wording and its sign flip were unverified.
+  it('shows how much is left when spending is within income', async () => {
+    vi.mocked(api.getMonthlyExpenditure).mockResolvedValue({
+      month: '2026-07',
+      variableCosts: 500,
+      fixedCostsMonthly: 100,
+      total: 600,
+      averageIncome: 950,
+      difference: -350,
+      overspending: false,
+    })
+
+    renderWithQuery(<MonthlyExpenditureView month="2026-07" />)
+
+    // The component negates the difference, so a negative difference must read
+    // as a positive amount remaining.
+    expect(await screen.findByRole('status')).toHaveTextContent(/Within income by/)
+    expect(screen.getByRole('status')).not.toHaveTextContent('-')
+  })
+
   it('shows an error message when loading fails', async () => {
     vi.mocked(api.getMonthlyExpenditure).mockRejectedValue(new Error('boom'))
 

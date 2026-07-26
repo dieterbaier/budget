@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, afterEach } from 'vitest'
 import * as z from 'zod/mini'
-import { apiGet, ApiError, ApiResponseError } from './http'
+import { apiGet, apiPost, ApiError, ApiResponseError } from './http'
 
 const schema = z.object({ total: z.number(), overspending: z.boolean() })
 
@@ -81,5 +81,60 @@ describe('apiGet', () => {
 
     await expect(apiGet('/api/x', schema, 'failed')).rejects.toThrow(ApiError)
     await expect(apiGet('/api/x', schema, 'failed')).rejects.toThrow('Unknown category: Nope')
+  })
+})
+
+describe('apiPost', () => {
+  afterEach(() => vi.unstubAllGlobals())
+
+  it('sends the body as JSON and resolves on success', async () => {
+    const fetchMock = vi.fn().mockResolvedValue({ ok: true, status: 201 } as Response)
+    vi.stubGlobal('fetch', fetchMock)
+
+    await expect(apiPost('/api/x', { a: 1 }, 'failed')).resolves.toBeUndefined()
+    expect(fetchMock).toHaveBeenCalledWith('/api/x', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: '{"a":1}',
+    })
+  })
+
+  it('reports the error body the backend sent', async () => {
+    respondWith({ error: 'Unknown category: Nope' }, false, 400)
+
+    await expect(apiPost('/api/x', {}, 'failed')).rejects.toThrow(ApiError)
+    await expect(apiPost('/api/x', {}, 'failed')).rejects.toThrow('Unknown category: Nope')
+  })
+
+  // The write path has no schema, so a body-less failure must still produce a
+  // message naming what was being attempted.
+  it('falls back to the caller wording when the failure carries no body', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue({
+        ok: false,
+        status: 503,
+        json: async () => {
+          throw new SyntaxError('no body')
+        },
+      } as unknown as Response),
+    )
+
+    await expect(apiPost('/api/x', {}, 'Failed to record transaction')).rejects.toThrow(
+      'Failed to record transaction (503)',
+    )
+  })
+})
+
+describe('schema failures at the root', () => {
+  afterEach(() => vi.unstubAllGlobals())
+
+  // A body that is valid JSON but not an object at all has no field to name, so
+  // the message must still say something useful rather than an empty path.
+  it('reports a root-level mismatch without a field path', async () => {
+    respondWith(['not', 'an', 'object'])
+
+    await expect(apiGet('/api/x', schema, 'failed')).rejects.toThrow(ApiResponseError)
+    await expect(apiGet('/api/x', schema, 'failed')).rejects.toThrow(/\(root\)/)
   })
 })
