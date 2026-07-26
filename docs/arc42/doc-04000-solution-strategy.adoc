@@ -81,10 +81,10 @@ relations:
   reviewed: true
 - type: documents
   target: ADR-016-frontend-response-validation
-  status: proposed
+  status: accepted
   rationale: Validating responses at the client's HTTP seam is part of the client strategy.
   evidence: docs/arc42/09-architecture-decisions/adr-016-frontend-response-validation.adoc
-  reviewed: false
+  reviewed: true
 metadata_version: '1.0'
 ---
 [[solution-strategy]]

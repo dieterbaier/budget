@@ -2,11 +2,11 @@
 id: ADR-016-frontend-response-validation
 type: ADR
 title: Frontend Response Validation With Zod
-status: proposed
+status: accepted
 owner: architecture
 created: '2026-07-26'
 updated: '2026-07-26'
-reviewed: false
+reviewed: true
 summary: Zod schemas validate API responses at the client's HTTP seam and the TypeScript types are inferred from them; a shared backend/frontend contract was considered and rejected.
 derived_from:
 - type: prompt
@@ -18,14 +18,14 @@ tags:
 relations:
 - type: relates_to
   target: ADR-014-frontend-architecture-style-and-stack
-  status: proposed
+  status: accepted
   rationale: Adds a library to the client's stack under the same named-trigger discipline that ADR records.
-  reviewed: false
+  reviewed: true
 - type: relates_to
   target: ADR-001-backend-api-boundary
-  status: proposed
+  status: accepted
   rationale: The HTTP boundary this ADR decides is the client's is the same boundary that ADR establishes.
-  reviewed: false
+  reviewed: true
 metadata_version: '1.0'
 ---
 [[adr-016-frontend-response-validation]]
@@ -33,9 +33,8 @@ metadata_version: '1.0'
 
 === Status
 
-Proposed. The choices were made by the owner in a design discussion on
-2026-07-26; this record of them is AI-drafted and is not accepted architecture
-truth until the owner has reviewed the text.
+Accepted. The choices were made by the owner in a design discussion on
+2026-07-26; the owner reviewed and confirmed this record of them the same day.
 
 === Decision
 
