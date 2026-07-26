@@ -33,4 +33,12 @@ class PaymentIntervalTest {
         // 1000 / 12 = 83.3333... -> 83.33
         assertThat(PaymentInterval.YEARLY.monthlyPortion(Money.of("1000"))).isEqualTo(Money.of("83.33"));
     }
+
+    @Test
+    void exposesTheCycleLengthInMonths() {
+        assertThat(PaymentInterval.MONTHLY.monthsPerCycle()).isEqualTo(1);
+        assertThat(PaymentInterval.QUARTERLY.monthsPerCycle()).isEqualTo(3);
+        assertThat(PaymentInterval.HALF_YEARLY.monthsPerCycle()).isEqualTo(6);
+        assertThat(PaymentInterval.YEARLY.monthsPerCycle()).isEqualTo(12);
+    }
 }

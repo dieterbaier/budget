@@ -1,5 +1,6 @@
 plugins {
     java
+    jacoco
     id("org.springframework.boot") version "3.3.2"
     id("io.spring.dependency-management") version "1.1.6"
 }
@@ -80,4 +81,82 @@ tasks.named<org.springframework.boot.gradle.tasks.run.BootRun>("bootRun") {
     // Activate the local profile (datasource + demo data seeder). Start the
     // database first with `docker compose up -d` / `podman compose up -d`.
     systemProperty("spring.profiles.active", "local")
+}
+
+// CON-006: test coverage. The thresholds and the reasoning behind them are
+// ADR-018; the exclusions below are listed there too, because an undocumented
+// exclusion is how a coverage number stops meaning anything.
+//
+// Coverage rides `test`, the task the required `PR validation` check already
+// runs, for the same reason the ArchUnit rules do (ADR-013): a check that needs
+// a separate gate is a check someone forgets to run.
+val coverageExclusions = listOf(
+    // The boot class belongs to no layer, exactly as in CON-002.
+    "eu/dieterbaier/budget/BudgetApplication.class",
+    // Local-profile convenience, never deployed and deliberately untested.
+    "eu/dieterbaier/budget/dev/**",
+)
+
+// Built from the output directory rather than by mapping `classDirectories`,
+// whose `.files` resolves at configuration time and silently leaves the
+// exclusions unapplied.
+fun JacocoReportBase.applyCoverageExclusions() {
+    classDirectories.setFrom(
+        fileTree(layout.buildDirectory.dir("classes/java/main")) { exclude(coverageExclusions) },
+    )
+}
+
+tasks.named<JacocoReport>("jacocoTestReport") {
+    dependsOn(tasks.named("test"))
+    applyCoverageExclusions()
+    reports {
+        xml.required = true
+        csv.required = true
+        html.required = true
+    }
+}
+
+tasks.named<JacocoCoverageVerification>("jacocoTestCoverageVerification") {
+    dependsOn(tasks.named("test"))
+    applyCoverageExclusions()
+    violationRules {
+        // The global floor. 80 is a convention rather than a derived number --
+        // see ADR-018. Its worth is that it cannot silently drop.
+        rule {
+            element = "BUNDLE"
+            limit {
+                counter = "LINE"
+                value = "COVEREDRATIO"
+                minimum = "0.80".toBigDecimal()
+            }
+            limit {
+                counter = "BRANCH"
+                value = "COVEREDRATIO"
+                minimum = "0.80".toBigDecimal()
+            }
+        }
+        // The money rules carry a higher bar than the average. They are
+        // framework-free and trivially testable, and QG-003 is about them, so a
+        // gap here must not be payable by trivial coverage elsewhere.
+        rule {
+            element = "PACKAGE"
+            includes = listOf("eu.dieterbaier.budget.domain.*")
+            limit {
+                counter = "LINE"
+                value = "COVEREDRATIO"
+                minimum = "0.95".toBigDecimal()
+            }
+            limit {
+                counter = "BRANCH"
+                value = "COVEREDRATIO"
+                minimum = "0.90".toBigDecimal()
+            }
+        }
+    }
+}
+
+// Verification runs as part of `test`, not after `check`, so a coverage drop
+// fails the same command that runs the tests.
+tasks.named<Test>("test") {
+    finalizedBy(tasks.named("jacocoTestCoverageVerification"))
 }
