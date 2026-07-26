@@ -1,0 +1,184 @@
+---
+id: ADR-016-frontend-response-validation
+type: ADR
+title: Frontend Response Validation With Zod
+status: proposed
+owner: architecture
+created: '2026-07-26'
+updated: '2026-07-26'
+reviewed: false
+summary: Zod schemas validate API responses at the client's HTTP seam and the TypeScript types are inferred from them; a shared backend/frontend contract was considered and rejected.
+derived_from:
+- type: prompt
+  description: The owner proposed zod for the frontend and asked whether the domain could describe datatypes and constraints once for both sides.
+tags:
+- decision
+- frontend
+- architecture
+relations:
+- type: relates_to
+  target: ADR-014-frontend-architecture-style-and-stack
+  status: proposed
+  rationale: Adds a library to the client's stack under the same named-trigger discipline that ADR records.
+  reviewed: false
+- type: relates_to
+  target: ADR-001-backend-api-boundary
+  status: proposed
+  rationale: The HTTP boundary this ADR decides is the client's is the same boundary that ADR establishes.
+  reviewed: false
+metadata_version: '1.0'
+---
+[[adr-016-frontend-response-validation]]
+== ADR-016: Frontend Response Validation With Zod
+
+=== Status
+
+Proposed. The choices were made by the owner in a design discussion on
+2026-07-26; this record of them is AI-drafted and is not accepted architecture
+truth until the owner has reviewed the text.
+
+=== Decision
+
+The web client validates every API response against a Zod schema at its HTTP
+seam. `shared/api` takes a schema and parses with it instead of casting, so a
+payload that does not match fails where it arrives, with a message naming the
+field.
+
+The response types are *inferred* from those schemas with `z.infer`, so a
+response shape has one definition rather than a schema and a hand-written
+`interface` that can disagree.
+
+Schemas live in the owning feature's `api/` module, beside the call they
+describe. They are internal to the feature unless another feature needs them,
+like everything else behind a feature's barrel
+(xref:con-005-feature-boundaries[CON-005]).
+
+*Form* validation is deferred, not rejected. Native HTML validation covers the
+current fields and brings accessible, localized browser messages for free. The
+trigger is the first form with a rule the platform cannot express — a
+cross-field rule such as the reserve depending on a payment interval, or the
+runway depending on an account balance. This is the same named-trigger
+discipline xref:adr-014-frontend-architecture-style-and-stack[ADR-014] applies
+to React Router and axios.
+
+A generated contract shared between backend and frontend is *not* adopted. The
+reasoning is recorded below, because the idea is attractive enough to be
+proposed again.
+
+=== Context
+
+`shared/api/http.ts` ended a read with `response.json() as Promise<T>`. That is
+an assertion, not a check: nothing compared the payload to the type. A renamed
+backend field would surface as `undefined`, then as `NaN` in a component, far
+from its cause — and the compiler would report nothing, because the cast told it
+not to. Alongside it, each response had a hand-written `interface` that no test
+compared to a real payload.
+
+The owner asked a broader question first: whether the backend domain could
+describe the datatypes and their constraints once, for both sides. That is a
+better idea than schema duplication and was explored in full before being set
+aside; see the options.
+
+=== Decision Drivers
+
+* A wrong payload should fail at the boundary with a clear message, not deep
+  inside a component as a rendering artefact.
+* A response shape should have one definition, not two that can drift.
+* Whatever is adopted must earn its place against *this* project — a single
+  repository whose client and server are built from one commit and released
+  together.
+* Constraints that need server data cannot be checked on the client at all, so
+  no design should imply that they can.
+
+=== Considered Options
+
+==== Zod schemas written in the client, validating responses (chosen)
+
+One dependency, no code generation, no build step. Types are inferred, so the
+duplication that mattered — schema versus interface — disappears rather than
+being managed. The schema sits beside the call it describes, so a feature owns
+its own contract with the backend.
+
+Its limitation is honest: the schema is written by hand from the backend's
+actual response, so nothing *proves* it matches the server. What it does
+guarantee is that a mismatch is caught immediately, at the seam, instead of
+being rendered.
+
+==== A contract generated from the backend domain
+
+The owner's preferred shape, and explored in detail: annotate the domain, have
+springdoc emit an OpenAPI document, and generate TypeScript and Zod from it. It
+was rejected because none of its three viable forms survives contact with this
+codebase.
+
+Putting domain types in the DTOs makes `Money` — a record wrapping one
+`BigDecimal` — serialize as `{"amount": …}`, so every amount in the JSON gains a
+wrapper. Flattening it back with springdoc's `replaceWithClass` substitutes
+`BigDecimal`'s schema and *discards* the constraint annotation that was the
+entire point. Exposing domain types from the controllers instead needs
+`@JsonValue` on `Money`, which is precisely the Jackson import
+xref:con-001-framework-free-core[CON-001] predicts will arrive "smuggled in by a
+serialization convenience on a domain type", and it makes any domain rename a
+breaking change for an installed PWA. Annotating the domain while keeping the
+DTOs primitive does work, but needs a bespoke per-field equivalence test and
+leaves the duplication in place.
+
+The deeper reason is structural rather than technical. A generated contract
+earns its keep between units with *independent release cycles*; the PWA is built
+from the same commit as the backend and ships with it, so the contract has no
+independent lifetime to protect. The same test applies to API versioning and
+gives the same answer there, which is what issue #31 records.
+
+==== Keep the cast and rely on TypeScript
+
+No dependency at all. It is what the code did, and the reason it is not enough
+is that a cast is a promise to the compiler rather than a check of the data: the
+one moment the type is worth verifying is the moment it crosses from a system
+TypeScript cannot see.
+
+=== Pugh Matrix
+
+[cols="2,1,1,1", options="header"]
+|===
+| Criterion | Zod at the seam | Generated contract | Keep the cast
+| A wrong payload fails where it arrives | +1 | +1 | -1
+| One definition per response shape | +1 | +1 | 0
+| Cost proportionate to this repository | +1 | -1 | +1
+s| Sum s| 3 s| 1 s| 0
+|===
+
+=== Consequences
+
+==== Positive
+
+* A backend change that alters a response shape fails at the seam with the field
+  named, instead of rendering as `NaN` or `undefined`.
+* `z.infer` removes the hand-written response interfaces, so there is nothing to
+  keep in step.
+* The same schemas are available for form validation when a form needs more than
+  the platform offers; adopting it later costs no new dependency.
+
+==== Negative
+
+* The schemas are written by hand against the backend's responses, so they can be
+  wrong in the same way the interfaces could. The gain is *when* the error
+  surfaces, not that it cannot happen.
+* Validation runs on every response. On payloads this size the cost is not
+  measurable, but it is not zero.
+* A second definition of the response shape now exists — in the backend's DTO and
+  in the client's schema. That is deliberate, and the option above records why
+  removing it costs more than it saves here.
+
+==== Neutral or Follow-Up
+
+* The conditions that would reverse the contract decision are structural, not a
+  matter of scale: a second client, an external consumer, separate repositories,
+  or client and server released independently of one another. Domain size alone
+  is not the trigger.
+* Requests are not validated. The POST body is typed but not parsed, because the
+  form deferral above covers it; revisit with the first cross-field form rule.
+* `apiPost` still discards the response body. When a use case needs the created
+  resource — issue #12 introduces transaction identity — that response gets a
+  schema like any other.
+
+include::generated/adr-016-frontend-response-validation-traceability.adoc[leveloffset=+1]
