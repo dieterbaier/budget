@@ -40,8 +40,13 @@ Accepted. The choices were made by the owner in a design discussion on
 
 The web client validates every API response against a Zod schema at its HTTP
 seam. `shared/api` takes a schema and parses with it instead of casting, so a
-payload that does not match fails where it arrives, with a message naming the
-field.
+payload that does not match fails where it arrives, reporting the offending
+field together with the expected and received types.
+
+A response that is not JSON at all fails the same way, naming the path, rather
+than surfacing as a bare `SyntaxError` from `response.json()`. The seam is
+therefore complete: a wrong status, an unparseable body, and a well-formed body
+of the wrong shape all produce an error that says which request failed and why.
 
 The response types are *inferred* from those schemas with `z.infer`, so a
 response shape has one definition rather than a schema and a hand-written
@@ -98,6 +103,34 @@ duplication that mattered — schema versus interface — disappears rather than
 being managed. The schema sits beside the call it describes, so a feature owns
 its own contract with the backend.
 
+`zod/mini` is used rather than the full build, with the English locale loaded
+explicitly. Three variants were measured against a 47.1 KB gzipped baseline:
+
+[cols="3,1,1", options="header"]
+|===
+| Variant | Gzipped | Increase
+| `zod/mini`, no locale | 62.9 KB | +15.7 KB
+| `zod/mini` + `en` locale | 63.9 KB | +16.7 KB
+| Full `zod` | 77.6 KB | +30.4 KB
+|===
+
+The locale is what makes Mini viable. Without it Mini reports
+`total: Invalid input`; with it, `total: Invalid input: expected number, received
+string` — byte-identical to the full build's message, for about 1 KB. The full
+build therefore costs 13.7 KB more than Mini for no difference in diagnostics at
+all.
+
+Note what Mini does *not* cost: the field path. Both variants name the offending
+field. What the locale buys on top is the expected and received types, which is
+the difference between knowing a field is wrong and knowing *how* — a renamed
+field reports `received undefined`, a changed type reports `received string`. In
+an application with no centralized error monitoring, that distinction is the
+whole diagnostic.
+
+Typing the shared helper against `zod/v4/core` is the mechanism Zod documents for
+code that must accept schemas from either build; it is not a dependency on
+private internals.
+
 Its limitation is honest: the schema is written by hand from the backend's
 actual response, so nothing *proves* it matches the server. What it does
 guarantee is that a mismatch is caught immediately, at the seam, instead of
@@ -150,8 +183,10 @@ s| Sum s| 3 s| 1 s| 0
 
 ==== Positive
 
-* A backend change that alters a response shape fails at the seam with the field
-  named, instead of rendering as `NaN` or `undefined`.
+* A backend change that alters a response shape fails at the seam, naming the
+  field and what it received, instead of rendering as `NaN` or `undefined`.
+* A response that is not JSON — a proxy error page, a misrouted request — is
+  reported against the path rather than as an unattributed `SyntaxError`.
 * `z.infer` removes the hand-written response interfaces, so there is nothing to
   keep in step.
 * The same schemas are available for form validation when a form needs more than
@@ -164,19 +199,20 @@ s| Sum s| 3 s| 1 s| 0
   surfaces, not that it cannot happen.
 * Validation runs on every response. On payloads this size the cost is not
   measurable, but it is not zero.
-* The bundle grows by about 30 KB gzipped — 47.1 KB to 77.6 KB, a 65% increase in
-  JavaScript, to validate two response shapes. `zod/mini` was measured as the
-  alternative and halves the increase to about 16 KB, but it reports
-  `total: Invalid input` where the full build reports
-  `total: Invalid input: expected number, received string`, and it requires
-  typing the HTTP helper against `zod/v4/core` internals. The full build was kept
-  because the naming of the offending field is the benefit being bought, and
-  because the bundle is fetched once and then served by the service worker to a
-  single user on their own device. The trade would look different on a public
-  site.
+* The bundle grows by about 17 KB gzipped — 47.1 KB to 63.9 KB — to validate two
+  response shapes. That is the cost of `zod/mini` with the English locale
+  loaded; see the measurements below for why the full build was not used.
 * A second definition of the response shape now exists — in the backend's DTO and
   in the client's schema. That is deliberate, and the option above records why
   removing it costs more than it saves here.
++
+On the bundle: the service worker caches it, but that is supporting evidence
+rather than the argument. Caching removes the repeated download; it does not
+remove the first download, the download after each update, decompression,
+parsing, or the storage on the device. The size is defensible here because 63.9
+KB of JavaScript is small in absolute terms for a private single-user
+application — not because caching makes it free. On a public, performance-
+sensitive site the same 17 KB would deserve a harder look.
 
 ==== Neutral or Follow-Up
 
