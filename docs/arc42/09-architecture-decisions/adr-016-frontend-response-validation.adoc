@@ -165,6 +165,16 @@ s| Sum s| 3 s| 1 s| 0
   surfaces, not that it cannot happen.
 * Validation runs on every response. On payloads this size the cost is not
   measurable, but it is not zero.
+* The bundle grows by about 30 KB gzipped — 47.1 KB to 77.6 KB, a 65% increase in
+  JavaScript, to validate two response shapes. `zod/mini` was measured as the
+  alternative and halves the increase to about 16 KB, but it reports
+  `total: Invalid input` where the full build reports
+  `total: Invalid input: expected number, received string`, and it requires
+  typing the HTTP helper against `zod/v4/core` internals. The full build was kept
+  because the naming of the offending field is the benefit being bought, and
+  because the bundle is fetched once and then served by the service worker to a
+  single user on their own device. The trade would look different on a public
+  site.
 * A second definition of the response shape now exists — in the backend's DTO and
   in the client's schema. That is deliberate, and the option above records why
   removing it costs more than it saves here.
