@@ -5,3 +5,7 @@
 // would re-expose the interior the rule exists to hide. Add to this list when
 // another feature genuinely needs something, not in advance.
 export { MonthlyExpenditureView } from './components/MonthlyExpenditureView'
+
+// Published so another feature can invalidate this data after a write. See the
+// note in transactions/queries/useRecordTransaction.ts.
+export { MONTHLY_EXPENDITURE_KEY } from './queries/useMonthlyExpenditure'

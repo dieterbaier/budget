@@ -1,5 +1,6 @@
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { renderWithQuery } from '@/test/renderWithQuery'
 import { MonthlyExpenditureView } from './MonthlyExpenditureView'
 import * as api from '../api/monthlyExpenditure'
 
@@ -22,7 +23,7 @@ describe('MonthlyExpenditureView', () => {
       overspending: true,
     })
 
-    render(<MonthlyExpenditureView month="2026-07" reloadToken={0} />)
+    renderWithQuery(<MonthlyExpenditureView month="2026-07" />)
 
     expect(await screen.findByRole('status')).toHaveTextContent(/Overspending/)
     expect(api.getMonthlyExpenditure).toHaveBeenCalledWith('2026-07')
@@ -32,7 +33,7 @@ describe('MonthlyExpenditureView', () => {
   it('shows an error message when loading fails', async () => {
     vi.mocked(api.getMonthlyExpenditure).mockRejectedValue(new Error('boom'))
 
-    render(<MonthlyExpenditureView month="2026-07" reloadToken={0} />)
+    renderWithQuery(<MonthlyExpenditureView month="2026-07" />)
 
     expect(await screen.findByRole('alert')).toHaveTextContent('boom')
   })
