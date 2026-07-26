@@ -64,6 +64,32 @@ In addition to the `refines` relation on the new ADR:
    other ADR and states precisely what is narrowed and what still stands. Put it
    before the decision prose, not after — a reader must meet it before acting on
    the text it qualifies.
+
+### The refined side is written by hand only until the generator does it
+
+Only one of those two notes is legitimately hand-written.
+
+The note on the **refining** ADR is local knowledge: its author is restating
+their own outgoing relation, in the same commit that declares it.
+
+The note on the **refined** ADR is *derived*. It follows entirely from the other
+artifact's outgoing `refines`, and writing it by hand is the reciprocal-incoming-
+relation problem the metamodel forbids — expressed as prose rather than YAML,
+where no validator can see it. Nothing checks it, so if the refining ADR is later
+retargeted, superseded or withdrawn, the refined ADR keeps asserting a
+relationship that no longer holds.
+
+**Treat it as a stopgap, not the design.** It is written by hand today because
+the generator does not yet emit it; the intended end state is a generated
+fragment on both sides, derived from the one outgoing relation. Until then:
+
+- keep the hand-written note, because the alternative is a reader meeting a
+  contradiction with no signal at all
+- when you change or remove a `refines` or `supersedes` relation, go and fix the
+  other artifact's note in the same commit — nothing will remind you
+- do not extend the pattern to other derived facts; this exception exists because
+  a refinement silently contradicts the document it narrows, which is worse than
+  the duplication
 3. **Do not rewrite the refined ADR's decision text.** It is the record of what
    was decided and when, and the admonition above it says what to read instead.
    Rewriting destroys the history `refines` exists to preserve. If the old wording
@@ -88,6 +114,9 @@ ADR-001 keeps the word "versioned" in its decision paragraph. The admonition
 above that paragraph names ADR-017, says the versioning was never implemented and
 is not adopted, and says the paragraph is kept as the record of 2026-07-24.
 
+ADR-001's admonition is the hand-written derived note described above, and is the
+one piece of this pair that a generator should be producing instead.
+
 ## Checklist
 
 - [ ] `refines` is the right relation, and not `supersedes`
@@ -98,3 +127,8 @@ is not adopted, and says the paragraph is kept as the record of 2026-07-24.
 - [ ] descriptive documents follow the new decision; grep for the old claim
 - [ ] the refined ADR's `updated` is bumped and the owner confirmed the edit
 - [ ] the validator passes and the rendered register reads as one decision
+
+If you *changed* an existing relation rather than adding one:
+
+- [ ] the other artifact's hand-written note still describes reality, or was
+      corrected in the same commit
