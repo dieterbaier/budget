@@ -34,6 +34,7 @@
     "jsdom": "^25.0.0",
     "typescript": "^5.5.4",
     "typescript-eslint": "^8.65.0",
+    "unocss": "^66.7.5",
     "vite": "^5.4.3",
     "vite-plugin-pwa": "^0.20.5",
     "vitest": "^2.0.5"

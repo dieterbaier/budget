@@ -27,13 +27,20 @@ export function RecordTransactionForm() {
 
   return (
     <form onSubmit={handleSubmit} aria-label="Record transaction">
-      <label>
+      <label className="field-label">
         Date
-        <input type="date" value={date} onChange={(e) => setDate(e.target.value)} required />
+        <input
+          className="field-control"
+          type="date"
+          value={date}
+          onChange={(e) => setDate(e.target.value)}
+          required
+        />
       </label>
-      <label>
+      <label className="field-label">
         Amount (EUR)
         <input
+          className="field-control"
           type="number"
           step="0.01"
           value={amount}
@@ -41,13 +48,22 @@ export function RecordTransactionForm() {
           required
         />
       </label>
-      <label>
+      <label className="field-label">
         Category
-        <input value={category} onChange={(e) => setCategory(e.target.value)} required />
+        <input
+          className="field-control"
+          value={category}
+          onChange={(e) => setCategory(e.target.value)}
+          required
+        />
       </label>
-      <label>
+      <label className="field-label">
         Type
-        <select value={type} onChange={(e) => setType(e.target.value as TransactionType)}>
+        <select
+          className="field-control"
+          value={type}
+          onChange={(e) => setType(e.target.value as TransactionType)}
+        >
           {TYPES.map((t) => (
             <option key={t} value={t}>
               {t}
@@ -55,11 +71,11 @@ export function RecordTransactionForm() {
           ))}
         </select>
       </label>
-      <button type="submit" disabled={record.isPending}>
+      <button className="field-submit" type="submit" disabled={record.isPending}>
         {record.isPending ? 'Saving…' : 'Record'}
       </button>
       {record.error && (
-        <p role="alert" className="error">
+        <p role="alert" className="mt-3 text-danger">
           {record.error.message}
         </p>
       )}
