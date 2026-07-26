@@ -48,5 +48,30 @@ export default defineConfig({
     globals: true,
     setupFiles: './src/test/setup.ts',
     css: false,
+
+    // CON-007. Thresholds and reasoning are ADR-018; the exclusions are listed
+    // there too, because an undocumented exclusion is how a coverage number
+    // stops meaning anything.
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'html'],
+      // `include` decides what is measured, and everything matching it counts
+      // whether or not a test touches it. That matters: a module with no test at
+      // all must drag the number down rather than be absent from it. (Vitest 3
+      // removed the separate `all` flag that used to control this.)
+      include: ['src/**/*.{ts,tsx}'],
+      exclude: [
+        // Entry point: mounts the shell and does nothing else.
+        'src/main.tsx',
+        // Ambient type declarations, and the test helpers themselves.
+        'src/vite-env.d.ts',
+        'src/test/**',
+        '**/*.test.{ts,tsx}',
+      ],
+      thresholds: {
+        lines: 80,
+        branches: 80,
+      },
+    },
   },
 })
