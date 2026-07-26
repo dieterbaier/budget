@@ -87,10 +87,10 @@ relations:
   reviewed: true
 - type: documents
   target: ADR-017-unversioned-api
-  status: proposed
+  status: accepted
   rationale: An unversioned API for a co-released client is part of the boundary strategy.
   evidence: docs/arc42/09-architecture-decisions/adr-017-unversioned-api.adoc
-  reviewed: false
+  reviewed: true
 metadata_version: '1.0'
 ---
 [[solution-strategy]]
