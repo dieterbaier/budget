@@ -2,12 +2,14 @@
 import { fileURLToPath, URL } from 'node:url'
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import UnoCSS from 'unocss/vite'
 import { VitePWA } from 'vite-plugin-pwa'
 
 // Dev proxy forwards /api to the backend, so the PWA is same-origin in dev and
 // prod alike — no CORS needed. Point at the backend on :8080.
 export default defineConfig({
   plugins: [
+    UnoCSS(),
     react(),
     VitePWA({
       registerType: 'autoUpdate',

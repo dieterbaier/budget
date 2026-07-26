@@ -14,18 +14,23 @@ export function App() {
   const [month, setMonth] = useState('2026-07')
 
   return (
-    <main>
-      <h1>Budget</h1>
+    <main className="max-w-[40rem] mx-auto px-4 pt-6 pb-16">
+      <h1 className="text-2xl font-bold mb-4">Budget</h1>
 
-      <label className="month-picker">
+      <label className="field-label">
         Month
-        <input type="month" value={month} onChange={(e) => setMonth(e.target.value)} />
+        <input
+          className="field-control"
+          type="month"
+          value={month}
+          onChange={(e) => setMonth(e.target.value)}
+        />
       </label>
 
-      <h2>Current monthly expenditure</h2>
+      <h2 className="mt-8 text-[1.1rem] font-semibold">Current monthly expenditure</h2>
       <MonthlyExpenditureView month={month} />
 
-      <h2>Record a transaction</h2>
+      <h2 className="mt-8 text-[1.1rem] font-semibold">Record a transaction</h2>
       <RecordTransactionForm />
     </main>
   )
