@@ -5,7 +5,7 @@ title: Solution Strategy
 status: reviewed
 owner: architecture
 created: '2026-07-03'
-updated: '2026-07-25'
+updated: '2026-07-26'
 reviewed: true
 generated: false
 summary: Main architectural approaches for the budget application.
@@ -69,16 +69,16 @@ relations:
   reviewed: true
 - type: documents
   target: ADR-014-frontend-architecture-style-and-stack
-  status: proposed
+  status: accepted
   rationale: Feature-first structure with public-API boundaries is the client strategy.
   evidence: docs/arc42/09-architecture-decisions/adr-014-frontend-architecture-style-and-stack.adoc
-  reviewed: false
+  reviewed: true
 - type: documents
   target: ADR-015-frontend-architecture-fitness-functions
-  status: proposed
+  status: accepted
   rationale: Lint rules are how the client strategy stays true as the client grows.
   evidence: docs/arc42/09-architecture-decisions/adr-015-frontend-architecture-fitness-functions.adoc
-  reviewed: false
+  reviewed: true
 metadata_version: '1.0'
 ---
 [[solution-strategy]]

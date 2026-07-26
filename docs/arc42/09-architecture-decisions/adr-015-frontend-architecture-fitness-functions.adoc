@@ -2,11 +2,11 @@
 id: ADR-015-frontend-architecture-fitness-functions
 type: ADR
 title: Frontend Architecture Fitness Functions
-status: proposed
+status: accepted
 owner: architecture
 created: '2026-07-25'
-updated: '2026-07-25'
-reviewed: false
+updated: '2026-07-26'
+reviewed: true
 summary: ESLint with eslint-plugin-boundaries enforces the feature boundaries and gates the web job of PR validation.
 derived_from:
 - type: prompt
@@ -19,14 +19,14 @@ tags:
 relations:
 - type: relates_to
   target: ADR-013-architecture-fitness-functions
-  status: proposed
+  status: accepted
   rationale: Extends the same intent to the client; that ADR covers the backend's ArchUnit rules and this one the client's lint rules.
-  reviewed: false
+  reviewed: true
 - type: relates_to
   target: ADR-014-frontend-architecture-style-and-stack
-  status: proposed
+  status: accepted
   rationale: Turns the structure that ADR records into an enforced property.
-  reviewed: false
+  reviewed: true
 metadata_version: '1.0'
 ---
 [[adr-015-frontend-architecture-fitness-functions]]
@@ -34,9 +34,8 @@ metadata_version: '1.0'
 
 === Status
 
-Proposed. The choice was made by the owner in a design interview on 2026-07-25;
-this record of it is AI-drafted and is not accepted architecture truth until the
-owner has reviewed the text.
+Accepted. The choice was made by the owner in a design interview on 2026-07-25;
+the owner reviewed and confirmed this record of it on 2026-07-26.
 
 === Decision
 
