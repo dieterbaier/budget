@@ -7,7 +7,7 @@ owner: architecture
 created: '2026-07-03'
 updated: '2026-07-26'
 reviewed: true
-summary: 'The backend exposes a versioned HTTP JSON API as the single client boundary. Refined by ADR-017: the versioning is deliberately not adopted.'
+summary: Originally established a versioned HTTP JSON API as the single client boundary; refined by ADR-017 so the API deliberately remains unversioned.
 tags:
 - decision
 - api

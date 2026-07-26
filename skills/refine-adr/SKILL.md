@@ -59,7 +59,15 @@ In addition to the `refines` relation on the new ADR:
    its `Notes` column, so this is what makes the pairing visible without opening
    either document.
    - the refining ADR's summary begins `Refines ADR-XXX: `
-   - the refined ADR's summary gains `Refined by ADR-YYY: <what changed>.`
+   - the refined ADR's summary is rewritten **in the past tense**, so it reads as
+     history rather than as a live claim that the next clause contradicts:
+     `Originally established <X>; refined by ADR-YYY so <what now holds>.`
+
+   The past tense matters more than it looks. A summary of the form
+   "<asserts X>. X is deliberately not adopted." is a contradiction in one cell of
+   the register, and a reader has to work out which half is current. Framing the
+   first clause as what was *originally* decided removes the ambiguity without
+   losing the history.
 2. **Both Decision sections open with a `[NOTE]` admonition** that `xref`s the
    other ADR and states precisely what is narrowed and what still stands. Put it
    before the decision prose, not after — a reader must meet it before acting on

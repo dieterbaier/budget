@@ -108,10 +108,13 @@ not a derived ledger.
 That API is deliberately unversioned. Versioning coordinates units with
 independent release cycles, and there are none here: the PWA is built from the
 same commit as the backend and ships with it, so a retired version would never
-be kept running for anyone. The stale-bundle window an installed PWA does create
-is answered where it actually occurs — the client validates every response at its
-HTTP seam, so a changed payload fails there naming the field rather than
-rendering as nonsense. See xref:adr-017-unversioned-api[ADR-017] and
+be kept running for anyone. An installed PWA does create a short window in which
+a cached bundle talks to a backend it was not built against, and that window is
+deliberately accepted rather than closed: no versioning scheme would shorten it
+without serving a retired version. What changes is how it fails — the client
+validates every response at its HTTP seam, so a changed payload stops there with
+the field named instead of rendering as nonsense, and the client updates or
+reloads to recover. See xref:adr-017-unversioned-api[ADR-017] and
 xref:adr-016-frontend-response-validation[ADR-016].
 
 Features are specified in Gherkin and built test-first: Cucumber-JVM exercises use
