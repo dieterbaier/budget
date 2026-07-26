@@ -5,9 +5,9 @@ title: Backend API Boundary
 status: accepted
 owner: architecture
 created: '2026-07-03'
-updated: '2026-07-24'
+updated: '2026-07-26'
 reviewed: true
-summary: The backend exposes a versioned HTTP JSON API as the single client boundary.
+summary: 'The backend exposes a versioned HTTP JSON API as the single client boundary. Refined by ADR-017: the versioning is deliberately not adopted.'
 tags:
 - decision
 - api
@@ -28,6 +28,16 @@ metadata_version: '1.0'
 Accepted. Confirmed by the owner on 2026-07-24.
 
 === Decision
+
+[NOTE]
+====
+*Refined by xref:adr-017-unversioned-api[ADR-017].* The versioning this decision
+assumed was never implemented and is deliberately not adopted: the API stays at
+`/api`. Everything else below stands — an HTTP JSON API rather than GraphQL, and
+no direct database access from clients. Read ADR-017 before acting on the word
+"versioned" in the next paragraph, which is kept as the record of what was
+decided on 2026-07-24.
+====
 
 The backend exposes a versioned HTTP JSON API as the single boundary between the
 web PWA and the domain. The same contract serves the phone when the PWA is
