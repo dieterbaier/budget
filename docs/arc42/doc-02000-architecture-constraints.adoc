@@ -43,6 +43,18 @@ relations:
   rationale: The chapter contains this constraint.
   evidence: docs/arc42/doc-02000-architecture-constraints.adoc
   reviewed: true
+- type: documents
+  target: CON-006-backend-test-coverage
+  status: proposed
+  rationale: The chapter contains this constraint.
+  evidence: docs/arc42/doc-02000-architecture-constraints.adoc
+  reviewed: false
+- type: documents
+  target: CON-007-frontend-test-coverage
+  status: proposed
+  rationale: The chapter contains this constraint.
+  evidence: docs/arc42/doc-02000-architecture-constraints.adoc
+  reviewed: false
 metadata_version: '1.0'
 ---
 [[architecture-constraints]]
@@ -64,10 +76,14 @@ metadata_version: '1.0'
 
 The constraints below are the ones a build can check. Each names the decision it
 protects, so breaking one fails the pull request rather than being noticed in
-review. The tool differs by side of the system: CON-001 to CON-004 are ArchUnit
-rules running with the backend test suite
-(xref:adr-013-architecture-fitness-functions[ADR-013]), and CON-005 is an ESLint
-configuration running with the web client's lint step
-(xref:adr-015-frontend-architecture-fitness-functions[ADR-015]).
+review. The tool differs by what is being checked:
+
+* *Structure* — CON-001 to CON-004 are ArchUnit rules running with the backend
+  test suite (xref:adr-013-architecture-fitness-functions[ADR-013]), and CON-005
+  is an ESLint configuration running with the web client's lint step
+  (xref:adr-015-frontend-architecture-fitness-functions[ADR-015]).
+* *Coverage* — CON-006 and CON-007 are threshold checks inside the test runs
+  themselves (xref:adr-018-test-coverage-thresholds[ADR-018]). Structure rules
+  say where code may live; these say that it is exercised.
 
 include::generated/doc-02000-architecture-constraints-includes.adoc[]

@@ -1,0 +1,78 @@
+---
+id: CON-007-frontend-test-coverage
+type: Constraint
+title: Frontend Test Coverage
+status: proposed
+owner: architecture
+created: '2026-07-26'
+updated: '2026-07-26'
+reviewed: false
+summary: Vitest fails the web client's test run below 80% line and branch coverage.
+tags:
+- constraint
+- frontend
+- testing
+- fitness-function
+relations:
+- type: refines
+  target: ADR-018-test-coverage-thresholds
+  status: proposed
+  rationale: One of the two rule groups that ADR introduces.
+  evidence: application/web/vite.config.ts
+  reviewed: false
+- type: verifies
+  target: ADR-018-test-coverage-thresholds
+  status: proposed
+  rationale: Fails the test run when web client coverage drops below the recorded thresholds.
+  evidence: application/web/vite.config.ts
+  reviewed: false
+metadata_version: '1.0'
+---
+[[con-007-frontend-test-coverage]]
+== CON-007: Frontend Test Coverage
+
+`npm test` runs `vitest run --coverage` and fails below 80% line and 80% branch
+coverage. That is the same command the `web` job of `PR validation` already runs,
+so the threshold gates integration without a separate step.
+
+[cols="2,1,1,2", options="header"]
+|===
+| Scope | Line | Branch | Enforces
+| `src/**` | 80% | 80% | xref:adr-018-test-coverage-thresholds[ADR-018]
+|===
+
+There is no equivalent of the backend's domain bar, because the client holds no
+domain: xref:adr-003-server-owned-budget-calculation[ADR-003] puts every money
+rule on the server, so what is left here is rendering and request plumbing.
+
+=== Exclusions
+
+[cols="2,3", options="header"]
+|===
+| Excluded | Why
+| `src/main.tsx` | The entry point mounts the shell and does nothing else.
+| `src/vite-env.d.ts` | Ambient type declarations; no executable code.
+| `src/test/**` and `*.test.tsx` | The test helpers and the tests themselves.
+|===
+
+Everything matching `src/**` is measured whether or not a test touches it, so a
+module with no test at all drags the figure down rather than being absent from
+it. This is worth stating because the two behave identically until someone adds
+an untested file: verified by adding one and watching the branch figure fall from
+90.9% to 83.3%.
+
+=== What setting the bar exposed
+
+The threshold was not merely satisfied; reaching it surfaced three real gaps.
+`apiPost` had never been exercised. Both feature `api` modules reported zero
+coverage because every component test mocked them, so the URLs they build and the
+schemas they parse against were unverified. And the *non-overspending* path of
+the monthly expenditure view — the message a user sees when they are within
+income — had no test at all, only the overspending case.
+
+The fix in each case was a test that asserts behaviour worth asserting, rather
+than one written to move a number.
+
+Checked by `application/web/vite.config.ts`.
+
+include::generated/con-007-frontend-test-coverage-traceability.adoc[leveloffset=+1]

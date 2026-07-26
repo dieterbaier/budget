@@ -1,0 +1,72 @@
+---
+id: CON-006-backend-test-coverage
+type: Constraint
+title: Backend Test Coverage
+status: proposed
+owner: architecture
+created: '2026-07-26'
+updated: '2026-07-26'
+reviewed: false
+summary: JaCoCo fails the backend build below 80% line and branch overall, and below 95/90 in the domain.
+tags:
+- constraint
+- backend
+- testing
+- fitness-function
+relations:
+- type: refines
+  target: ADR-018-test-coverage-thresholds
+  status: proposed
+  rationale: One of the two rule groups that ADR introduces.
+  evidence: application/backend/build.gradle.kts
+  reviewed: false
+- type: verifies
+  target: ADR-018-test-coverage-thresholds
+  status: proposed
+  rationale: Fails the build when backend coverage drops below the recorded thresholds.
+  evidence: application/backend/build.gradle.kts
+  reviewed: false
+metadata_version: '1.0'
+---
+[[con-006-backend-test-coverage]]
+== CON-006: Backend Test Coverage
+
+JaCoCo verification runs as part of `./gradlew test`, the task the required
+`PR validation` check already runs.
+
+[cols="2,1,1,2", options="header"]
+|===
+| Scope | Line | Branch | Enforces
+| Whole backend | 80% | 80% | xref:adr-018-test-coverage-thresholds[ADR-018]
+| `eu.dieterbaier.budget.domain.*` | 95% | 90% | xref:adr-018-test-coverage-thresholds[ADR-018]
+|===
+
+The domain rule is declared per package rather than across the domain as a whole,
+so a well-covered package cannot carry a thin one.
+
+=== Exclusions
+
+Two classes are excluded, and no others. Adapters, DTOs and JPA entities are
+deliberately *not* excluded, because that is where excluding becomes tempting and
+where the number would quietly stop meaning anything.
+
+[cols="2,3", options="header"]
+|===
+| Excluded | Why
+| `BudgetApplication` | The boot class belongs to no layer, exactly as in xref:con-002-hexagonal-boundaries[CON-002].
+| `dev.LocalDataSeeder` | A local-profile convenience that is never deployed and deliberately not tested. It is also the single largest block of uncovered code, which is precisely why leaving it in would have made the overall figure meaningless.
+|===
+
+The exclusion is built from the compiled output directory rather than by mapping
+Gradle's `classDirectories`, whose `.files` resolves at configuration time and
+silently leaves the exclusions unapplied — a failure that looks exactly like
+success, since the build still passes and the report merely covers more than it
+should.
+
+The rule fired on its first run: `domain.model` stood at 93%, below the 95% bar,
+because `Money` had no test of its own and `PaymentInterval.monthsPerCycle` was
+never called. Both were fixed by writing the tests, not by lowering the bar.
+
+Checked by `application/backend/build.gradle.kts`.
+
+include::generated/con-006-backend-test-coverage-traceability.adoc[leveloffset=+1]
