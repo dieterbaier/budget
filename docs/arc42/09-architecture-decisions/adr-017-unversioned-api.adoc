@@ -7,7 +7,7 @@ owner: architecture
 created: '2026-07-26'
 updated: '2026-07-26'
 reviewed: false
-summary: The HTTP API stays at /api with no version segment, because versioning coordinates units with independent release cycles and this system has none.
+summary: 'Refines ADR-001: the HTTP API stays at /api with no version segment, because versioning coordinates units with independent release cycles and this system has none.'
 derived_from:
 - type: prompt
   description: The owner asked whether a versioned HTTP API is still worth having, given the argument that had just rejected a generated backend/frontend contract.
@@ -43,6 +43,14 @@ this record of it is AI-drafted and is not accepted architecture truth until the
 owner has reviewed the text.
 
 === Decision
+
+[NOTE]
+====
+*Refines xref:adr-001-backend-api-boundary[ADR-001].* Only the versioning clause
+of that decision is narrowed. Its other choices — an HTTP JSON API rather than
+GraphQL, and no direct database access from clients — stand unchanged, and
+ADR-001 remains the record of the boundary itself.
+====
 
 The HTTP API stays at `/api`. No version segment is introduced, and no other
 versioning scheme is adopted. `MonthlyExpenditureController` and
