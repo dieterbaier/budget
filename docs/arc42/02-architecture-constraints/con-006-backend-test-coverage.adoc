@@ -54,7 +54,7 @@ where the number would quietly stop meaning anything.
 |===
 | Excluded | Why
 | `BudgetApplication` | The boot class belongs to no layer, exactly as in xref:con-002-hexagonal-boundaries[CON-002].
-| `dev.LocalDataSeeder` | A local-profile convenience that is never deployed and deliberately not tested. It is also the single largest block of uncovered code, which is precisely why leaving it in would have made the overall figure meaningless.
+| `dev.LocalDataSeeder` | A local-profile convenience that is packaged but never activated in production, and deliberately not tested. It lives under `src/main` and ships inside the artifact; the `local` profile is what keeps it inert. It is also the single largest block of uncovered code, which is precisely why leaving it in would have made the overall figure meaningless.
 |===
 
 The exclusion is built from the compiled output directory rather than by mapping
