@@ -93,7 +93,9 @@ tasks.named<org.springframework.boot.gradle.tasks.run.BootRun>("bootRun") {
 val coverageExclusions = listOf(
     // The boot class belongs to no layer, exactly as in CON-002.
     "eu/dieterbaier/budget/BudgetApplication.class",
-    // Local-profile convenience, never deployed and deliberately untested.
+    // Local-profile convenience. It is packaged with the application -- it lives
+    // under src/main -- but the `local` profile is what activates it, so it never
+    // runs in production. Deliberately untested.
     "eu/dieterbaier/budget/dev/**",
 )
 
