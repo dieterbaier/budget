@@ -2,11 +2,11 @@
 id: CON-005-feature-boundaries
 type: Constraint
 title: Feature Boundaries
-status: proposed
+status: reviewed
 owner: architecture
 created: '2026-07-25'
-updated: '2026-07-25'
-reviewed: false
+updated: '2026-07-26'
+reviewed: true
 summary: Features are reached through their public API, the feature graph is acyclic, and shared UI stays presentational, checked by ESLint.
 tags:
 - constraint
@@ -16,16 +16,16 @@ tags:
 relations:
 - type: refines
   target: ADR-015-frontend-architecture-fitness-functions
-  status: proposed
+  status: accepted
   rationale: The rule group that ADR-015 introduces.
   evidence: application/web/eslint.config.js
-  reviewed: false
+  reviewed: true
 - type: verifies
   target: ADR-014-frontend-architecture-style-and-stack
-  status: proposed
+  status: accepted
   rationale: Fails the build when a feature boundary, the dependency direction, or the presentational rule is broken.
   evidence: application/web/eslint.config.js
-  reviewed: false
+  reviewed: true
 metadata_version: '1.0'
 ---
 [[con-005-feature-boundaries]]

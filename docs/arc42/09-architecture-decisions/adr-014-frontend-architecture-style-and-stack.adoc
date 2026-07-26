@@ -2,11 +2,11 @@
 id: ADR-014-frontend-architecture-style-and-stack
 type: ADR
 title: Frontend Architecture Style And Stack
-status: proposed
+status: accepted
 owner: architecture
 created: '2026-07-25'
-updated: '2026-07-25'
-reviewed: false
+updated: '2026-07-26'
+reviewed: true
 summary: The web client is organized feature-first, features are reached through a public API, and each library is adopted against a named trigger.
 derived_from:
 - type: prompt
@@ -18,19 +18,19 @@ tags:
 relations:
 - type: relates_to
   target: ADR-005-web-client-as-pwa
-  status: proposed
+  status: accepted
   rationale: Gives the React PWA that ADR chose an internal structure and a library set.
-  reviewed: false
+  reviewed: true
 - type: relates_to
   target: ADR-004-backend-stack-and-architecture
-  status: proposed
+  status: accepted
   rationale: Applies the same intent — a structure that names the domain and keeps its boundaries explicit — to the client.
-  reviewed: false
+  reviewed: true
 - type: addresses
   target: QS-002-expense-entry-latency
-  status: proposed
+  status: accepted
   rationale: A query cache serves the already-loaded monthly figure immediately and refreshes it on invalidation, which is the confirm-and-update step the scenario measures.
-  reviewed: false
+  reviewed: true
 metadata_version: '1.0'
 ---
 [[adr-014-frontend-architecture-style-and-stack]]
@@ -38,9 +38,8 @@ metadata_version: '1.0'
 
 === Status
 
-Proposed. The choices below were made by the owner in a design interview on
-2026-07-25; this record of them is AI-drafted and is not accepted architecture
-truth until the owner has reviewed the text.
+Accepted. The choices were made by the owner in a design interview on
+2026-07-25; the owner reviewed and confirmed this record of them on 2026-07-26.
 
 === Decision
 

@@ -5,7 +5,7 @@ title: Architecture Constraints
 status: reviewed
 owner: architecture
 created: '2026-07-03'
-updated: '2026-07-25'
+updated: '2026-07-26'
 reviewed: true
 generated: false
 summary: Architecture, technology, and documentation constraints.
@@ -39,10 +39,10 @@ relations:
   reviewed: true
 - type: documents
   target: CON-005-feature-boundaries
-  status: proposed
+  status: accepted
   rationale: The chapter contains this constraint.
   evidence: docs/arc42/doc-02000-architecture-constraints.adoc
-  reviewed: false
+  reviewed: true
 metadata_version: '1.0'
 ---
 [[architecture-constraints]]

@@ -5,7 +5,7 @@ title: Architecture Decisions
 status: reviewed
 owner: architecture
 created: '2026-07-03'
-updated: '2026-07-25'
+updated: '2026-07-26'
 reviewed: true
 generated: false
 summary: Accepted ADRs for the private single-user Budget architecture.
@@ -87,27 +87,25 @@ relations:
   reviewed: true
 - type: documents
   target: ADR-014-frontend-architecture-style-and-stack
-  status: proposed
+  status: accepted
   rationale: The chapter contains this ADR.
   evidence: docs/arc42/doc-09000-architecture-decisions.adoc
-  reviewed: false
+  reviewed: true
 - type: documents
   target: ADR-015-frontend-architecture-fitness-functions
-  status: proposed
+  status: accepted
   rationale: The chapter contains this ADR.
   evidence: docs/arc42/doc-09000-architecture-decisions.adoc
-  reviewed: false
+  reviewed: true
 metadata_version: '1.0'
 ---
 [[architecture-decisions]]
 = Architecture Decisions
 
-Most of the decisions below were confirmed by the owner on 2026-07-24, and
-ADR-013 on 2026-07-25. ADR-014 and ADR-015 are still `proposed`: the choices
-they record were made by the owner, but the records themselves are AI-drafted
-and await review. Each ADR's own status section says which it is, and the index
-below carries the status. The withdrawn ADR-002 (mobile local-first offline
-entry) has been removed because offline capture is out of scope.
+Most of the decisions below were confirmed by the owner on 2026-07-24, ADR-013 on
+2026-07-25, and ADR-014 and ADR-015 on 2026-07-26. Each ADR's own status section
+records when. The withdrawn ADR-002 (mobile local-first offline entry) has been
+removed because offline capture is out of scope.
 
 include::09-architecture-decisions/generated/doc-09001-adr-index.adoc[]
 == Open Questions
