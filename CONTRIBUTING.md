@@ -78,7 +78,7 @@ It runs only the parts affected by the change (see
 |---|---|
 | `docs/`, `metamodel/`, `templates/`, `scripts/`, `adapters/`, `build.sh`, `AGENTS.md`, `general-semantic-contracts.md` | `./build.sh all` — stale-adapter check, metamodel and relation validation, arc42 render |
 | `application/backend/` | `./gradlew test` |
-| `application/web/` | `npm test` and the PWA build (`tsc --noEmit && vite build`) |
+| `application/web/` | `npm run lint`, `npm test`, and the PWA build (`tsc --noEmit && vite build`) |
 
 Run the relevant one locally before pushing; they are the same commands CI uses.
 
@@ -105,3 +105,17 @@ refactor in progress — the rules are on by default and a violation must not re
 A failing rule names the decision it protects in its message. The rule groups are
 recorded as `CON-001` to `CON-004` in the architecture constraints chapter, and
 the choice of tool is `ADR-013`.
+
+The web client has the same arrangement with different tools. Its structure is
+`ADR-014`, the rules are `CON-005`, and they are ESLint rules in
+`application/web/eslint.config.js` rather than tests — so `npm run lint` is what
+gates them, which is why the table above lists it. A deep import into another
+feature's interior, a cycle between features, or a `shared/ui` component
+reaching for an API module fails that step and names the decision. There is no
+wholesale escape hatch equivalent to `-PexcludeTags=architecture`: an exception
+is an `eslint-disable-next-line` comment with a reason, which shows up in the
+diff and has to survive review.
+
+Most violations appear in the editor while you type, which the backend's rules
+cannot do. Treat a clean editor as the fast check and `npm run lint` as the
+authoritative one.

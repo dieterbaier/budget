@@ -144,6 +144,12 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      # The architecture fitness functions live here (CON-005, ADR-015): a deep
+      # import across a feature boundary or a cycle fails this step, not the
+      # tests.
+      - name: Lint
+        run: npm run lint
+
       - name: Run tests
         run: npm test
 
