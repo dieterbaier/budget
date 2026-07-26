@@ -1,34 +1,28 @@
 import { useState } from 'react'
-import { recordTransaction, type TransactionType } from '../api/transactions'
-
-interface Props {
-  onRecorded: () => void
-}
+import { useRecordTransaction } from '../queries/useRecordTransaction'
+import type { TransactionType } from '../api/transactions'
 
 const TYPES: TransactionType[] = ['EXPENSE', 'INCOME', 'TRANSFER']
 
-export function RecordTransactionForm({ onRecorded }: Props) {
+export function RecordTransactionForm() {
   const [date, setDate] = useState('')
   const [amount, setAmount] = useState('')
   const [category, setCategory] = useState('')
   const [type, setType] = useState<TransactionType>('EXPENSE')
-  const [error, setError] = useState<string | null>(null)
-  const [submitting, setSubmitting] = useState(false)
 
-  async function handleSubmit(event: React.FormEvent) {
+  const record = useRecordTransaction()
+
+  function handleSubmit(event: React.FormEvent) {
     event.preventDefault()
-    setError(null)
-    setSubmitting(true)
-    try {
-      await recordTransaction({ date, amount: Number(amount), category, type })
-      setAmount('')
-      setCategory('')
-      onRecorded()
-    } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Unknown error')
-    } finally {
-      setSubmitting(false)
-    }
+    record.mutate(
+      { date, amount: Number(amount), category, type },
+      {
+        onSuccess: () => {
+          setAmount('')
+          setCategory('')
+        },
+      },
+    )
   }
 
   return (
@@ -61,12 +55,12 @@ export function RecordTransactionForm({ onRecorded }: Props) {
           ))}
         </select>
       </label>
-      <button type="submit" disabled={submitting}>
-        {submitting ? 'Saving…' : 'Record'}
+      <button type="submit" disabled={record.isPending}>
+        {record.isPending ? 'Saving…' : 'Record'}
       </button>
-      {error && (
+      {record.error && (
         <p role="alert" className="error">
-          {error}
+          {record.error.message}
         </p>
       )}
     </form>

@@ -6,9 +6,12 @@ import { RecordTransactionForm } from '@/features/transactions'
 // at once, and it reaches each of them through its public API like everyone
 // else — breadth, not depth (CON-005). The router lands here when the second
 // route exists (ADR-014).
+//
+// It no longer coordinates the refresh after a write: recording a transaction
+// invalidates the month's figures through the query cache, so the two features
+// meet in the cache rather than in a prop threaded through this component.
 export function App() {
   const [month, setMonth] = useState('2026-07')
-  const [reloadToken, setReloadToken] = useState(0)
 
   return (
     <main>
@@ -20,10 +23,10 @@ export function App() {
       </label>
 
       <h2>Current monthly expenditure</h2>
-      <MonthlyExpenditureView month={month} reloadToken={reloadToken} />
+      <MonthlyExpenditureView month={month} />
 
       <h2>Record a transaction</h2>
-      <RecordTransactionForm onRecorded={() => setReloadToken((token) => token + 1)} />
+      <RecordTransactionForm />
     </main>
   )
 }
