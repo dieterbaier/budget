@@ -86,6 +86,32 @@ Once a documentation change lands on `main`, a separate workflow republishes the
 rendered architecture documentation to
 <https://dieterbaier.github.io/budget/>.
 
+## Dependency overrides
+
+`application/web/package.json` carries one `overrides` entry, and `package.json`
+has nowhere to write down why:
+
+```json
+"overrides": { "minimatch": "^10.2.5" }
+```
+
+`vite-plugin-pwa` reaches `brace-expansion@2.x` through
+`workbox-build → ejs → jake → filelist → minimatch@5`, and versions up to 5.0.7
+carry a denial-of-service advisory. The fix is only in `brace-expansion@5`, which
+is ESM-only, so overriding *that* package directly satisfies `npm audit` and
+breaks the library: `minimatch@5` then fails with `expand is not a function` the
+first time a glob contains a brace. Overriding `minimatch` to 10 instead brings a
+version that already expects `brace-expansion@5`, and the brace path keeps
+working.
+
+Both were tested by running the affected code, not by reading the audit output —
+the build passes either way, because this project's own globs never take that
+path.
+
+Remove the override once `vite-plugin-pwa` ships a `workbox-build` that no longer
+pulls the vulnerable chain. It exists to unblock a transitive advisory, not
+because this project has an opinion about `minimatch`.
+
 ## Architecture rules
 
 The backend's architecture decisions are enforced by ArchUnit rules that run as
