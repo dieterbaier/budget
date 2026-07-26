@@ -115,6 +115,18 @@ relations:
   rationale: The chapter contains this ADR.
   evidence: docs/arc42/doc-09000-architecture-decisions.adoc
   reviewed: false
+- type: documents
+  target: ADR-019-resource-efficiency
+  status: proposed
+  rationale: The chapter contains this ADR.
+  evidence: docs/arc42/doc-09000-architecture-decisions.adoc
+  reviewed: false
+- type: documents
+  target: ADR-020-selective-pipeline
+  status: proposed
+  rationale: The chapter contains this ADR.
+  evidence: docs/arc42/doc-09000-architecture-decisions.adoc
+  reviewed: false
 metadata_version: '1.0'
 ---
 [[architecture-decisions]]

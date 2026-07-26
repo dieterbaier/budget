@@ -55,6 +55,12 @@ relations:
   rationale: The chapter contains this constraint.
   evidence: docs/arc42/doc-02000-architecture-constraints.adoc
   reviewed: false
+- type: documents
+  target: CON-008-web-client-payload-budget
+  status: proposed
+  rationale: The chapter contains this constraint.
+  evidence: docs/arc42/doc-02000-architecture-constraints.adoc
+  reviewed: false
 metadata_version: '1.0'
 ---
 [[architecture-constraints]]

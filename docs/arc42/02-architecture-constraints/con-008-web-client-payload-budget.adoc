@@ -1,0 +1,62 @@
+---
+id: CON-008-web-client-payload-budget
+type: Constraint
+title: Web Client Payload Budget
+status: proposed
+owner: architecture
+created: '2026-07-26'
+updated: '2026-07-26'
+reviewed: false
+summary: The web build fails when the application bundle exceeds 75 kB gzipped.
+tags:
+- constraint
+- frontend
+- sustainability
+- fitness-function
+relations:
+- type: refines
+  target: ADR-019-resource-efficiency
+  status: proposed
+  rationale: The one part of that concern which is measurable today and therefore enforced rather than reviewed.
+  evidence: application/web/scripts/check-bundle-budget.mjs
+  reviewed: false
+- type: verifies
+  target: QS-003-web-client-payload
+  status: proposed
+  rationale: Fails the build when the bundle exceeds the budget that scenario states.
+  evidence: application/web/scripts/check-bundle-budget.mjs
+  reviewed: false
+metadata_version: '1.0'
+---
+[[con-008-web-client-payload-budget]]
+== CON-008: Web Client Payload Budget
+
+`npm run build` measures the gzipped application bundle after `vite build` and
+exits non-zero above the budget. That is the command the `web` job of
+`PR validation` already runs, so the budget gates integration without a separate
+step — the same arrangement as
+xref:con-006-backend-test-coverage[CON-006] and
+xref:con-005-feature-boundaries[CON-005].
+
+[cols="2,1,2", options="header"]
+|===
+| Measured | Budget | Enforces
+| `dist/assets/*.js`, gzipped | 75 kB | xref:qs-003-web-client-payload[QS-003]
+|===
+
+The service worker and Workbox runtime are printed but not budgeted; the reason
+is in QS-003. At the time of writing the application bundle was 61.2 kB — 82% of
+budget — and the PWA runtime 6.0 kB.
+
+The check was verified by lowering the budget to 50 kB and confirming the build
+failed with the measured size and the budget named, then restoring it. A budget
+that has never rejected anything is a number, not a check.
+
+Its failure message says what to do about it: make the bundle smaller, or change
+the budget *as a decision*, with the number that justifies it recorded in QS-003.
+Raising a budget to make a build pass is the failure mode this constraint exists
+to make visible, and no tool can prevent it — only make it deliberate.
+
+Checked by `application/web/scripts/check-bundle-budget.mjs`.
+
+include::generated/con-008-web-client-payload-budget-traceability.adoc[leveloffset=+1]

@@ -31,6 +31,11 @@ relations:
   status: accepted
   rationale: A query cache serves the already-loaded monthly figure immediately and refreshes it on invalidation, which is the confirm-and-update step the scenario measures.
   reviewed: true
+- type: addresses
+  target: DOC-01001-quality-goals
+  status: proposed
+  rationale: Generating only the utility CSS actually used took the stylesheet from 4.20 KB to 3.08 KB, serving QG-005.
+  reviewed: false
 metadata_version: '1.0'
 ---
 [[adr-014-frontend-architecture-style-and-stack]]

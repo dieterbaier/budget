@@ -1,0 +1,140 @@
+---
+id: ADR-020-selective-pipeline
+type: ADR
+title: Pipeline Runs Only What Changed
+status: proposed
+owner: architecture
+created: '2026-07-26'
+updated: '2026-07-26'
+reviewed: false
+summary: Pull request validation classifies the changed paths and runs only the affected jobs, aggregated behind one always-running check.
+derived_from:
+- type: prompt
+  description: The owner named the selective pipeline as an existing decision that pays into the resource-efficiency goal and asked for such decisions to be made explicit.
+tags:
+- decision
+- ops
+- sustainability
+relations:
+- type: addresses
+  target: DOC-01001-quality-goals
+  status: proposed
+  rationale: Not running a job is the cheapest way to not spend machine time, which is what QG-005 asks for.
+  reviewed: false
+- type: relates_to
+  target: ADR-019-resource-efficiency
+  status: proposed
+  rationale: One of the decisions that already served the resource-efficiency concern before it was recorded as a goal.
+  reviewed: false
+metadata_version: '1.0'
+---
+[[adr-020-selective-pipeline]]
+== ADR-020: Pipeline Runs Only What Changed
+
+=== Status
+
+Proposed. The arrangement has been in place since the pipeline was written; this
+record of it is AI-drafted and is not accepted architecture truth until the owner
+has reviewed the text.
+
+=== Decision
+
+`PR validation` classifies the files a pull request changed and runs only the
+jobs those paths affect: the documentation build, the backend tests, the web
+client's lint, tests and build. A change touching none of them runs none of them.
+
+Because conditional jobs report no useful result when skipped, a `PR validation`
+job always runs, depends on the others, and treats `skipped` as success. Branch
+protection requires that one aggregate check rather than the conditional ones.
+
+Two deliberate details:
+
+* A change to the workflow file itself re-validates *everything*, so a broken
+  path filter cannot quietly disable a job.
+* `skipped` counts as success only in the aggregate job. Any other result fails
+  it.
+
+=== Context
+
+This repository holds three independently built things — the architecture
+documentation, a Spring Boot backend and a React PWA — each with its own
+toolchain. The backend suite starts PostgreSQL through Testcontainers and is by
+far the slowest.
+
+Running all three on every pull request would make a README typo wait for a
+database to boot. The arrangement has been in place since the pipeline was
+written; it was never recorded as a decision, so nothing connected it to a goal
+and nothing stated the reasoning it rests on.
+
+=== Decision Drivers
+
+* Machine time not spent is the cheapest resource saving available, and CI is
+  where this project spends most of its machine time.
+* Feedback should arrive in proportion to the size of the change.
+* A conditional pipeline must not be able to silently skip a check that matters.
+
+=== Considered Options
+
+==== Path-filtered jobs behind an aggregate check (chosen)
+
+Each job runs when its own sources changed. The aggregate gives branch protection
+a stable check to require, which is the part that makes conditional jobs safe to
+use at all.
+
+The cost is that the filter is a second place where "what belongs to the backend"
+is written down, and it can drift from reality. The self-revalidation rule is the
+guard: changing the filter runs everything.
+
+==== Run everything on every pull request
+
+Simplest and impossible to get wrong. It spends a Testcontainers run on a
+documentation typo, every time, which is precisely the waste QG-005 names — and
+it makes the slowest job the floor on feedback for every change.
+
+==== Split into separate repositories
+
+Each toolchain gets its own pipeline and the question disappears. It also
+disperses the architecture documentation away from the code it describes, breaks
+the single-commit coupling that
+xref:adr-017-unversioned-api[ADR-017] and
+xref:adr-016-frontend-response-validation[ADR-016] both depend on, and would be a
+large change to avoid a small one.
+
+=== Pugh Matrix
+
+[cols="2,1,1,1", options="header"]
+|===
+| Criterion | Path filters | Run everything | Split repositories
+| Machine time spent | +1 | -1 | +1
+| Cannot silently skip a check | 0 | +1 | 0
+| Cost to adopt and carry | +1 | +1 | -1
+s| Sum s| 2 s| 1 s| 0
+|===
+
+=== Consequences
+
+==== Positive
+
+* A documentation change does not start PostgreSQL. In this session, pull
+  requests touching only `docs/` ran one job instead of four.
+* Feedback is proportionate to the change.
+* Branch protection has one stable required check.
+
+==== Negative
+
+* The path filter duplicates knowledge that also lives in the directory layout,
+  and a new top-level directory is invisible to it until someone adds it.
+* `CONTRIBUTING.md` is *not* in the documentation filter, so a change to it runs
+  no job at all. That is correct — it is not part of the rendered documentation —
+  but it surprises, and it is the kind of thing the filter makes easy to get
+  wrong in the other direction.
+
+==== Neutral or Follow-Up
+
+* The saving is real but modest in absolute terms, and this ADR does not claim
+  otherwise: see xref:adr-019-resource-efficiency[ADR-019] on where the larger
+  costs actually sit.
+* The workflow is `.github/workflows/pr-validation.yml`; `CONTRIBUTING.md`
+  documents which command each job runs.
+
+include::generated/adr-020-selective-pipeline-traceability.adoc[leveloffset=+1]

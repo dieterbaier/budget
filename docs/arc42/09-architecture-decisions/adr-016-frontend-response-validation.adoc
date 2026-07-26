@@ -26,6 +26,11 @@ relations:
   status: accepted
   rationale: The HTTP boundary this ADR decides is the client's is the same boundary that ADR establishes.
   reviewed: true
+- type: addresses
+  target: DOC-01001-quality-goals
+  status: proposed
+  rationale: Choosing Zod Mini over the full build cut 13.7 KB gzipped from the shipped bundle, which is QG-005 resource efficiency with a measurement behind it.
+  reviewed: false
 metadata_version: '1.0'
 ---
 [[adr-016-frontend-response-validation]]
