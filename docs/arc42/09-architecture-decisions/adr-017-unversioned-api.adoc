@@ -24,7 +24,7 @@ relations:
 - type: relates_to
   target: ADR-016-frontend-response-validation
   status: accepted
-  rationale: Response validation at the client's seam is what actually answers the stale-client problem that versioning was meant to address.
+  rationale: Response validation at the client's seam makes an incompatible payload fail immediately and diagnostically; it does not preserve compatibility, so the incompatibility window itself is accepted rather than solved.
   reviewed: true
 - type: relates_to
   target: ADR-005-web-client-as-pwa
@@ -85,8 +85,8 @@ implementing the other was an inconsistency, not two separate judgements.
 === Decision Drivers
 
 * A mechanism should be adopted for a problem this system actually has.
-* The stale-bundle window is real and needs *an* answer, whichever mechanism
-  provides it.
+* The stale-bundle window is real. Whether it is closed, mitigated, or
+  deliberately accepted must be stated rather than left implied.
 * Documentation that asserts an untrue property decays and misleads, which is
   the argument xref:adr-013-architecture-fitness-functions[ADR-013] was written
   from.
@@ -152,6 +152,17 @@ finding, and it is why the decision turns on the other two rows.
 
 ==== Negative
 
+* *A short incompatibility window remains, and is deliberately accepted.* Between
+  a backend deploy that changes a response and the installed PWA picking up the
+  new bundle, a cached client is talking to an API it was not built against. No
+  option considered here removes that: a version segment would only remove it by
+  continuing to serve the retired version, which this project would not do.
+  Response validation makes the failure immediate and diagnostic rather than
+  silent; it does not preserve compatibility, and restoring service still needs
+  the client to update or reload. For a private single-user application whose
+  operator is also the person deploying, that is an acceptable residual risk —
+  but it is accepted, not solved, and would need revisiting the moment someone
+  other than the deployer depends on the client staying up.
 * If a second client ever appears, adding a version segment then means changing
   this client too. That cost is small and stays small while both live in one
   repository.
@@ -161,11 +172,12 @@ finding, and it is why the decision turns on the other two rows.
 
 ==== Neutral or Follow-Up
 
-* The stale-bundle window is answered, but by
-  xref:adr-016-frontend-response-validation[ADR-016] rather than here. A cached
-  client meeting a changed payload fails at its HTTP seam, naming the field and
-  the expected and received types. That covers the case versioning misses
-  entirely: the same path returning the same field with a different type.
+* xref:adr-016-frontend-response-validation[ADR-016] changes how the window
+  *fails*, not how long it lasts. A cached client meeting a changed payload stops
+  at its HTTP seam with the field and the expected and received types named,
+  rather than propagating invalid data into the UI — and it catches what
+  versioning misses entirely, the same path returning the same field with a
+  different type. It does not keep the stale client working.
 * The conditions that would reverse this are structural, not a matter of scale: a
   second client, an external or third-party consumer, separate repositories, or
   client and server released independently of one another. The API growing
