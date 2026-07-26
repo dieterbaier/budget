@@ -77,8 +77,8 @@ It runs only the parts affected by the change (see
 | Changed | Runs |
 |---|---|
 | `docs/`, `metamodel/`, `templates/`, `scripts/`, `adapters/`, `build.sh`, `AGENTS.md`, `general-semantic-contracts.md` | `./build.sh all` — stale-adapter check, metamodel and relation validation, arc42 render |
-| `application/backend/` | `./gradlew test` |
-| `application/web/` | `npm run lint`, `npm test`, and the PWA build (`tsc --noEmit && vite build`) |
+| `application/backend/` | `./gradlew test` — tests, ArchUnit rules and the JaCoCo coverage thresholds |
+| `application/web/` | `npm run lint`, `npm test` (with coverage thresholds), and the PWA build (`tsc --noEmit && vite build`) |
 
 Run the relevant one locally before pushing; they are the same commands CI uses.
 
@@ -156,3 +156,32 @@ diff and has to survive review.
 Most violations appear in the editor while you type, which the backend's rules
 cannot do. Treat a clean editor as the fast check and `npm run lint` as the
 authoritative one.
+
+## Test coverage
+
+Both test commands also enforce coverage, so `./gradlew test` and `npm test` fail
+when it drops:
+
+| Scope | Line | Branch |
+|---|---|---|
+| Backend, overall | 80% | 80% |
+| Backend, `domain.*` | 95% | 90% |
+| Web client | 80% | 80% |
+
+The thresholds and the reasoning are `ADR-018`; the rule groups are `CON-006` and
+`CON-007`, which also list every excluded class and why. Nothing else is
+excluded — in particular not adapters, DTOs or entities.
+
+80% is a convention rather than a derived number, and the ADR says so. What it
+buys is that coverage cannot fall silently, not that 80 is correct. The domain
+carries the higher bar because the money rules are the product, and a single
+average would let a gap there be paid for by trivial coverage elsewhere.
+
+**Gherkin features are not the instrument.** Feature files describe behaviour;
+unit tests carry the branch coverage. Cucumber runs inside `./gradlew test` and so
+contributes coverage naturally, but no edge case needs a feature file, and nobody
+should write scenarios to reach a percentage.
+
+Coverage measures execution, not assertion: a test that calls a method and checks
+nothing raises the number. Treat the threshold as a floor under review, not a
+replacement for it.

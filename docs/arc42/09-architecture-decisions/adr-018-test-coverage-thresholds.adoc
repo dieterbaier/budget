@@ -1,0 +1,158 @@
+---
+id: ADR-018-test-coverage-thresholds
+type: ADR
+title: Test Coverage Thresholds
+status: proposed
+owner: architecture
+created: '2026-07-26'
+updated: '2026-07-26'
+reviewed: false
+summary: A global floor of 80% line and branch coverage on both applications, with 95/90 on the domain, enforced by the task that already gates integration.
+derived_from:
+- type: prompt
+  description: The owner asked for 80% line and branch coverage on both the backend and the frontend, and for the technique to be chosen for this project.
+tags:
+- decision
+- backend
+- frontend
+- testing
+relations:
+- type: addresses
+  target: DOC-01001-quality-goals
+  status: proposed
+  rationale: QG-003 requires the calculations to be covered by tests; this is what holds the code to it.
+  reviewed: false
+- type: relates_to
+  target: ADR-013-architecture-fitness-functions
+  status: proposed
+  rationale: Same enforcement pattern and the same gate — a check that needs a separate command is a check someone forgets to run.
+  reviewed: false
+- type: relates_to
+  target: ADR-004-backend-stack-and-architecture
+  status: proposed
+  rationale: The framework-free domain that ADR records is what makes a high bar there cheap to meet.
+  reviewed: false
+metadata_version: '1.0'
+---
+[[adr-018-test-coverage-thresholds]]
+== ADR-018: Test Coverage Thresholds
+
+=== Status
+
+Proposed. The thresholds were chosen by the owner on 2026-07-26; this record of
+them is AI-drafted and is not accepted architecture truth until the owner has
+reviewed the text.
+
+=== Decision
+
+Both applications carry a coverage floor of *80% line and 80% branch*, and the
+backend domain carries a higher bar of *95% line and 90% branch*.
+
+The checks run inside the task that already gates integration — `./gradlew test`
+and `npm test` — so no pull request can pass while coverage is below the floor,
+and nobody has to remember a second command.
+
+[cols="2,1,1,3", options="header"]
+|===
+| Scope | Line | Branch | Tool
+| Backend, overall | 80% | 80% | JaCoCo `jacocoTestCoverageVerification`
+| Backend, `domain.*` | 95% | 90% | the same, as a second rule
+| Frontend, overall | 80% | 80% | `@vitest/coverage-v8` thresholds
+|===
+
+=== Context
+
+Nothing measured coverage before this. xref:adr-013-architecture-fitness-functions[ADR-013]
+and xref:adr-015-frontend-architecture-fitness-functions[ADR-015] enforce
+*structure* — where code may live and what it may import — and say nothing about
+whether it is exercised. Meanwhile QG-003 already asserted that the calculations
+"must be correct and covered by tests", with nothing holding the code to it.
+
+The thresholds were set against a measurement rather than chosen first. Before
+this decision the backend stood at 83.9% line and 80.0% branch, and the frontend
+at 91.5% line and 72.7% branch. That is what makes 80 a *ratchet* rather than a
+project: the code was already there, and the rule stops it slipping back.
+
+=== Decision Drivers
+
+* QG-003 is currently an assertion with no mechanism behind it.
+* A number that is met on the day it is introduced is a floor; one that requires
+  a campaign to reach is a backlog item pretending to be a rule.
+* Coverage must not be reachable by writing tests that assert nothing, so where
+  the bar is high it should be where tests are cheap and meaningful.
+* The gate must be the command people already run.
+
+=== Considered Options
+
+==== A global floor plus a higher domain bar (chosen)
+
+80% is a convention, not a derived number, and this ADR does not pretend
+otherwise. Arguing 78 against 82 wastes the time that belongs to arguing about
+what is untested. What the floor buys is that coverage cannot silently fall.
+
+The domain bar is where the decision has actual content. A single global average
+lets a gap in the money rules be paid for by trivial coverage elsewhere — and the
+money rules are the product. They are also framework-free and constructible with
+`new`, which is exactly what xref:adr-004-backend-stack-and-architecture[ADR-004]
+bought, so a high bar there is cheap. It sat at 93.8% line before this change and
+reached 100% with one test class.
+
+==== A single global threshold on both applications
+
+Simpler to state and to configure. It fails the third driver: 80% overall is an
+average, and averages hide their distribution. The measurement showed exactly
+that shape — `domain.model` at 93.8% next to a local seeder at 0%.
+
+==== Coverage reported but not enforced
+
+Publish the number, let review judge it. No false precision and no gaming
+pressure. But an unenforced number is the situation this ADR exists to leave:
+QG-003 was already a statement nobody could fail.
+
+=== Pugh Matrix
+
+[cols="2,1,1,1", options="header"]
+|===
+| Criterion | Floor + domain bar | Single threshold | Report only
+| Protects the calculations specifically | +1 | 0 | -1
+| Met on the day it is introduced | +1 | +1 | +1
+| Resistant to being satisfied trivially | +1 | -1 | 0
+s| Sum s| 3 s| 0 s| 0
+|===
+
+=== Consequences
+
+==== Positive
+
+* QG-003 has a mechanism instead of an assertion.
+* Coverage cannot fall silently; a drop fails the same command that runs the
+  tests.
+* Setting the bar exposed real gaps rather than only producing a number: `Money`
+  had no test of its own despite being the value object every figure passes
+  through, `apiPost` was never exercised, and the client's "within income" path —
+  the non-overspending case — had never been asserted at all.
+
+==== Negative
+
+* Coverage measures execution, not assertion. A test that calls a method and
+  checks nothing raises the number, and no threshold detects that. The bar is a
+  floor under review, not a replacement for it.
+* The reported backend figure improved from 83.9% to 95.8% partly through
+  *exclusions* rather than tests. That is legitimate, but it is why every
+  exclusion is listed in xref:con-006-backend-test-coverage[CON-006] with a
+  reason: an unlisted exclusion turns the number into decoration.
+* Two thresholds are more configuration than one, and the domain rule has to be
+  revisited if the domain is ever split across more packages.
+
+==== Neutral or Follow-Up
+
+* *Gherkin's role is deliberately not coverage.* Feature files describe behaviour;
+  unit tests carry the branch coverage. Cucumber runs in the same JVM test task
+  and so contributes coverage naturally, which is fine — but nobody should write
+  scenarios to reach a percentage, and no edge case needs a feature file.
+* The frontend's remaining gap is concentrated in component branches rather than
+  in logic. It is above the floor and not worth chasing further by itself.
+* The rule groups are xref:con-006-backend-test-coverage[CON-006] and
+  xref:con-007-frontend-test-coverage[CON-007].
+
+include::generated/adr-018-test-coverage-thresholds-traceability.adoc[leveloffset=+1]
