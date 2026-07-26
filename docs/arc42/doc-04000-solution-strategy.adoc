@@ -79,6 +79,12 @@ relations:
   rationale: Lint rules are how the client strategy stays true as the client grows.
   evidence: docs/arc42/09-architecture-decisions/adr-015-frontend-architecture-fitness-functions.adoc
   reviewed: true
+- type: documents
+  target: ADR-016-frontend-response-validation
+  status: proposed
+  rationale: Validating responses at the client's HTTP seam is part of the client strategy.
+  evidence: docs/arc42/09-architecture-decisions/adr-016-frontend-response-validation.adoc
+  reviewed: false
 metadata_version: '1.0'
 ---
 [[solution-strategy]]
@@ -156,6 +162,18 @@ UnoCSS retires a single global stylesheet that every feature would otherwise
 have to edit. React Router waits for the second route, and axios waits for the
 authentication work that would give an interceptor something to do — a decision
 recorded now, taken later.
+
+Responses are validated where they arrive. Zod schemas sit in each feature's
+`api/` module and the client's HTTP helper parses with them instead of casting,
+so a backend change that alters a shape fails at the seam with the field named
+rather than surfacing as a rendering artefact; the TypeScript types are inferred
+from those schemas, so a response has one definition. Describing the datatypes
+once for both sides — generating a contract from the backend domain — was
+explored and set aside: a generated contract coordinates units with independent
+release cycles, and the client is built from the same commit as the server and
+ships with it. See xref:adr-016-frontend-response-validation[ADR-016], which
+records what that would have cost and the structural conditions that would make
+it right.
 
 This structure is checked the way the backend's is. ESLint with
 `eslint-plugin-boundaries` fails the build on a deep import into another
