@@ -42,9 +42,9 @@ the owner reviewed and confirmed this record of it on 2026-07-26.
 The boundary rules of
 xref:adr-014-frontend-architecture-style-and-stack[ADR-014] are enforced by
 ESLint, using `eslint-plugin-boundaries` for the element rules and
-`import/no-cycle` for the acyclic requirement. The boundaries rules carry
+`import-x/no-cycle` for the acyclic requirement. The boundaries rules carry
 messages naming the decision they protect, so a failing lint run reports which
-decision was broken. `import/no-cycle` takes no custom message and reports only
+decision was broken. `import-x/no-cycle` takes no custom message and reports only
 "Dependency cycle detected"; that is the one rule whose output does not name
 CON-005.
 
@@ -97,10 +97,10 @@ import remains writable; it just cannot merge.
 ==== dependency-cruiser
 
 A dedicated architecture checker rather than a lint plugin: stronger cycle
-analysis than `import/no-cycle`, rules in one readable config, and it can emit a
-module graph as SVG. That graph is a genuine draw in a repository that already
-renders its architecture documentation — it would slot into the building block
-view as a generated figure.
+analysis than the ESLint cycle rule, rules in one readable config, and it can
+emit a module graph as SVG. That graph is a genuine draw in a repository that
+already renders its architecture documentation — it would slot into the building
+block view as a generated figure.
 
 It is nevertheless a second toolchain and a second config beside the ESLint one
 the project still needs, stating rules that overlap. Two checkers with
@@ -146,17 +146,22 @@ s| Sum s| 2 s| 0 s| -1
   `CONTRIBUTING.md` checks table gains a command. Folding the lint into
   `npm test` would have avoided that, at the cost of hiding a gate inside a
   script named for something else.
-* `import/no-cycle` is the slow rule in any ESLint configuration. On this
-  codebase that is not measurable; on a much larger one it would be.
-* ESLint is held at 9 rather than 10, because `eslint-plugin-import` — the only
-  one of the plugins that provides a cycle check — still caps there. The pin is
-  a real cost: it is a major version of the linter that this project cannot take
-  until that plugin moves.
-* The cycle rule needs `settings['import/parsers']` to read TypeScript files.
+* The cycle rule is the slow one in any ESLint configuration. On this codebase
+  that is not measurable; on a much larger one it would be.
+* The cycle rule needs `settings['import-x/parsers']` to read TypeScript files.
   Without it the rule finds no exports in the modules it follows and reports no
   cycles at all — it passes because it is blind. That failure mode is silent by
   construction, which is the argument for testing a fitness function by breaking
   it on purpose rather than by observing it pass.
++
+That omission cost a decision before it was understood. `eslint-plugin-import-x`
+was the first choice; its cycle rule reported nothing, so it was replaced by
+`eslint-plugin-import`, which capped ESLint at 9 and pinned the project to a
+superseded major. The replacement then reported nothing either, and the missing
+parser setting turned out to be the cause both times. With it configured,
+`import-x` works, `eslint-plugin-import` is unnecessary, and the pin is gone.
+The lesson is not about either plugin: a tool that fails silently will be blamed
+for the wrong thing and the wrong remedy will be adopted.
 * An `eslint-disable` comment is easier to write than a rule exception, so the
   quiet-allowance risk ADR-013 records applies here with less friction.
 

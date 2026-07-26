@@ -64,13 +64,13 @@ molecule" is not.
 Each rule was verified by writing the violation it forbids and watching the
 build fail, not by observing a clean run. That distinction earned its keep: the
 cycle rule initially reported nothing at all, because without
-`settings['import/parsers']` it cannot parse the TypeScript modules it follows,
+`settings['import-x/parsers']` it cannot parse the TypeScript modules it follows,
 finds no exports in them, and concludes there is no cycle. It passed because it
 was blind. A fitness function that cannot see is worse than none, since it also
 removes the suspicion that would have caught the gap.
 
 The cycle rule is also the one whose message does not name this constraint —
-`import/no-cycle` accepts no custom message and reports only "Dependency cycle
+`import-x/no-cycle` accepts no custom message and reports only "Dependency cycle
 detected". The other three name CON-005 and ADR-014 in their output.
 
 Checked by `application/web/eslint.config.js`.

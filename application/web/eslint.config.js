@@ -4,15 +4,13 @@
 // it is what CON-005 points at as evidence, and a rule broken there fails the
 // `PR validation` check. See ADR-015 for why ESLint carries these rules rather
 // than a dedicated architecture checker.
-//
-// ESLint is pinned to 9 rather than 10 on purpose: eslint-plugin-import, which
-// provides the cycle check, still caps at 9. Revisit when it moves.
 
 import js from '@eslint/js'
 import globals from 'globals'
 import tseslint from 'typescript-eslint'
 import boundaries from 'eslint-plugin-boundaries'
-import importPlugin from 'eslint-plugin-import'
+import importX from 'eslint-plugin-import-x'
+import { createTypeScriptImportResolver } from 'eslint-import-resolver-typescript'
 import reactHooks from 'eslint-plugin-react-hooks'
 
 // The app shell and a feature see the same things: other features through their
@@ -52,15 +50,22 @@ export default tseslint.config(
   // ---------------------------------------------------------------------
   {
     files: ['src/**/*.{ts,tsx}'],
-    plugins: { boundaries, import: importPlugin },
+    plugins: { boundaries, 'import-x': importX },
     settings: {
-      // `import/parsers` is load-bearing, not boilerplate. Without it
-      // `import/no-cycle` cannot parse the .ts files it follows, finds no
+      // `import-x/parsers` is load-bearing, not boilerplate. Without it
+      // `import-x/no-cycle` cannot parse the .ts files it follows, finds no
       // exports, and so reports no cycles -- it passes because it is blind
       // rather than because the code is acyclic. Verified by probe: a
       // deliberate two-file cycle goes undetected without this line and is
       // reported with it.
-      'import/parsers': { '@typescript-eslint/parser': ['.ts', '.tsx'] },
+      //
+      // This was originally missed, which made import-x look broken and cost it
+      // the job; the same omission then made eslint-plugin-import equally blind.
+      // One missing setting, diagnosed twice.
+      'import-x/parsers': { '@typescript-eslint/parser': ['.ts', '.tsx'] },
+      'import-x/resolver-next': [createTypeScriptImportResolver({ project: './tsconfig.json' })],
+
+      // boundaries reads the legacy `import/resolver` key, not import-x's.
       'import/resolver': { typescript: { project: './tsconfig.json' } },
 
       // Order matters: the first matching descriptor wins, so shared/ui is
@@ -126,7 +131,7 @@ export default tseslint.config(
 
       // The feature graph is acyclic. This rule takes no custom message, so
       // unlike the others it does not name CON-005 in its output.
-      'import/no-cycle': ['error', { maxDepth: Infinity, ignoreExternal: true }],
+      'import-x/no-cycle': ['error', { maxDepth: Infinity, ignoreExternal: true }],
     },
   },
 
