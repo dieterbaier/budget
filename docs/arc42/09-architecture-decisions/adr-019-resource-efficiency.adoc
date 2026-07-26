@@ -1,0 +1,154 @@
+---
+id: ADR-019-resource-efficiency
+type: ADR
+title: Resource Efficiency As A Weighed Concern
+status: proposed
+owner: architecture
+created: '2026-07-26'
+updated: '2026-07-26'
+reviewed: false
+summary: Resource cost is weighed with a number when decisions are made, enforced where it can be measured, and never allowed to outrank correctness or privacy.
+derived_from:
+- type: prompt
+  description: The owner asked for GreenIT awareness to be enforced as a quality goal, and for decisions that serve it to be made explicit.
+tags:
+- decision
+- architecture
+- sustainability
+relations:
+- type: addresses
+  target: DOC-01001-quality-goals
+  status: proposed
+  rationale: Gives QG-005 a working definition, an enforcement point, and a precedence rule.
+  reviewed: false
+- type: relates_to
+  target: QS-003-web-client-payload
+  status: proposed
+  rationale: The bundle budget is the one part of this concern that is currently measurable and enforced.
+  reviewed: false
+metadata_version: '1.0'
+---
+[[adr-019-resource-efficiency]]
+== ADR-019: Resource Efficiency As A Weighed Concern
+
+=== Status
+
+Proposed. The goal was set by the owner on 2026-07-26; this record of it is
+AI-drafted and is not accepted architecture truth until the owner has reviewed
+the text.
+
+=== Decision
+
+Resource cost — bytes shipped, requests made, machine time spent — is weighed
+openly when a decision is made, under two rules that exist to stop the goal
+becoming decoration:
+
+. *Every claim carries a number.* "Feels lighter" is not a rationale. A decision
+  that cites resource cost states the measurement that supports it, as
+  xref:adr-016-frontend-response-validation[ADR-016] does with 13.7 kB.
+. *It is a tiebreaker, not an override.* QG-005 never outranks QG-001 to QG-004.
+  It decides between options that are otherwise comparable; it does not justify a
+  correctness gap, a privacy weakening, or fewer tests.
+
+Where the cost is measurable it is enforced rather than reviewed: the web
+client's bundle has a budget (xref:qs-003-web-client-payload[QS-003], checked by
+xref:con-008-web-client-payload-budget[CON-008]). Everything else is a review
+concern, and this ADR is honest below about how much that leaves.
+
+=== Context
+
+Several decisions already served this goal before it was a goal, which is the
+evidence that it is real rather than retrofitted:
+
+[cols="2,2,1", options="header"]
+|===
+| Decision | Effect | Where
+| Zod Mini rather than the full build | −13.7 kB gzipped | xref:adr-016-frontend-response-validation[ADR-016]
+| Utility CSS generated on demand | CSS 4.20 → 3.08 kB | xref:adr-014-frontend-architecture-style-and-stack[ADR-014]
+| No automatic refetch on focus, no retries | fewer requests, less radio time on a phone | `app/queryClient.ts`
+| Precached bundle | fetched once rather than per visit | xref:adr-005-web-client-as-pwa[ADR-005]
+| Pipeline runs only what changed | a README typo starts no Testcontainers | xref:adr-020-selective-pipeline[ADR-020]
+|===
+
+None of those was made *for* this goal. Recording the goal is what makes the next
+one deliberate rather than lucky.
+
+=== Decision Drivers
+
+* A goal nothing measures becomes a label applied after the fact to whatever was
+  already decided.
+* Sustainability arguments are unusually easy to make and unusually hard to
+  check, so the burden of proof has to sit with the claim.
+* An unbounded efficiency goal can be turned against correctness — fewer tests,
+  less validation — which would be a worse outcome than not having the goal.
+
+=== Considered Options
+
+==== Weighed, with one enforced budget (chosen)
+
+Enforces the part that can be measured today and is explicit that the rest is
+review. It costs one build check and one number to maintain.
+
+Its weakness is stated plainly rather than hidden: the enforced part is the
+smallest part of the actual footprint. See the consequences.
+
+==== A broader set of enforced budgets
+
+Request counts, build minutes, image sizes, a carbon estimate. More complete in
+principle. In practice each needs a measurement this project cannot take
+honestly — carbon per request depends on a hosting decision not yet made
+(issue #19) — and a budget derived from a guess is worse than no budget, because
+it looks like evidence.
+
+==== A goal without enforcement
+
+Record QG-005 and rely on review. Cheapest, and it is what most projects do. It
+is also exactly the failure this repository keeps writing decisions against: an
+assertion nothing can fail. QG-003 sat unenforced until
+xref:adr-018-test-coverage-thresholds[ADR-018], and the day it was enforced it
+found that `Money` had no test.
+
+=== Pugh Matrix
+
+[cols="2,1,1,1", options="header"]
+|===
+| Criterion | Weighed + one budget | Broad budgets | Goal only
+| Resistant to becoming decoration | +1 | +1 | -1
+| Honest about what is measured | +1 | -1 | 0
+| Cost to build and carry | 0 | -1 | +1
+s| Sum s| 2 s| -1 s| 0
+|===
+
+=== Consequences
+
+==== Positive
+
+* A resource claim now has to bring a measurement, which makes it reviewable.
+* The bundle budget makes the Zod Mini decision permanent: a change that gives
+  the saving back fails the build instead of passing unnoticed.
+* Existing decisions that serve the goal are linked to it, so the goal is
+  traceable to evidence rather than asserted.
+
+==== Negative
+
+* *The enforced part is not the large part.* For a self-hosted single-user
+  application the dominant energy cost is almost certainly the always-on backend
+  and its database — one user, roughly one page load a day, against a machine
+  running continuously. A 75 kB budget is a real but small lever next to that.
+  Issue #19 is therefore the more consequential resource decision in the backlog
+  than anything in the client, and it should weigh scale-to-zero against
+  always-on. Recording that here stops the goal being quietly frontend-flavoured.
+* Bundle size is a proxy. It correlates with parse time, memory and transfer
+  energy, but it is not any of them, and no threshold on it makes the application
+  efficient.
+* A tiebreaker rule is easy to state and easy to erode. The precedence exists so
+  that "it is smaller" can be answered with "it is also wrong".
+
+==== Neutral or Follow-Up
+
+* Backend resource cost is not budgeted at all. Nothing sensible can be measured
+  until the deployment target exists (#19); until then it stays a review concern.
+* The check reports the PWA runtime's size without budgeting it, so a jump in
+  tooling output is visible without being a gate.
+
+include::generated/adr-019-resource-efficiency-traceability.adoc[leveloffset=+1]

@@ -185,3 +185,27 @@ should write scenarios to reach a percentage.
 Coverage measures execution, not assertion: a test that calls a method and checks
 nothing raises the number. Treat the threshold as a floor under review, not a
 replacement for it.
+
+## Bundle budget
+
+`npm run build` also fails when the web client's application bundle exceeds
+**75 kB gzipped**. It prints where it stands on every build:
+
+```
+Bundle budget (CON-008)
+  application  61.2 kB gzipped of 75.0 kB  (82% of budget)
+  pwa runtime  6.0 kB gzipped  (reported, not budgeted)
+```
+
+The budget covers `dist/assets/*.js` — the bundle this project's own decisions
+move. The service worker and Workbox runtime are printed but not budgeted, since
+they are the PWA plugin's output rather than a consequence of how the application
+is written.
+
+The scenario is `QS-003`, the check is `CON-008`, and the goal behind it is
+`QG-005` resource efficiency (`ADR-019`).
+
+**Raising the budget is a decision, not a fix.** If a change genuinely needs more,
+record the new number and its justification in `QS-003`. Raising it to make a
+build pass is the failure mode the budget exists to make visible, and no tool can
+prevent that — only make it deliberate.

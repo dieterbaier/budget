@@ -1,0 +1,62 @@
+---
+id: QS-003-web-client-payload
+type: QualityScenario
+title: Web Client Payload Budget
+status: proposed
+owner: architecture
+created: '2026-07-26'
+updated: '2026-07-26'
+reviewed: false
+summary: The web client's application bundle stays under 75 kB gzipped, checked by the build.
+tags:
+- quality
+- frontend
+- sustainability
+relations:
+- type: refines
+  target: DOC-01001-quality-goals
+  status: proposed
+  rationale: The scenario makes QG-005 measurable for the one resource this project can measure today.
+  reviewed: false
+metadata_version: '1.0'
+---
+[[qs-003-web-client-payload]]
+== QS-003: Web Client Payload Budget
+
+=== Scenario
+
+[cols="1,3", options="header"]
+|===
+| Element | Description
+| Source | A developer adding a feature or a dependency to the web client.
+| Stimulus | The change increases the JavaScript the browser must download.
+| Artifact | The web client's application bundle in `dist/assets`.
+| Environment | A production build, `npm run build`, as run locally and by the `web` job of PR validation.
+| Response | The build reports the bundle's gzipped size against the budget, and fails when it is exceeded.
+| Response Measure | The application bundle stays at or below *75 kB gzipped*. It was 61.2 kB when this scenario was written, so the budget carries roughly 22% headroom.
+|===
+
+=== What the budget covers, and what it does not
+
+The measure is the *application* bundle. That is what this project's own
+decisions move: xref:adr-016-frontend-response-validation[ADR-016] chose Zod Mini
+over the full build and saved 13.7 kB of it.
+
+The service worker and the Workbox runtime that `vite-plugin-pwa` generates — 6.0
+kB gzipped together — are deliberately outside the budget. They are the tooling's
+output rather than a consequence of how this application is written, and
+including them would make the number move on a plugin upgrade for reasons no
+feature change caused. The build prints them anyway, so a jump is visible rather
+than silent.
+
+=== On the number
+
+75 kB is a ceiling with headroom, not a target to grow into. It is chosen so that
+a deliberate addition passes and an unnoticed one does not — a budget with no
+headroom fails on the next legitimate feature and gets raised reflexively, which
+is how a budget stops meaning anything.
+
+Raising it is allowed and is a decision: it needs the number that justifies it,
+recorded here. Raising it to make a build pass is not.
+
+include::generated/qs-003-web-client-payload-traceability.adoc[leveloffset=+1]

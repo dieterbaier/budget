@@ -5,7 +5,7 @@ title: Quality Goals
 status: reviewed
 owner: architecture
 created: '2026-07-03'
-updated: '2026-07-24'
+updated: '2026-07-26'
 reviewed: true
 generated: false
 summary: Top quality goals for the private single-user Budget architecture.
@@ -36,4 +36,14 @@ metadata_version: '1.0'
 | QG-004
 | Usability
 | Recording a transaction from a bank statement must be fast enough to become a habit.
+
+| QG-005
+| Resource efficiency
+| The application should not spend bytes, requests, or machine time it does not need. Shipping less and computing less is a design choice, not a side effect, and it is weighed openly when decisions are made.
 |===
+
+QG-005 is deliberately last, and it is a *tiebreaker rather than an override*: it
+must never outrank QG-001 to QG-004. A smaller bundle is not worth a correctness
+gap, and no resource argument justifies weakening privacy or dropping tests. See
+xref:adr-019-resource-efficiency[ADR-019] for how it is weighed, what is enforced,
+and the honest limit of what it currently measures.
