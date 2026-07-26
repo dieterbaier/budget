@@ -43,9 +43,11 @@ owner has reviewed the text.
 The boundary rules of
 xref:adr-014-frontend-architecture-style-and-stack[ADR-014] are enforced by
 ESLint, using `eslint-plugin-boundaries` for the element rules and
-`import/no-cycle` for the acyclic requirement. Each rule carries a message
-naming the decision it protects, so a failing lint run reports which decision
-was broken.
+`import/no-cycle` for the acyclic requirement. The boundaries rules carry
+messages naming the decision they protect, so a failing lint run reports which
+decision was broken. `import/no-cycle` takes no custom message and reports only
+"Dependency cycle detected"; that is the one rule whose output does not name
+CON-005.
 
 `npm run lint` runs them. A lint step is added to the `web` job of
 `.github/workflows/pr-validation.yml`, beside `npm test` and the PWA build, so
@@ -147,6 +149,15 @@ s| Sum s| 2 s| 0 s| -1
   script named for something else.
 * `import/no-cycle` is the slow rule in any ESLint configuration. On this
   codebase that is not measurable; on a much larger one it would be.
+* ESLint is held at 9 rather than 10, because `eslint-plugin-import` — the only
+  one of the plugins that provides a cycle check — still caps there. The pin is
+  a real cost: it is a major version of the linter that this project cannot take
+  until that plugin moves.
+* The cycle rule needs `settings['import/parsers']` to read TypeScript files.
+  Without it the rule finds no exports in the modules it follows and reports no
+  cycles at all — it passes because it is blind. That failure mode is silent by
+  construction, which is the argument for testing a fitness function by breaking
+  it on purpose rather than by observing it pass.
 * An `eslint-disable` comment is easier to write than a rule exception, so the
   quiet-allowance risk ADR-013 records applies here with less friction.
 
