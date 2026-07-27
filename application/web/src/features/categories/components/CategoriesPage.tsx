@@ -54,6 +54,14 @@ function GroupRow({ name }: { name: string }) {
   const rename = useRenameCategoryGroup()
   const remove = useDeleteCategoryGroup()
 
+  // The draft is seeded from the current value every time editing opens, rather
+  // than once at mount. That makes Cancel actually discard -- reopening shows the
+  // stored value, not the abandoned edit.
+  function startEditing() {
+    setDraft(name)
+    setEditing(true)
+  }
+
   // The message a refused deletion carries is the point of showing it: it names
   // how many categories are still in the group, which is what the owner has to
   // move (ADR-021).
@@ -91,7 +99,7 @@ function GroupRow({ name }: { name: string }) {
         <div className="flex items-center justify-between gap-2">
           <span>{name}</span>
           <span className="flex gap-3 text-sm">
-            <button type="button" className="text-muted" onClick={() => setEditing(true)}>
+            <button type="button" className="text-muted" onClick={() => startEditing()}>
               Rename
             </button>
             <button
@@ -135,6 +143,17 @@ function CategoryRow({ category, groups }: { category: Category; groups: string[
   const remove = useDeleteCategory()
 
   const failure = update.error ?? remove.error
+
+  // Seeding the draft once at mount was a bug, not just untidy. This row's key is
+  // the category name, so renaming its *group* leaves the component mounted with
+  // a new `category` prop and a stale `draft.group`: the next save would submit a
+  // group that no longer exists, and the select would hold a value absent from
+  // its own options. Re-seeding when editing opens fixes that, and makes Cancel
+  // discard as well.
+  function startEditing() {
+    setDraft(category)
+    setEditing(true)
+  }
 
   return (
     <li className="border-b border-hairline py-2">
@@ -194,7 +213,7 @@ function CategoryRow({ category, groups }: { category: Category; groups: string[
               {category.group}
               {category.pensionRelevant ? '' : ' · not pension relevant'}
             </span>
-            <button type="button" className="text-sm text-muted" onClick={() => setEditing(true)}>
+            <button type="button" className="text-sm text-muted" onClick={() => startEditing()}>
               Edit
             </button>
             <button
