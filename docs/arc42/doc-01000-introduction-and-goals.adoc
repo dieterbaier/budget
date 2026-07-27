@@ -5,7 +5,7 @@ title: Introduction And Goals
 status: reviewed
 owner: product owner
 created: '2026-07-03'
-updated: '2026-07-24'
+updated: '2026-07-27'
 reviewed: true
 generated: false
 summary: Product purpose, top quality goals, and stakeholders for the private single-user Budget app.
@@ -42,5 +42,15 @@ small set of money questions: current monthly spending versus average income,
 spend per group, how much must sit on each account (including the reserve for
 non-monthly fixed costs), the cash runway to month end, and a pension
 projection. There is one user, no bank integration, and no sharing.
+
+The project carries a second goal beside that product: it is a working proof of
+the architecture-knowledge-toolkit, run by the toolkit's own method on real work
+rather than on an example. This is recorded here because it changes how the rest
+of these chapters should be read — the recorded decisions, constraints and
+fitness functions are denser than a single-user tracker alone would warrant, and
+that density is deliberate. It is bounded by a simple question asked of each new
+artifact: without it, would a later reader probably decide wrongly or miss an
+assumption? See xref:vision-mission[the vision and mission] for both missions and
+xref:stakeholders[] for the concerns behind them.
 
 include::generated/doc-01000-introduction-and-goals-includes.adoc[]
