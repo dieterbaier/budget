@@ -5,7 +5,7 @@ title: Frontend Architecture Style And Stack
 status: accepted
 owner: architecture
 created: '2026-07-25'
-updated: '2026-07-26'
+updated: '2026-07-27'
 reviewed: true
 summary: The web client is organized feature-first, features are reached through a public API, and each library is adopted against a named trigger.
 derived_from:
@@ -34,7 +34,7 @@ relations:
 - type: addresses
   target: DOC-01001-quality-goals
   status: proposed
-  rationale: Generating only the utility CSS actually used took the stylesheet from 4.20 KB to 3.08 KB, serving QG-005.
+  rationale: 'Measured: generating only the utility CSS actually used took the stylesheet from 4.20 KB to 3.08 KB, serving QG-005.'
   reviewed: false
 metadata_version: '1.0'
 ---

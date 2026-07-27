@@ -38,12 +38,40 @@ metadata_version: '1.0'
 | Recording a transaction from a bank statement must be fast enough to become a habit.
 
 | QG-005
-| Resource efficiency
-| The application should not spend bytes, requests, or machine time it does not need. Shipping less and computing less is a design choice, not a side effect, and it is weighed openly when decisions are made.
+| Resource frugality
+| The application avoids unnecessary transfer, computation, storage, requests, and infrastructure capacity. When otherwise suitable options are comparable, the option requiring fewer resources is preferred.
 |===
 
-QG-005 is deliberately last, and it is a *tiebreaker rather than an override*: it
-must never outrank QG-001 to QG-004. A smaller bundle is not worth a correctness
-gap, and no resource argument justifies weakening privacy or dropping tests. See
-xref:adr-019-resource-efficiency[ADR-019] for how it is weighed, what is enforced,
-and the honest limit of what it currently measures.
+QG-005 is deliberately named *frugality* rather than sustainability or GreenIT.
+The project can state that shipping 13.7 kB less JavaScript means less to
+transfer, store, decompress and parse. It cannot yet state how many watt-hours or
+grams of CO₂ that saves, or whether the saving is material beside hosting and
+end-user-device costs. The measured fact and the environmental hypothesis are
+kept distinct, so the goal does not claim an impact nobody here has measured.
+
+=== Resolving a conflict between goals
+
+Quality goals are not interchangeable points in a weighted score. A reviewer
+facing a genuine conflict applies this rule, in order:
+
+. *Required quality scenarios are non-compensable minimums.* An option that
+  violates a required scenario for correctness, privacy, security, or fitness for
+  purpose is not acceptable, whatever it saves.
+. *Compare only the acceptable options.* For each, state which goals improve,
+  which regress, by how much, and at what evidence level.
+. *Prefer a Pareto improvement.* An option no worse on the required goals and
+  cheaper in resources wins outright.
+. *Resolve a real trade-off against the concrete scenario*, not an abstract
+  score: whose outcome changes, under what conditions, and whether that
+  regression is accepted.
+. *Apply QG-005 when the options are otherwise comparable.* The frugal option
+  wins the tie.
+. *Record the assumptions and a revisit trigger.* If the decision rests on a
+  hypothesis, state what measurement or structural change would reopen it.
+
+The rule exists to prevent one specific failure: a weighted score in which enough
+bundle-size points mathematically pay for a privacy or correctness defect. Saving
+resources never buys a regression in something the product owes its user.
+
+See xref:adr-019-resource-efficiency[ADR-019] for the evidence levels a claim
+must declare, what is enforced today, and the honest limit of what it measures.

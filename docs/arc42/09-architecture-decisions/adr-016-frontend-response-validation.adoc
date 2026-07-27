@@ -5,7 +5,7 @@ title: Frontend Response Validation With Zod
 status: accepted
 owner: architecture
 created: '2026-07-26'
-updated: '2026-07-26'
+updated: '2026-07-27'
 reviewed: true
 summary: Zod schemas validate API responses at the client's HTTP seam and the TypeScript types are inferred from them; a shared backend/frontend contract was considered and rejected.
 derived_from:
@@ -29,7 +29,7 @@ relations:
 - type: addresses
   target: DOC-01001-quality-goals
   status: proposed
-  rationale: Choosing Zod Mini over the full build cut 13.7 KB gzipped from the shipped bundle, which is QG-005 resource efficiency with a measurement behind it.
+  rationale: 'Measured: choosing Zod Mini over the full build ships 13.7 KB gzipped less, which serves QG-005 resource frugality.'
   reviewed: false
 metadata_version: '1.0'
 ---
