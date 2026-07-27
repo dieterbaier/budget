@@ -12,20 +12,25 @@ The project has a second purpose beside the product, and it is worth stating up
 front because it explains the shape of this repository.
 
 1. **Build the budget application** described above — the functional goal.
-2. **Prove the [architecture-knowledge-toolkit](https://github.com/docs-as-code-toolkit/architecture-knowledge-toolkit)
-   on real work** — whether the method holds up outside its own examples, and how
-   it actually helps day-to-day architectural work.
+2. **Validate the [architecture-knowledge-toolkit](https://github.com/docs-as-code-toolkit/architecture-knowledge-toolkit)
+   through real work** — determine where the method helps, where it gets in the
+   way, and which gaps should be corrected upstream.
 
-The toolkit was not merely used to bootstrap this repository; exercising it is an
-ongoing objective. That is why a single-user budget tracker carries more recorded
-decisions, constraints and fitness functions than its size alone would justify:
-the density is how the method's strengths and weaknesses surface.
+*Validate*, not *prove*: a testbed that can only confirm is worthless. This one
+has already shown the method missing a generator behaviour, permitting overclaims,
+passing checks that were blind, and lacking a proportionality rule for artifacts.
+Those findings are the return on the second goal, not the artifact count.
 
-It is not a licence for ceremony. Artifact work earns its place when it produces
-a *finding* — something learned about the method, or a decision a later reader
-would otherwise get wrong. Findings flow back upstream as issues against the
-toolkit, and the same question is asked of every new artifact: would someone
-without it probably decide wrongly or miss an assumption?
+**The two goals can be in tension, and the product goal wins.** Exercising the
+toolkit adds documentation and review work; the application benefits from
+proportionate effort and delivery. Product needs and architectural
+proportionality govern the application. The testbed observes and reports what
+real product work reveals — it must not add architecture artifacts, constraints,
+dependencies or implementation complexity solely to exercise the method.
+
+The operational rule is one question, asked of every artifact: without it, would a
+later reader probably decide wrongly or miss an important assumption? A finding
+can justify upstream toolkit work; artifact count cannot justify anything.
 
 This repository holds architecture documentation under `docs/` and the
 application under `application/`.

@@ -17,14 +17,32 @@ questions:
 * Am I on track for retirement given my current pot, costs, inflation, and
   expected return?
 
-Second mission: serve as a working proof of the architecture-knowledge-toolkit.
-The project is deliberately run by the toolkit's own method — its skills,
-contracts, metamodel and templates — on real work rather than on an example, so
-that whether the method holds up, and how it helps day-to-day architectural work,
-can be answered from evidence.
+Second mission: serve as a validation testbed for the
+architecture-knowledge-toolkit. The project is deliberately run by the toolkit's
+own method — its skills, contracts, metamodel and templates — on real work rather
+than on an example, to determine where the method helps, where it gets in the
+way, and which gaps should be corrected upstream.
 
-The two missions are not in tension, but they are not the same either. The
-product mission is finished when the owner stops using Notion. The toolkit
-mission is served by *findings*: a place the method helped, a place it got in the
-way, a gap worth fixing upstream. Artifact work that produces no finding and
-answers no question a later reader would get wrong serves neither mission.
+The word is *validate*, not *prove*. A testbed that can only confirm tells you
+nothing; the useful outcomes so far have all been negative ones — a generator
+behaviour the metamodel lacked, an overclaim about what a budget protected,
+checks that passed while blind, and the absence of a rule for when an artifact is
+not worth creating.
+
+=== When the two missions disagree
+
+They can disagree, and the resolution is not symmetric. Exercising the toolkit
+adds documentation and review work; the product benefits from proportionate
+effort and delivery.
+
+*Product needs and architectural proportionality govern the application.* The
+testbed observes and reports what real product work reveals. It must not add
+architecture artifacts, constraints, dependencies or implementation complexity
+solely to exercise the method.
+
+The two also end differently. The product mission finishes when the owner stops
+using Notion; the toolkit mission has no completion condition, which is precisely
+why it needs a bound rather than a completion date. The bound is one question,
+asked of every artifact: without it, would a later reader probably decide wrongly
+or miss an important assumption? A finding can justify upstream toolkit work.
+Artifact count justifies nothing.
