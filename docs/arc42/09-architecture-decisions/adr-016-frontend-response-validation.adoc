@@ -28,9 +28,9 @@ relations:
   reviewed: true
 - type: addresses
   target: DOC-01001-quality-goals
-  status: proposed
+  status: accepted
   rationale: 'Measured: choosing Zod Mini over the full build ships 13.7 KB gzipped less, which serves QG-005 resource frugality.'
-  reviewed: false
+  reviewed: true
 metadata_version: '1.0'
 ---
 [[adr-016-frontend-response-validation]]

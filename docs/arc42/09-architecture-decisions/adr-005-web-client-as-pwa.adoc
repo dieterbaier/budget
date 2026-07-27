@@ -24,9 +24,9 @@ relations:
   reviewed: true
 - type: addresses
   target: DOC-01001-quality-goals
-  status: proposed
+  status: accepted
   rationale: 'Directional: precaching means the bundle is fetched once rather than on every visit, which is fewer transfers though the saving is not quantified.'
-  reviewed: false
+  reviewed: true
 metadata_version: '1.0'
 ---
 [[adr-005-web-client-as-pwa]]

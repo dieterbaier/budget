@@ -2,11 +2,11 @@
 id: ADR-020-selective-pipeline
 type: ADR
 title: Pipeline Runs Only What Changed
-status: proposed
+status: accepted
 owner: architecture
 created: '2026-07-26'
 updated: '2026-07-27'
-reviewed: false
+reviewed: true
 summary: Pull request validation classifies the changed paths and runs only the affected jobs, aggregated behind one always-running check.
 derived_from:
 - type: prompt
@@ -18,14 +18,14 @@ tags:
 relations:
 - type: addresses
   target: DOC-01001-quality-goals
-  status: proposed
+  status: accepted
   rationale: 'Directional: not running a job spends no machine time, though the saving in absolute terms is not quantified.'
-  reviewed: false
+  reviewed: true
 - type: relates_to
   target: ADR-019-resource-efficiency
-  status: proposed
+  status: accepted
   rationale: One of the decisions that already served the resource-efficiency concern before it was recorded as a goal.
-  reviewed: false
+  reviewed: true
 metadata_version: '1.0'
 ---
 [[adr-020-selective-pipeline]]
@@ -33,9 +33,8 @@ metadata_version: '1.0'
 
 === Status
 
-Proposed. The arrangement has been in place since the pipeline was written; this
-record of it is AI-drafted and is not accepted architecture truth until the owner
-has reviewed the text.
+Accepted. The arrangement has been in place since the pipeline was written; this
+record of it was reviewed and confirmed by the owner on 2026-07-27.
 
 === Decision
 

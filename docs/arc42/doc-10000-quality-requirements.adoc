@@ -5,7 +5,7 @@ title: Quality Requirements
 status: reviewed
 owner: architecture
 created: '2026-07-03'
-updated: '2026-07-26'
+updated: '2026-07-27'
 reviewed: true
 generated: false
 summary: Quality tree and quality scenarios.
@@ -27,10 +27,10 @@ relations:
   reviewed: true
 - type: documents
   target: QS-003-web-client-payload
-  status: proposed
+  status: accepted
   rationale: The chapter contains this quality scenario.
   evidence: docs/arc42/doc-10000-quality-requirements.adoc
-  reviewed: false
+  reviewed: true
 metadata_version: '1.0'
 ---
 [[quality-requirements]]
