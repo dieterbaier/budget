@@ -1,0 +1,79 @@
+== Day 3 — 26 July 2026: five green lights that were not
+
+The heaviest day for false confidence.
+
+=== The blind cycle rule
+
+`import/no-cycle` was configured and reporting nothing. It was reporting nothing
+because `settings['import/parsers']` was missing, so it could not parse the
+`.ts` files it followed, found no exports, and concluded there were no cycles.
+
+It passed because it was *blind*, not because the code was acyclic.
+
+The expensive part: this same omission had already made me blame
+`eslint-plugin-import-x` and rip it out for a different plugin, which was then
+equally blind for the same reason. One missing setting, diagnosed wrong twice —
+and the second diagnosis was *more* confident than the first, because "we
+already tried another plugin" felt like evidence. It was not evidence. It was
+the same mistake wearing a second coat.
+
+The comment in `eslint.config.js` is long on purpose. It is the note I wish had
+been there.
+
+Verified now by a deliberate two-file cycle, which goes undetected without the
+setting and is reported with it.
+
+=== The override that broke what it pinned
+
+A `minimatch` override cleared the last `npm audit` advisory and broke the
+library: `expand is not a function`. `npm audit` was satisfied; the code was not.
+
+Fixed by scoping the override to `filelist.minimatch`, and — on review
+insistence — covered by a regression test. That insistence was right: "we fixed
+it once" is not a guard, and an override is exactly the kind of change that gets
+re-broken by a future dependency bump nobody connects to it.
+
+=== `${PIPESTATUS[0]}` is bash, not zsh
+
+My lint checks were reading an empty variable and printing success. Lint had
+been failing.
+
+Small, embarrassing, and the most transferable of the seven: the check was not
+checking the tool, it was checking my shell knowledge. Every check since reads
+the tool's own exit code directly.
+
+=== Zod, and a budget that did not bite
+
+Zod Mini plus `zod/locales` replaced full Zod for response validation (ADR-016).
+The locale import matters more than it looks: without it, error messages
+silently fall back to English, which is a regression that nothing in the build
+would have reported. It is the second entry in the through-line list and it was
+caught only because the fallback was looked for on purpose.
+
+Coverage thresholds went in (ADR-018, CON-006, CON-007): 80/80 globally, with
+the domain held to 95/90, because the domain is where the rules live and a rule
+without a test is a suggestion.
+
+Then the payload budget (CON-008, QS-003, ADR-019). I proposed 75 kB. The owner
+did the arithmetic I had not: the Zod regression it was written to catch
+measured 74.0 kB. **The budget would have let it through.** It went in at 70 kB
+instead, verified by re-applying the regression and watching it fail — the
+commit is titled "Set the ceiling that rejects the regression", which is the
+whole point. 75 kB was never committed.
+
+A budget that does not reject the thing it was written for is decoration.
+
+The ceiling later moved from 70 kB to 92 kB, on day 4, to admit React Router
+("Raise the payload ceiling for the router"). That is the precedent worth
+keeping: it was raised *deliberately, with a named cause, in its own commit* —
+not nudged upward to make a build go green.
+
+=== CON-005 caught me
+
+Worth recording because it is the good case: my own test deep-imported a
+feature's api module in order to mock it, and the boundary rule I had just
+written rejected it. Fixed by stubbing `fetch` instead.
+
+The rule earned its keep within a day of existing, against its own author. That
+is the strongest evidence a fitness function can produce — not that it passes,
+but that it refuses something the person who wrote it wanted to do.

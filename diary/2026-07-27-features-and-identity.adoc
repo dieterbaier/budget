@@ -1,0 +1,155 @@
+== Day 4 — 27 July 2026: features, and identity paying off
+
+=== Two goals, not one
+
+The README gained a second purpose: this repo is also a working validation of
+the sibling `architecture-knowledge-toolkit` (issue #43). The wording was
+corrected twice, and both corrections were substantive rather than editorial:
+
+* *validate*, not *prove* — a single project cannot prove a method, and a
+  testbed that can only confirm is worthless.
+* QG-005 asks for *declared evidence levels* — Measured / Estimated /
+  Directional / Hypothesis / Unknown — rather than demanding a number for every
+  claim, which would only have produced invented numbers.
+
+The second correction is the sharper one. "Every claim carries a number" sounds
+like rigour and is a recipe for false precision; naming the *confidence class*
+makes an unmeasured claim honest instead of forbidden.
+
+What that goal actually returned is its own recap — see the toolkit validation.
+
+=== Category groups and categories (#8)
+
+The first real feature. Two questions from the owner shaped it more than the
+issue did.
+
+*First:* deleting a category that is already assigned to a transaction must be
+refused — and the same for a group that still holds categories. Not a validation
+message bolted on the edge: an invariant.
+
+*Second, and sharper:*
+
+[quote]
+____
+"This constraint should be explicit at the domain model… I don't like
+constraints at DB at all."
+____
+
+This looked like a genuine conflict. Uniqueness has to hold under concurrency,
+which is a database's job, and the domain is where the rule belongs. Both are
+true.
+
+The DDD literature dissolved it, and ADR-021 records the answer: uniqueness is
+not a separate constraint at all — it is a *consequence of identity*. ADR-009
+made the name the identity. A repository is a collection of things identified
+that way (Evans), so "no duplicate names" is simply what the port promises, and
+a unique index is the relational adapter *implementing* that promise, not a rule
+living in the wrong place.
+
+The same identity decision dissolved a second conflict the same day: how can a
+name be the identity if names can be renamed? Answer: the JPA adapter mutates
+the existing row, so its surrogate key carries the foreign keys while the domain
+never sees one. The in-memory Cucumber steps have to do that re-pointing by
+hand, which is exactly the right amount of honesty about what the database is
+doing for free.
+
+Two arguments, one decision from day 1, no technical ID. The general shape is
+worth keeping: when a constraint and a layer rule appear to conflict, the
+question to ask is not "which wins" but "is one of these a consequence of
+something already decided".
+
+=== The test that had never seen the bug
+
+Review found that `CategoryRow` seeded its edit draft once at mount. The row's
+key is the category name, so renaming its *group* leaves the component mounted
+with a new prop and a stale `draft.group` — the next save would submit a group
+that no longer exists, and the select would hold a value absent from its own
+options.
+
+A real bug, found by a human reading code, not by the test suite. The fix was
+four lines.
+
+The part worth recording is what came after: I reverted the fix and watched the
+new test fail. A test written *after* a bug has often never seen it, and a test
+that has never seen its bug is indistinguishable from a test that cannot see it.
+
+=== The category picker (#46)
+
+The transaction form's free-text category became a picker. The design question
+was what the categories feature should export: the `useCategories` hook plus the
+list, or a component.
+
+A component. A hook hands the caller the shape of a category and the job of
+rendering it, so every future caller restates the same select and the same empty
+case, and a change to how categories are fetched leaks outward. The caller asks
+for a *choice*, not for data it must then know how to draw.
+
+Two states a free-text field never had to answer: while the catalogue loads the
+field renders disabled rather than empty, and when no category exists yet it
+renders a link to the categories page instead of a dropdown that cannot be
+opened. Both are cases the old input simply could not have — replacing free text
+with a constrained control removes a class of error and *adds* a class of empty
+state.
+
+=== Shared query-state primitives (#50)
+
+An observation from the owner, and a correct one: every reader repeats
+`isPending → error → data`.
+
+Counting first changed the priority. The gate appeared *3* times. The *error
+rendering* appeared *9* times — and the copying had already caused a defect:
+`CategoriesPage` rendered its query errors without `text-danger`, so a failed
+load appeared in ordinary ink while every other error in the app was red. Nobody
+chose that. It is what nine hand-copied paragraphs do.
+
+Three things worth keeping:
+
+* The loading states are *not* interchangeable. Two readers want a paragraph;
+  the picker wants a disabled select, or the form jumps when data lands. So the
+  shared thing is the branching, with the pending state overridable. The
+  duplicated *logic* was real; the duplicated *markup* was not.
+* The real win is *type narrowing*, not line count. `?? []` and
+  `if (!data) return null` were written to convince the compiler of something
+  the code already knew. A render-prop child states it in the signature.
+* `QueryBoundary` types its `query` prop *structurally*, not as TanStack's
+  `UseQueryResult`. The boundary rule keeps `shared/ui` away from features and
+  from `shared/api` — but it says nothing about npm packages, so importing the
+  query library's types would have walked the data layer in through a door
+  nothing watches.
+
+That last point generalises: a boundary rule enumerates the *internal* elements
+it governs, and an external package is invisible to it. The place a dependency
+rule leaks is almost always the direction it was never asked about.
+
+The `shared-ui` rule itself had been in the config since day 3 and had never
+been exercised, because the folder did not exist. Probed in both directions
+before trusting it.
+
+=== The claim that measurement killed (#51)
+
+Extracting `CategoryGroupPicker` meant it would fetch its own groups instead of
+being handed them. I justified that as free: TanStack shares by query key, so
+one request.
+
+I wrote the test to show it rather than assert it:
+
+[source]
+----
+AssertionError: expected [ [ '/api/category-groups' ], …(2) ] to have a length of 1 but got 3
+----
+
+*Three pickers, three requests.* The default `staleTime` is 0, so data is stale
+on arrival and every newly mounting observer refires. Key sharing collapses
+*concurrent* requests, not sequential mounts — and turning a select into a
+component creates exactly the second case.
+
+So the tidy-up refactor would have quietly tripled traffic on that endpoint, in
+a project with resource frugality as a stated quality goal (QG-005). The fix is
+a five minute `staleTime`, safe here for a specific reason and not by taste:
+every mutation already invalidates those keys explicitly, so a remount learns
+nothing an invalidation would not have told it.
+
+The wrong claim was corrected on the issue as well, so the record does not keep
+the wrong version. That matters more than it sounds — the issue text is what a
+later reader finds first, and an uncorrected justification outlives the code it
+justified.

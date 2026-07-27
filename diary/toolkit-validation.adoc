@@ -1,0 +1,207 @@
+== Validating the toolkit
+
+The project's second goal is to *validate the
+https://github.com/docs-as-code-toolkit/architecture-knowledge-toolkit[architecture-knowledge-toolkit]
+through real work* — to find where the method helps, where it gets in the way,
+and which gaps belong upstream.
+
+This recap is the return on that goal. It is kept separate from the daily
+recaps on purpose: a finding about the *method* is reusable by other projects,
+while a finding about the budget application is not.
+
+The measure is findings, not artifact count. Three went upstream in these four
+days, and each came out of ordinary product work rather than out of looking for
+something to report.
+
+=== Finding 1 — AI removed the friction that kept the record proportionate
+
+Upstream: toolkit issue
+https://github.com/docs-as-code-toolkit/architecture-knowledge-toolkit/issues/66[#66].
+Downstream tracker: budget issue #42.
+
+Writing an ADR used to cost real effort, and that cost was quietly doing useful
+work: it discouraged recording minor or short-lived implementation details as
+architecture decisions. Nobody wrote an ADR about a configuration line, because
+it was not worth the hour.
+
+With an AI drafting them, that hour is gone. The friction that enforced
+proportionality was never a rule — it was a *price* — and the method had been
+relying on it without saying so.
+
+The toolkit's ADR skill begins by inspecting context and drafting. It never
+first asks whether an ADR is the proportionate artifact at all. The result is a
+record that can be formally excellent and increasingly ceremonial.
+
+The proposal is a proportionality gate before the workflow starts, with one
+question:
+
+[quote]
+____
+Without this record, would a later contributor probably make a materially
+different decision or miss an important assumption?
+____
+
+and, when the answer is no, a menu of smaller durable records that fit better —
+a code comment for a surprising implementation detail, a test for required
+behaviour, `CONTRIBUTING.md` for contributor workflow, an issue or commit
+message for local reasoning.
+
+This is the most transferable finding of the four days, because it is not about
+this toolkit. *Any* practice that was held in balance by the cost of doing it
+needs re-examining once that cost collapses.
+
+=== Finding 2 — a derived field with two sources of truth
+
+Upstream: toolkit issue
+https://github.com/docs-as-code-toolkit/architecture-knowledge-toolkit/issues/67[#67].
+
+The metamodel's relation contract is clear: source artifacts carry
+*authoritative outgoing relations only*, and incoming relations are derived
+during generation.
+
+But `metamodel/artifact.schema.yaml` also declares `superseded_by` — which is
+precisely the incoming side of `supersedes`. Maintained by hand, it duplicates
+information the newer ADR already owns, and can drift silently against it.
+
+The contract and the schema disagreed with each other. Neither was wrong on its
+own terms, which is why it survived: a rule stated in prose and a rule stated in
+a schema are not automatically checked against one another.
+
+The requested semantics keep the old ADR in place, with status `superseded` and
+its original Decision text untouched, and derive the `superseded by` view from
+the newer ADR's outgoing relation. Preserving the superseded ADR matters for a
+reason beyond tidiness: it stops a rejected alternative being proposed again
+with its previous reasoning invisible.
+
+=== Finding 3 — the same defect, in prose, where no validator could see it
+
+Upstream: toolkit issue
+https://github.com/docs-as-code-toolkit/architecture-knowledge-toolkit/issues/68[#68].
+Downstream trackers: budget issues #36 (closed) and #45 (open follow-ups).
+
+This is the sharpest of the three, and it is finding 2 wearing a disguise.
+
+`skills/refine-adr/SKILL.md` told authors to hand-write a note *on the refined
+ADR* saying it had been refined. That note is derived data. It follows entirely
+from the other artifact's outgoing `refines` relation.
+
+In other words: it is exactly the reciprocal-incoming-relation problem the
+metamodel forbids — expressed as *prose* rather than YAML, where no validator
+can see it.
+
+Only one of the two notes is legitimate:
+
+on the refining ADR:: local knowledge. The author restates their own outgoing
+relation in the same commit that declares it. Fine.
+
+on the refined ADR:: derived. If the refining ADR is later retargeted,
+superseded or withdrawn, the refined ADR keeps asserting a relationship that no
+longer holds, and nothing fails.
+
+The generated `-traceability.adoc` fragment does surface the incoming relation —
+but as a row in a matrix at the foot of the document. A reader meets the
+decision paragraph long before that, which is exactly how the contradiction went
+unnoticed until review.
+
+The general lesson: *a rule enforced in the structured format is not enforced.*
+It is enforced in the structured format. The same rule can be violated in prose,
+in a template, or in a skill's instructions, and the validator will stay green
+throughout. When a metamodel forbids something, the prose guidance needs
+auditing against the same rule — by hand, because nothing else will.
+
+==== Attributing it upstream rather than fixing it locally
+
+Worth recording as method, because it is reusable. The tooling here is
+*vendored* from the toolkit, so the first question was whether this was a local
+divergence or a genuine upstream defect. That was answered by diffing rather
+than assuming:
+
+[cols="2,3"]
+|===
+| File | Divergence from toolkit
+
+| `scripts/validate-metamodel.rb` | 3 path constants (`src/docs` → `docs`)
+| `metamodel/relations.schema.yaml` | 2 example paths
+| `templates/adr.adoc` | byte-identical
+|===
+
+No logic differed. That is what justified sending the finding upstream instead
+of patching locally — and it avoided turning the next resync from a copy into a
+merge. `AGENTS.md` states the sync obligation; the diff is what made it
+actionable.
+
+The interim decision is also worth keeping: the hand-written note *stays* until
+the toolkit ships the generated one, because a reader meeting an unflagged
+contradiction is worse than the duplication. The skill file marks it as a
+stopgap, names the staleness risk, and requires both sides to be fixed in the
+same commit as any relation change. Issue #45 lists the follow-ups for when the
+upstream change lands.
+
+=== What the toolkit got right
+
+Findings are the point, but a validation that only lists complaints is as
+useless as one that only confirms.
+
+The outgoing-only relation contract earned its keep twice:: it is what made
+findings 2 and 3 recognisable *as the same defect*. Without that rule stated
+explicitly, the prose note would have looked like a documentation style choice
+rather than a contract violation. A stated invariant makes new violations
+nameable.
+
+The artifact separation carried real weight:: ADR-021 (where domain invariants
+are enforced) could be written as a short decision because it *pointed at*
+ADR-009 (identity) rather than restating it. The separation between decisions,
+constraints and quality scenarios meant the day-4 arguments had somewhere to
+land that already had the context.
+
+Vendoring worked:: three files, five lines of divergence, all of it paths. That
+is what a healthy vendored copy looks like, and it is only knowable because
+someone checked.
+
+Generated traceability caught the drift:: the `-traceability.adoc` fragment did
+contain the correct incoming relation while the hand-written prose contradicted
+it. The generator was right and the human text was wrong — the problem was
+placement, not correctness.
+
+=== What the toolkit structurally cannot catch
+
+The honest scorecard from these four days:
+
+[cols="2,5"]
+|===
+| Caught by automation
+| CON-005 rejecting my own test's deep import; ArchUnit on the backend layering;
+  the payload budget once it was calibrated properly; the coverage floors;
+  `import-x/no-cycle` after it was made to work
+
+| Caught by human review
+| Rename and delete not reachable from the PWA; the stale edit draft; two
+  inaccurate claims in my own writing; the budget arithmetic showing 75 kB would
+  not bite; wording that overstated what this project can prove
+
+| Caught by measuring a claim I believed
+| The three-requests-not-one finding
+|===
+
+The middle column is the longest, and that is the finding.
+
+The fitness functions are good at the failures someone already anticipated well
+enough to encode. They caught nothing about *reachability* (a backend endpoint
+with no path to it in the UI), *staleness* (a note that was true when written),
+or *overstatement* (a claim the project cannot support). No metamodel validates
+those, and it is not obvious that one could: each requires knowing what the
+system is *for*, which is the part that stays human.
+
+This is not an argument against the toolkit. It is an argument against reading a
+green pipeline as coverage of the risk space, which — see the through-line — is
+the mistake this project keeps making in other forms.
+
+=== A candidate not yet sent upstream
+
+The evidence-level vocabulary the owner introduced for QG-005 — Measured /
+Estimated / Directional / Hypothesis / Unknown — is a method idea, not a budget
+idea. It replaced "every claim carries a number", which sounds rigorous and
+manufactures false precision.
+
+It has not been proposed upstream. It should be, once it has survived longer
+than one project and a handful of claims.

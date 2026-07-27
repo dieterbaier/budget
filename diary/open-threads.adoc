@@ -1,0 +1,42 @@
+== Open threads
+
+Things left deliberately unfinished, with the reasoning attached so the next
+decision does not have to start from scratch.
+
+The payload budget has 2.2 kB of headroom:: CON-008 sits at 98% of 92 kB. The
+next dependency will hit the ceiling. The question at that moment is whether the
+budget was set right or whether the payload genuinely grew — and it should be
+raised deliberately with a named cause, in its own commit, the way the 70 kB →
+92 kB raise for React Router was. Never nudged upward to make a build go green.
+
+Quality reports are generated but not published:: budget issue #48 was closed as
+not planned. Every gate already fails the build when broken, so a deployed
+report adds no signal a red pull request does not, while costing build time and
+storage on every merge. Recorded as a decision rather than an omission, because
+"not published" reads like something forgotten.
+
+Toolkit follow-ups are waiting on upstream:: budget issue #45 lists what happens
+here once toolkit issue #68 lands — re-vendor `scripts/`, `templates/` and
+`metamodel/`, reapplying only the `src/docs` → `docs` path adaptation; update
+the pinned toolkit commit in `AGENTS.md`; replace ADR-001's hand-written
+admonition with the generated include; and delete the local `refine-adr` skill
+if upstream guidance then covers it. Until then the hand-written note stays,
+marked as a stopgap.
+
+The proportionality gate is not yet applied here:: budget issue #42 waits for
+toolkit issue #66 to define the test. Applying a home-made version first would
+defeat the purpose of validating the toolkit's.
+
+The evidence-level vocabulary is unproposed:: Measured / Estimated / Directional
+/ Hypothesis / Unknown works well enough here to be worth offering upstream, but
+one project is not evidence. It should survive longer first.
+
+=== A process note, learned the hard way
+
+Stacked pull requests need the dependent PR retargeted to `main` *before* the
+one below it merges.
+
+Merging the base PR deletes its branch, which auto-closes every PR pointing at
+it — and a closed PR's base can be neither retargeted nor reopened. That cost
+PR #52, which had to be recreated as #54 with identical content. PR #53 was
+retargeted pre-emptively and survived the same deletion.
