@@ -2,8 +2,12 @@ import { describe, it, expect, vi, afterEach } from 'vitest'
 import {
   createCategory,
   createCategoryGroup,
+  deleteCategory,
+  deleteCategoryGroup,
   getCategories,
   getCategoryGroups,
+  renameCategoryGroup,
+  updateCategory,
 } from './categories'
 
 function respondWith(body: unknown, ok = true, status = 200) {
@@ -67,5 +71,55 @@ describe('categories api', () => {
 
     await expect(createCategory({ name: 'Groceries', group: 'House', pensionRelevant: true }))
       .rejects.toThrow('A category named "Groceries" already exists')
+  })
+
+  it('renames a group through its old name', async () => {
+    const fetchMock = respondWith({ name: 'House' })
+
+    await expect(renameCategoryGroup('Huose', 'House')).resolves.toEqual({ name: 'House' })
+    expect(fetchMock).toHaveBeenCalledWith('/api/category-groups/Huose', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: '{"name":"House"}',
+    })
+  })
+
+  it('updates a category through its old name', async () => {
+    const fetchMock = respondWith({ name: 'Groceries', group: 'House', pensionRelevant: false })
+
+    await updateCategory('Grocries', { name: 'Groceries', group: 'House', pensionRelevant: false })
+
+    expect(fetchMock).toHaveBeenCalledWith('/api/categories/Grocries', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: '{"name":"Groceries","group":"House","pensionRelevant":false}',
+    })
+  })
+
+  // A name can contain characters that would otherwise change the path.
+  it('encodes the name in the path rather than interpolating it raw', async () => {
+    const fetchMock = respondWith({ name: 'House' })
+
+    await renameCategoryGroup('Haus/Hof', 'House')
+
+    expect(fetchMock).toHaveBeenCalledWith('/api/category-groups/Haus%2FHof', expect.anything())
+  })
+
+  it('deletes a group and a category', async () => {
+    const fetchMock = respondWith(undefined, true, 204)
+
+    await deleteCategoryGroup('Empty')
+    await deleteCategory('Mistake')
+
+    expect(fetchMock).toHaveBeenNthCalledWith(1, '/api/category-groups/Empty', { method: 'DELETE' })
+    expect(fetchMock).toHaveBeenNthCalledWith(2, '/api/categories/Mistake', { method: 'DELETE' })
+  })
+
+  // The refusal message names what still references the category, which is the
+  // owner's next action.
+  it('surfaces the refusal when the category is still in use', async () => {
+    respondWith({ error: '"Groceries" is still used by 42 transactions' }, false, 409)
+
+    await expect(deleteCategory('Groceries')).rejects.toThrow('still used by 42 transactions')
   })
 })

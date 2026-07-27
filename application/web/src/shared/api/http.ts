@@ -93,3 +93,26 @@ export async function apiPost(path: string, body: unknown, whenFailed: string): 
   })
   await failOnError(response, whenFailed)
 }
+
+export async function apiPut<S extends $ZodType>(
+  path: string,
+  body: unknown,
+  schema: S,
+  whenFailed: string,
+): Promise<output<S>> {
+  const response = await fetch(path, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  })
+  await failOnError(response, whenFailed)
+  return parseOrFail(schema, await readJson(response, path), path)
+}
+
+// 204 No Content, so there is nothing to read and nothing to parse. A failure
+// still carries the backend's message -- refusing to delete master data that is
+// still referenced is the case this exists to report (ADR-021).
+export async function apiDelete(path: string, whenFailed: string): Promise<void> {
+  const response = await fetch(path, { method: 'DELETE' })
+  await failOnError(response, whenFailed)
+}
