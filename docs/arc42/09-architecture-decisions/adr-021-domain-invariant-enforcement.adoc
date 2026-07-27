@@ -1,0 +1,174 @@
+---
+id: ADR-021-domain-invariant-enforcement
+type: ADR
+title: Where Domain Invariants Are Enforced
+status: proposed
+owner: architecture
+created: '2026-07-27'
+updated: '2026-07-27'
+reviewed: false
+summary: Invariants are declared in the domain; a schema constraint is the persistence adapter implementing a port contract, and no code branches on a persistence exception.
+derived_from:
+- type: prompt
+  description: The owner objected that a database unique constraint puts business logic outside the domain, and asked what Clean Architecture and DDD say about the problem.
+tags:
+- decision
+- backend
+- architecture
+relations:
+- type: relates_to
+  target: ADR-009-domain-identity-and-ddd
+  status: proposed
+  rationale: Uniqueness of a business key is a consequence of the identity that ADR records, not a separate rule.
+  reviewed: false
+- type: relates_to
+  target: ADR-004-backend-stack-and-architecture
+  status: proposed
+  rationale: Applies the hexagonal split to the question of which side of a port an invariant lives on.
+  reviewed: false
+metadata_version: '1.0'
+---
+[[adr-021-domain-invariant-enforcement]]
+== ADR-021: Where Domain Invariants Are Enforced
+
+=== Status
+
+Proposed. The position was set by the owner on 2026-07-27; this record of it is
+AI-drafted and is not accepted architecture truth until the owner has reviewed
+the text.
+
+=== Decision
+
+Every invariant is *declared and enforced in the domain*. Three rules follow.
+
+. *The uniqueness of an identity is structural, not a check.* Where
+  xref:adr-009-domain-identity-and-ddd[ADR-009] gives an entity a business key,
+  the outbound port is keyed by it, and a repository behaves as a collection
+  keyed by identity. Two categories cannot share a name for the same reason a map
+  cannot hold two entries under one key.
+. *A schema constraint is the persistence adapter implementing that contract.* A
+  unique index is how a relational adapter delivers a store keyed by name, in the
+  same way a `HashMap` uses hashing. It is not a business rule that happens to
+  live in DDL.
+. *No code branches on a persistence exception.* Nothing catches
+  `DataIntegrityViolationException` to decide anything or to build a message. If
+  one is ever thrown it means the domain failed to enforce its own rule: it is a
+  defect, it surfaces as a 500, and it is fixed in the domain.
+
+Rules that span aggregates — "a category in use cannot be deleted" — live in the
+application service that owns the use case, which queries the ports it needs. They
+are a *check and reject*, not a coordination of writes, so a synchronous query is
+sufficient.
+
+=== Context
+
+The owner's objection was concrete: if a duplicate category name is prevented by
+a database constraint, then the rule lives outside the domain, and the
+application learns about it by catching a vendor-specific exception and
+translating an error code back into meaning. That is business logic in the
+infrastructure, and it is what
+xref:con-002-hexagonal-boundaries[CON-002] and ADR-004 exist to prevent.
+
+The counter-argument usually offered is concurrency: two writers check, both find
+the name free, both insert. It is unusually weak here.
+xref:adr-007-single-user-deployment-and-auth[ADR-007] fixes this as a single-user
+application with one operator, so the race is not reachable in practice, and the
+standard justification for making the database authoritative mostly evaporates.
+
+The literature resolves it more cleanly than the trade-off suggests. DDD makes the
+*aggregate* the consistency boundary, which handles invariants inside one object
+graph but says nothing about a rule spanning a whole set. Vernon treats that as
+set-based validation and lists the options: a database constraint, a domain
+service that queries first, making the unique attribute the identity, or a
+dedicated registry aggregate. Evans frames a repository as behaving like a
+collection.
+
+Those two together dissolve the problem for this codebase. ADR-009 already made
+the name the identity, so a repository of categories is conceptually a map keyed
+by name — and uniqueness is not an extra invariant to enforce anywhere, it is what
+identity *means*. What the database then does is implement that contract.
+
+The dependency rule is about direction. It is violated by the domain importing a
+JPA exception, not by a schema being correct.
+
+=== Decision Drivers
+
+* Business rules must be readable in the domain, not reconstructed from a
+  constraint name.
+* An error the owner reads should be produced by the code that knows what it
+  means.
+* A domain bug should fail loudly rather than corrupt the figures quietly —
+  xref:quality-goals[QG-002] is data integrity.
+
+=== Considered Options
+
+==== Domain declares, adapter implements, nothing catches (chosen)
+
+The domain owns the rule and the message. The schema constraint exists because
+the adapter must honour a keyed store, and it is never part of control flow. Both
+the owner's objection and QG-002 are satisfied, because the constraint is not
+doing the deciding but is still there when a decision is missed.
+
+The honest cost: the invariant appears in two places, and the schema copy can
+drift from the domain's intent without anything noticing.
+
+==== Domain only; no constraints in the schema
+
+The purest reading, and it makes the domain unambiguously the single authority.
+It was rejected on asymmetric risk rather than on principle: a bug in a domain
+check then produces two categories named the same, the monthly figures split
+silently between them, and nothing ever raises an error. In a private budget the
+corruption could sit undiscovered for months, which is precisely the silent loss
+QG-002 names.
+
+==== Database enforces; the application translates the error
+
+The status quo before this decision, and what
+`V1__initial_schema.sql` still implied. Fewest lines, and correct under
+concurrency this application does not have. It puts the rule where the domain
+cannot state it and makes error handling depend on catching an exception whose
+type and message belong to the driver.
+
+=== Pugh Matrix
+
+[cols="2,1,1,1", options="header"]
+|===
+| Criterion | Domain declares, adapter implements | Domain only | Database enforces
+| The rule is readable in the domain | +1 | +1 | -1
+| A domain bug cannot corrupt silently | +1 | -1 | +1
+| Errors are produced by code that knows their meaning | +1 | +1 | -1
+s| Sum s| 3 s| 1 s| -1
+|===
+
+=== Consequences
+
+==== Positive
+
+* A reader looking for "why can two categories not share a name" finds it in the
+  domain, where ADR-009 already put the answer.
+* The owner's error messages are written by the use case, in the owner's terms.
+* A missed domain check still cannot corrupt the data set.
+
+==== Negative
+
+* The invariant is expressed twice — once as identity in the domain, once as an
+  index in the schema — and nothing checks that the two agree. A migration that
+  dropped the index would not fail any test.
+* "Never catch a persistence exception" is a rule no tool enforces here. It is a
+  review concern, like the `shared` directory staying small in
+  xref:con-005-feature-boundaries[CON-005].
+
+==== Neutral or Follow-Up
+
+* Referential integrity is treated the same way: the foreign key from a
+  transaction to its category is the adapter implementing a reference the domain
+  declares, and the "cannot delete a category in use" rule is enforced by the use
+  case querying the transaction and fixed-cost ports.
+* Renaming needs no propagation logic. Because the surrogate key stays inside the
+  JPA entity, changing the name updates every reference by construction — which
+  is the surrogate doing exactly the job ADR-009 reserves for it.
+* Whether an ArchUnit rule should forbid catching persistence exceptions outside
+  the persistence adapter is left open. It would be checkable, but it guards a
+  mistake nobody has made yet.
+
+include::generated/adr-021-domain-invariant-enforcement-traceability.adoc[leveloffset=+1]
