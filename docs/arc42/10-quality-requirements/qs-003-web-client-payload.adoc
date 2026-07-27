@@ -5,9 +5,9 @@ title: Web Client Payload Budget
 status: proposed
 owner: architecture
 created: '2026-07-26'
-updated: '2026-07-26'
+updated: '2026-07-27'
 reviewed: false
-summary: The web client's application bundle stays under 75 kB gzipped, checked by the build.
+summary: The web client's application bundle stays under 70 kB gzipped and its PWA runtime under 10 kB, checked by the build.
 tags:
 - quality
 - frontend
@@ -32,31 +32,42 @@ metadata_version: '1.0'
 | Stimulus | The change increases the JavaScript the browser must download.
 | Artifact | The web client's application bundle in `dist/assets`.
 | Environment | A production build, `npm run build`, as run locally and by the `web` job of PR validation.
-| Response | The build reports the bundle's gzipped size against the budget, and fails when it is exceeded.
-| Response Measure | The application bundle stays at or below *75 kB gzipped*. It was 61.2 kB when this scenario was written, so the budget carries roughly 22% headroom.
+| Response | The build reports each bundle's gzipped size against its budget, and fails when either is exceeded.
+| Response Measure | The application bundle stays at or below *70 kB gzipped*, and the PWA runtime at or below *10 kB gzipped*. When this scenario was written they were 61.2 kB and 6.0 kB — roughly 13% and 40% headroom.
 |===
 
-=== What the budget covers, and what it does not
+=== Two ceilings, because the two grow for different reasons
 
-The measure is the *application* bundle. That is what this project's own
-decisions move: xref:adr-016-frontend-response-validation[ADR-016] chose Zod Mini
-over the full build and saved 13.7 kB of it.
+The *application* bundle is what this project's own decisions move:
+xref:adr-016-frontend-response-validation[ADR-016] chose Zod Mini over the full
+build and took 13.7 kB out of it.
 
-The service worker and the Workbox runtime that `vite-plugin-pwa` generates — 6.0
-kB gzipped together — are deliberately outside the budget. They are the tooling's
-output rather than a consequence of how this application is written, and
-including them would make the number move on a plugin upgrade for reasons no
-feature change caused. The build prints them anyway, so a jump is visible rather
-than silent.
+The *PWA runtime* — the service worker and Workbox code that `vite-plugin-pwa`
+generates — moves when the plugin is upgraded, not when a feature is written.
 
-=== On the number
+They are budgeted separately rather than together so that feature work cannot
+consume the tooling allowance and plugin churn cannot consume the application
+allowance. An earlier version of this scenario reported the runtime without
+bounding it, which left it free to grow to any size: a printed line is not a
+gate, and nobody reads build output looking for a number that has not failed.
 
-75 kB is a ceiling with headroom, not a target to grow into. It is chosen so that
-a deliberate addition passes and an unnoticed one does not — a budget with no
-headroom fails on the next legitimate feature and gets raised reflexively, which
-is how a budget stops meaning anything.
+=== On the numbers
 
-Raising it is allowed and is a decision: it needs the number that justifies it,
-recorded here. Raising it to make a build pass is not.
+The application ceiling is 70 kB rather than a rounder 75 because *the regression
+it claims to prevent has to fail it*. Reverting to the full Zod build measures
+74.0 kB gzipped. At 75 kB that passes — the budget would have quietly permitted
+exactly the change ADR-016 decided against. At 70 kB it fails, with 13% headroom
+left for legitimate growth.
+
+That was found by applying the regression and running the gate, not by reasoning
+about the numbers: proving the check can reject *something* is not the same as
+proving it protects the property it claims to.
+
+The PWA ceiling of 10 kB is deliberately generous against a current 6.0 kB. It
+exists to catch a gross regression from a plugin upgrade, not to police normal
+variation.
+
+Raising either is allowed and is a decision: it needs the number that justifies
+it, recorded here. Raising one to make a build pass is not.
 
 include::generated/qs-003-web-client-payload-traceability.adoc[leveloffset=+1]

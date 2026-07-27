@@ -188,22 +188,26 @@ replacement for it.
 
 ## Bundle budget
 
-`npm run build` also fails when the web client's application bundle exceeds
-**75 kB gzipped**. It prints where it stands on every build:
+`npm run build` also fails when the web client's JavaScript exceeds its budgets.
+It prints where both stand on every build:
 
 ```
 Bundle budget (CON-008)
-  application  61.2 kB gzipped of 75.0 kB  (82% of budget)
-  pwa runtime  6.0 kB gzipped  (reported, not budgeted)
+  application  61.2 kB gzipped of 70.0 kB  (87%)
+  pwa runtime  6.0 kB gzipped of 10.0 kB  (60%)
 ```
 
-The budget covers `dist/assets/*.js` — the bundle this project's own decisions
-move. The service worker and Workbox runtime are printed but not budgeted, since
-they are the PWA plugin's output rather than a consequence of how the application
-is written.
+Two ceilings, because the two grow for unrelated reasons: the application bundle
+moves when this project makes a decision, the PWA runtime when `vite-plugin-pwa`
+is upgraded. Budgeting them separately stops feature work consuming the tooling
+allowance and plugin churn consuming the application allowance.
 
-The scenario is `QS-003`, the check is `CON-008`, and the goal behind it is
-`QG-005` resource efficiency (`ADR-019`).
+The application ceiling is 70 kB rather than 75 for a specific reason: reverting
+to the full Zod build measures 74.0 kB, which a 75 kB ceiling would have let
+through — permitting exactly the regression `ADR-016` decided against.
+
+The scenario is `QS-003`, the check is `CON-008`, and the goal is `QG-005`
+resource frugality (`ADR-019`).
 
 **Raising the budget is a decision, not a fix.** If a change genuinely needs more,
 record the new number and its justification in `QS-003`. Raising it to make a
