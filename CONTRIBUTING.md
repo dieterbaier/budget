@@ -193,7 +193,7 @@ It prints where both stand on every build:
 
 ```
 Bundle budget (CON-008)
-  application  61.2 kB gzipped of 70.0 kB  (87%)
+  application  88.8 kB gzipped of 92.0 kB  (97%)
   pwa runtime  6.0 kB gzipped of 10.0 kB  (60%)
 ```
 
@@ -202,9 +202,10 @@ moves when this project makes a decision, the PWA runtime when `vite-plugin-pwa`
 is upgraded. Budgeting them separately stops feature work consuming the tooling
 allowance and plugin churn consuming the application allowance.
 
-The application ceiling is 70 kB rather than 75 for a specific reason: reverting
-to the full Zod build measures 74.0 kB, which a 75 kB ceiling would have let
-through — permitting exactly the regression `ADR-016` decided against.
+The application ceiling was 70 kB, set so a revert to full Zod (74.0 kB) would
+fail it. Issue #8 raised it to 92 kB for the React Router adoption, which gives
+that guard up — see `QS-003` for the number that justified the raise and what it
+cost.
 
 The scenario is `QS-003`, the check is `CON-008`, and the goal is `QG-005`
 resource frugality (`ADR-019`).

@@ -7,7 +7,7 @@ owner: architecture
 created: '2026-07-26'
 updated: '2026-07-27'
 reviewed: true
-summary: The web client's application bundle stays under 70 kB gzipped and its PWA runtime under 10 kB, checked by the build.
+summary: The web client's application bundle stays under 92 kB gzipped and its PWA runtime under 10 kB, checked by the build.
 tags:
 - quality
 - frontend
@@ -33,7 +33,7 @@ metadata_version: '1.0'
 | Artifact | The web client's application bundle in `dist/assets`.
 | Environment | A production build, `npm run build`, as run locally and by the `web` job of PR validation.
 | Response | The build reports each bundle's gzipped size against its budget, and fails when either is exceeded.
-| Response Measure | The application bundle stays at or below *70 kB gzipped*, and the PWA runtime at or below *10 kB gzipped*. When this scenario was written they were 61.2 kB and 6.0 kB — roughly 13% and 40% headroom.
+| Response Measure | The application bundle stays at or below *92 kB gzipped*, and the PWA runtime at or below *10 kB gzipped*. They are 88.8 kB and 6.0 kB — roughly 3% and 40% headroom.
 |===
 
 === Two ceilings, because the two grow for different reasons
@@ -53,19 +53,47 @@ gate, and nobody reads build output looking for a number that has not failed.
 
 === On the numbers
 
-The application ceiling is 70 kB rather than a rounder 75 because *the regression
-it claims to prevent has to fail it*. Reverting to the full Zod build measures
-74.0 kB gzipped. At 75 kB that passes — the budget would have quietly permitted
-exactly the change ADR-016 decided against. At 70 kB it fails, with 13% headroom
-left for legitimate growth.
+The ceiling was originally 70 kB, chosen so that *the regression it claimed to
+prevent actually failed it*: reverting to the full Zod build measures 74.0 kB, so
+70 rejected it and the rounder 75 would not have. That was established by applying
+the regression rather than reasoning about it.
 
-That was found by applying the regression and running the gate, not by reasoning
-about the numbers: proving the check can reject *something* is not the same as
-proving it protects the property it claims to.
+It is now 92 kB, and the history matters more than the number.
+
+Issue #8 adopted React Router at the trigger
+xref:adr-014-frontend-architecture-style-and-stack[ADR-014] had recorded for it,
+and took the bundle to 88.8 kB. The alternatives were measured rather than
+argued: a lighter router (wouter) put it at 76.7 kB, so React Router costs about
+12 kB more for two routes; the categories feature itself accounts for roughly
+13 kB. *Both* options exceeded 70 kB, so this was never a router choice — the
+ceiling had to move regardless.
+
+*What the raise cost, stated plainly:* above 74 kB the ceiling no longer rejects a
+revert to full Zod. That guard is gone. What remains of
+xref:adr-016-frontend-response-validation[ADR-016]'s protection is the locale test,
+which checks the diagnostics rather than the size. The budget is now a ratchet
+against further growth, not a guard on a past decision — a weaker thing than it
+was, and worth knowing before relying on it.
+
+At 3% headroom it will bite again soon. That is the intended behaviour: the next
+raise should be a decision too.
 
 The PWA ceiling of 10 kB is deliberately generous against a current 6.0 kB. It
 exists to catch a gross regression from a plugin upgrade, not to police normal
 variation.
+
+=== A known weakness in how this is measured
+
+The check sums every chunk in `dist/assets`, so it measures *total shipped
+JavaScript* rather than the initial payload. Splitting the categories route into a
+lazily loaded chunk would therefore not move the number at all, even though the
+browser would no longer download it unless the owner opened that page.
+
+For a payload budget the initial chunk is arguably the better measure, and
+lazy-loading is the more frugal design. Both are left as they are for now: the
+constraint would need rewriting, and the estimate that it would keep the client
+under 70 kB has not been measured. Recorded here so the next raise considers it
+before simply moving the number again.
 
 Raising either is allowed and is a decision: it needs the number that justifies
 it, recorded here. Raising one to make a build pass is not.
