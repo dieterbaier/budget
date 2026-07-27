@@ -5,7 +5,7 @@ title: Web Client As Installable PWA
 status: accepted
 owner: architecture
 created: '2026-07-24'
-updated: '2026-07-26'
+updated: '2026-07-27'
 reviewed: true
 summary: A single React + TypeScript + Vite PWA serves both desktop and mobile.
 tags:
@@ -25,7 +25,7 @@ relations:
 - type: addresses
   target: DOC-01001-quality-goals
   status: proposed
-  rationale: Precaching means the bundle is fetched once rather than on every visit, serving QG-005.
+  rationale: 'Directional: precaching means the bundle is fetched once rather than on every visit, which is fewer transfers though the saving is not quantified.'
   reviewed: false
 metadata_version: '1.0'
 ---

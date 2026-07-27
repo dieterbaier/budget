@@ -5,7 +5,7 @@ title: Pipeline Runs Only What Changed
 status: proposed
 owner: architecture
 created: '2026-07-26'
-updated: '2026-07-26'
+updated: '2026-07-27'
 reviewed: false
 summary: Pull request validation classifies the changed paths and runs only the affected jobs, aggregated behind one always-running check.
 derived_from:
@@ -19,7 +19,7 @@ relations:
 - type: addresses
   target: DOC-01001-quality-goals
   status: proposed
-  rationale: Not running a job is the cheapest way to not spend machine time, which is what QG-005 asks for.
+  rationale: 'Directional: not running a job spends no machine time, though the saving in absolute terms is not quantified.'
   reviewed: false
 - type: relates_to
   target: ADR-019-resource-efficiency
@@ -131,9 +131,10 @@ s| Sum s| 2 s| 1 s| 0
 
 ==== Neutral or Follow-Up
 
-* The saving is real but modest in absolute terms, and this ADR does not claim
-  otherwise: see xref:adr-019-resource-efficiency[ADR-019] on where the larger
-  costs actually sit.
+* The saving is *directional*: skipping a job plainly spends less machine time,
+  but this ADR does not quantify how much, and does not claim it is significant
+  next to anything else. Where the larger costs sit in this system is not
+  established — see xref:adr-019-resource-efficiency[ADR-019] on evidence levels.
 * The workflow is `.github/workflows/pr-validation.yml`; `CONTRIBUTING.md`
   documents which command each job runs.
 
