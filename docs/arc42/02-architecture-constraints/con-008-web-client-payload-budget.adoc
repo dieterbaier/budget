@@ -7,7 +7,7 @@ owner: architecture
 created: '2026-07-26'
 updated: '2026-07-27'
 reviewed: true
-summary: The web build fails when the application bundle exceeds 70 kB gzipped or the PWA runtime exceeds 10 kB.
+summary: The web build fails when the application bundle exceeds 92 kB gzipped or the PWA runtime exceeds 10 kB.
 tags:
 - constraint
 - frontend
@@ -41,13 +41,13 @@ xref:con-005-feature-boundaries[CON-005].
 [cols="2,1,2", options="header"]
 |===
 | Measured | Budget | Enforces
-| `dist/assets/*.js`, gzipped | 70 kB | xref:qs-003-web-client-payload[QS-003]
+| `dist/assets/*.js`, gzipped | 92 kB | xref:qs-003-web-client-payload[QS-003]
 | `dist/*.js` — service worker and Workbox runtime | 10 kB | xref:qs-003-web-client-payload[QS-003]
 |===
 
 Two ceilings rather than one so that feature work cannot consume the tooling
-allowance and plugin churn cannot consume the application allowance. At the time
-of writing the application bundle was 61.2 kB and the runtime 6.0 kB.
+allowance and plugin churn cannot consume the application allowance. The
+application bundle is 88.8 kB and the runtime 6.0 kB.
 
 === How it was verified
 
@@ -57,10 +57,17 @@ not prove the property the decision claimed — that the budget preserves the Zo
 Mini choice — and the property turned out to be false: reverting to the full Zod
 build measures 74.0 kB, which the original 75 kB ceiling accepted.
 
-The ceiling is now 70 kB, and the verification is the regression itself: with the
-full build restored the check reports 74.0 kB against 70 kB and exits non-zero;
-with Zod Mini it reports 61.2 kB and passes. That is the difference between
-testing the mechanism and testing the claim.
+The ceiling was then 70 kB, and the verification was the regression itself: with
+the full build restored the check reported 74.0 kB against 70 kB and exited
+non-zero. That is the difference between testing the mechanism and testing the
+claim.
+
+The ceiling is now 92 kB, raised for the router adoption in issue #8, and that
+verification no longer holds — above 74 kB the full Zod build passes. QS-003
+records why the raise was accepted and what it gave up. The check has since
+rejected something real, though: it failed the categories feature at 88.8 kB
+against 70, which is what forced the decision instead of letting the growth
+through unnoticed.
 
 Its failure message says what to do about it: make the bundle smaller, or change
 the budget *as a decision*, with the number that justifies it recorded in QS-003.
