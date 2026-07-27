@@ -216,4 +216,91 @@ describe('CategoriesPage', () => {
     expect(screen.queryByLabelText(/new name for Groceries/i)).not.toBeInTheDocument()
     expect(fetchMock).not.toHaveBeenCalledWith('/api/categories/Groceries', expect.anything())
   })
+
+  // The cross-entity sequence this feature makes possible: rename a group, then
+  // correct a category that was in it. The row stays mounted across the refetch
+  // because its key is the category name, so a draft seeded once at mount would
+  // submit the group that no longer exists.
+  it('edits a category correctly after its group was renamed', async () => {
+    let renamed = false
+    const fetchMock = vi.fn(async (url: string, init?: RequestInit) => {
+      if (init?.method === 'PUT' && url.includes('category-groups')) {
+        renamed = true
+        return { ok: true, status: 200, json: async () => ({ name: 'Home' }) } as Response
+      }
+      if (init?.method === 'PUT') {
+        return {
+          ok: true,
+          status: 200,
+          json: async () => ({ name: 'Groceries', group: 'Home', pensionRelevant: true }),
+        } as Response
+      }
+      if (url.includes('category-groups')) {
+        return {
+          ok: true,
+          status: 200,
+          json: async () => (renamed ? [{ name: 'Home' }] : [{ name: 'House' }]),
+        } as Response
+      }
+      return {
+        ok: true,
+        status: 200,
+        json: async () => [
+          { name: 'Groceries', group: renamed ? 'Home' : 'House', pensionRelevant: true },
+        ],
+      } as Response
+    })
+    vi.stubGlobal('fetch', fetchMock)
+
+    renderWithQuery(<CategoriesPage />)
+    await screen.findByText('Groceries')
+
+    fireEvent.click(within(screen.getByRole('list', { name: /category groups/i }))
+      .getByRole('button', { name: /rename/i }))
+    fireEvent.change(screen.getByLabelText(/new name for House/i), { target: { value: 'Home' } })
+    fireEvent.click(screen.getByRole('button', { name: /^save$/i }))
+
+    // Wait for the refetch to land the renamed group on the *category* row --
+    // that is the precondition for the bug, and an unscoped /Home/ would also
+    // match the group row and the select's option.
+    await waitFor(() =>
+      expect(
+        within(screen.getByRole('list', { name: /category list/i })).getByText(/Home/),
+      ).toBeInTheDocument(),
+    )
+
+    fireEvent.click(within(screen.getByRole('list', { name: /category list/i }))
+      .getByRole('button', { name: /^edit$/i }))
+    const editForm = screen.getByRole('form', { name: /edit category Groceries/i })
+    fireEvent.click(within(editForm).getByLabelText(/still applies in retirement/i))
+    fireEvent.click(within(editForm).getByRole('button', { name: /^save$/i }))
+
+    await waitFor(() =>
+      expect(fetchMock).toHaveBeenCalledWith(
+        '/api/categories/Groceries',
+        expect.objectContaining({
+          body: '{"name":"Groceries","group":"Home","pensionRelevant":false}',
+        }),
+      ),
+    )
+  })
+
+  it('discards an abandoned edit when the row is reopened', async () => {
+    stubApi()
+
+    renderWithQuery(<CategoriesPage />)
+    await screen.findByText('Groceries')
+
+    const list = () => within(screen.getByRole('list', { name: /category list/i }))
+
+    fireEvent.click(list().getAllByRole('button', { name: /^edit$/i })[0])
+    fireEvent.change(screen.getByLabelText(/new name for Groceries/i), {
+      target: { value: 'Abandoned' },
+    })
+    fireEvent.click(screen.getByRole('button', { name: /cancel/i }))
+
+    fireEvent.click(list().getAllByRole('button', { name: /^edit$/i })[0])
+
+    expect(screen.getByLabelText(/new name for Groceries/i)).toHaveValue('Groceries')
+  })
 })
