@@ -43,14 +43,18 @@ spend per group, how much must sit on each account (including the reserve for
 non-monthly fixed costs), the cash runway to month end, and a pension
 projection. There is one user, no bank integration, and no sharing.
 
-The project carries a second goal beside that product: it is a working proof of
-the architecture-knowledge-toolkit, run by the toolkit's own method on real work
-rather than on an example. This is recorded here because it changes how the rest
-of these chapters should be read — the recorded decisions, constraints and
-fitness functions are denser than a single-user tracker alone would warrant, and
-that density is deliberate. It is bounded by a simple question asked of each new
-artifact: without it, would a later reader probably decide wrongly or miss an
-assumption? See xref:vision-mission[the vision and mission] for both missions and
-xref:stakeholders[] for the concerns behind them.
+The project carries a second goal beside that product: it is a validation testbed
+for the architecture-knowledge-toolkit, run by the toolkit's own method on real
+work rather than on an example, to find where that method helps, where it gets in
+the way, and what should be corrected upstream.
+
+This is recorded here because it changes how the rest of these chapters should be
+read — the recorded decisions, constraints and fitness functions are denser than a
+single-user tracker alone would warrant. Two things bound it. The product goal
+governs the application: nothing is added to the software solely to exercise the
+method. And each artifact must answer one question — without it, would a later
+reader probably decide wrongly or miss an important assumption? See
+xref:vision-mission[the vision and mission] for how the two missions resolve when
+they disagree, and xref:stakeholders[] for the concerns behind them.
 
 include::generated/doc-01000-introduction-and-goals-includes.adoc[]
