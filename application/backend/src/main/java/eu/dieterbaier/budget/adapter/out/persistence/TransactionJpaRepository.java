@@ -9,4 +9,6 @@ import java.util.List;
 public interface TransactionJpaRepository extends JpaRepository<TransactionEntity, Long> {
 
     List<TransactionEntity> findByBookingDateBetween(LocalDate start, LocalDate end);
+
+    long countByCategoryName(String categoryName);
 }

@@ -3,6 +3,7 @@ package eu.dieterbaier.budget.adapter.in.web;
 import eu.dieterbaier.budget.application.port.in.RecordTransactionUseCase;
 import eu.dieterbaier.budget.application.port.in.UnknownCategoryException;
 import eu.dieterbaier.budget.domain.model.Category;
+import eu.dieterbaier.budget.domain.model.CategoryGroup;
 import eu.dieterbaier.budget.domain.model.Money;
 import eu.dieterbaier.budget.domain.model.Transaction;
 import eu.dieterbaier.budget.domain.model.TransactionType;
@@ -35,7 +36,7 @@ class TransactionControllerTest {
     @Test
     void recordsTransactionAndReturns201() throws Exception {
         given(recordTransaction.record(any())).willReturn(new Transaction(
-                LocalDate.of(2026, 7, 3), Money.of("800.00"), new Category("Groceries", true), TransactionType.EXPENSE));
+                LocalDate.of(2026, 7, 3), Money.of("800.00"), Category.in(new CategoryGroup("House"), "Groceries"), TransactionType.EXPENSE));
 
         mockMvc.perform(post("/api/transactions")
                         .contentType(MediaType.APPLICATION_JSON)

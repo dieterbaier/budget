@@ -4,6 +4,7 @@ import eu.dieterbaier.budget.adapter.out.persistence.entity.CategoryEntity;
 import eu.dieterbaier.budget.adapter.out.persistence.entity.TransactionEntity;
 import eu.dieterbaier.budget.application.port.out.TransactionRepository;
 import eu.dieterbaier.budget.domain.model.Category;
+import eu.dieterbaier.budget.domain.model.CategoryGroup;
 import eu.dieterbaier.budget.domain.model.Money;
 import eu.dieterbaier.budget.domain.model.Transaction;
 import eu.dieterbaier.budget.domain.model.TransactionType;
@@ -55,6 +56,9 @@ public class TransactionPersistenceAdapter implements TransactionRepository {
     }
 
     static Category toDomain(CategoryEntity category) {
-        return new Category(category.getName(), category.isPensionRelevant());
+        return new Category(
+                category.getName(),
+                new CategoryGroup(category.getGroup().getName()),
+                category.isPensionRelevant());
     }
 }

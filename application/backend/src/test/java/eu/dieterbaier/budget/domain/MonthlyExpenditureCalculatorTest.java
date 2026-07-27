@@ -1,6 +1,7 @@
 package eu.dieterbaier.budget.domain;
 
 import eu.dieterbaier.budget.domain.model.Category;
+import eu.dieterbaier.budget.domain.model.CategoryGroup;
 import eu.dieterbaier.budget.domain.model.FixedCost;
 import eu.dieterbaier.budget.domain.model.Money;
 import eu.dieterbaier.budget.domain.model.PaymentInterval;
@@ -19,8 +20,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 class MonthlyExpenditureCalculatorTest {
 
     private static final YearMonth JULY = YearMonth.of(2026, 7);
-    private static final Category GROCERIES = Category.of("Groceries");
-    private static final Category FUEL = Category.of("Fuel");
+    private static final Category GROCERIES = Category.in(new CategoryGroup("House"), "Groceries");
+    private static final Category FUEL = Category.in(new CategoryGroup("Car"), "Fuel");
 
     private final MonthlyExpenditureCalculator calculator = new MonthlyExpenditureCalculator();
 
