@@ -1,4 +1,6 @@
+import type { ReactNode } from 'react'
 import { Link } from 'react-router-dom'
+import { QueryBoundary } from '@/shared/ui/QueryBoundary'
 import { useCategories } from '../queries/useCategories'
 
 interface Props {
@@ -19,62 +21,67 @@ interface Props {
 export function CategoryPicker({ value, onChange, label = 'Category' }: Props) {
   const categories = useCategories()
 
-  if (categories.isPending) {
-    return (
-      <label className="field-label">
-        {label}
-        <select className="field-control" disabled>
-          <option>Loading…</option>
-        </select>
-      </label>
-    )
-  }
+  return (
+    // A paragraph reading "Loading…" would collapse the field and make the form
+    // jump when the catalogue lands, so this is the one reader that supplies its
+    // own placeholder: the same control, in the same place, not yet usable.
+    <QueryBoundary
+      query={categories}
+      pending={
+        <Field label={label}>
+          <select className="field-control" disabled>
+            <option>Loading…</option>
+          </select>
+        </Field>
+      }
+    >
+      {(available) => {
+        // Nothing can be recorded before a category exists, and a picker with no
+        // options is a dead end. Say where to go instead — the same choice the
+        // categories page makes when there is no group to add a category to.
+        if (available.length === 0) {
+          return (
+            <p className="text-muted">
+              No categories yet. <Link to="/categories">Add one first</Link>.
+            </p>
+          )
+        }
 
-  if (categories.error) {
-    return (
-      <p role="alert" className="text-danger">
-        {categories.error.message}
-      </p>
-    )
-  }
+        const groups = [...new Set(available.map((category) => category.group))].sort()
 
-  const available = categories.data ?? []
+        return (
+          <Field label={label}>
+            <select
+              className="field-control"
+              value={value}
+              onChange={(event) => onChange(event.target.value)}
+              required
+            >
+              <option value="">Choose a category…</option>
+              {groups.map((group) => (
+                <optgroup key={group} label={group}>
+                  {available
+                    .filter((category) => category.group === group)
+                    .map((category) => (
+                      <option key={category.name} value={category.name}>
+                        {category.name}
+                      </option>
+                    ))}
+                </optgroup>
+              ))}
+            </select>
+          </Field>
+        )
+      }}
+    </QueryBoundary>
+  )
+}
 
-  // Nothing can be recorded before a category exists, and a picker with no
-  // options is a dead end. Say where to go instead — the same choice the
-  // categories page makes when there is no group to add a category to.
-  if (available.length === 0) {
-    return (
-      <p className="text-muted">
-        No categories yet. <Link to="/categories">Add one first</Link>.
-      </p>
-    )
-  }
-
-  const groups = [...new Set(available.map((category) => category.group))].sort()
-
+function Field({ label, children }: { label: string; children: ReactNode }) {
   return (
     <label className="field-label">
       {label}
-      <select
-        className="field-control"
-        value={value}
-        onChange={(event) => onChange(event.target.value)}
-        required
-      >
-        <option value="">Choose a category…</option>
-        {groups.map((group) => (
-          <optgroup key={group} label={group}>
-            {available
-              .filter((category) => category.group === group)
-              .map((category) => (
-                <option key={category.name} value={category.name}>
-                  {category.name}
-                </option>
-              ))}
-          </optgroup>
-        ))}
-      </select>
+      {children}
     </label>
   )
 }

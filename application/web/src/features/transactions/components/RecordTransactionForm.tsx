@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { CategoryPicker } from '@/features/categories'
+import { ErrorMessage } from '@/shared/ui/ErrorMessage'
 import { useRecordTransaction } from '../queries/useRecordTransaction'
 import type { TransactionType } from '../api/transactions'
 
@@ -77,11 +78,7 @@ export function RecordTransactionForm() {
       <button className="field-submit" type="submit" disabled={record.isPending || !category}>
         {record.isPending ? 'Saving…' : 'Record'}
       </button>
-      {record.error && (
-        <p role="alert" className="mt-3 text-danger">
-          {record.error.message}
-        </p>
-      )}
+      {record.error && <ErrorMessage error={record.error} className="mt-3" />}
     </form>
   )
 }

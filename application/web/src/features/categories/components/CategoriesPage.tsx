@@ -1,4 +1,6 @@
 import { useState } from 'react'
+import { ErrorMessage } from '@/shared/ui/ErrorMessage'
+import { QueryBoundary } from '@/shared/ui/QueryBoundary'
 import type { Category } from '../api/categories'
 import {
   useCategories,
@@ -15,12 +17,32 @@ export function CategoriesPage() {
   const groups = useCategoryGroups()
   const categories = useCategories()
 
-  if (groups.isPending || categories.isPending) return <p>Loading…</p>
-  if (groups.error) return <p role="alert">{groups.error.message}</p>
-  if (categories.error) return <p role="alert">{categories.error.message}</p>
+  // Two readers, so two boundaries. Nesting keeps the behaviour the hand-written
+  // guards had -- either query still pending shows one placeholder, and a failed
+  // group load is reported ahead of the categories that depend on it.
+  return (
+    <QueryBoundary query={groups}>
+      {(loadedGroups) => (
+        <QueryBoundary query={categories}>
+          {(loadedCategories) => (
+            <CategoriesSection
+              groupNames={loadedGroups.map((group) => group.name)}
+              categories={loadedCategories}
+            />
+          )}
+        </QueryBoundary>
+      )}
+    </QueryBoundary>
+  )
+}
 
-  const groupNames = (groups.data ?? []).map((group) => group.name)
-
+function CategoriesSection({
+  groupNames,
+  categories,
+}: {
+  groupNames: string[]
+  categories: Category[]
+}) {
   return (
     <section aria-label="Categories">
       <NewGroupForm />
@@ -31,7 +53,7 @@ export function CategoriesPage() {
       <NewCategoryForm groups={groupNames} />
 
       <h3 className="mt-8 text-[1.1rem] font-semibold">Categories</h3>
-      <CategoryList categories={categories.data ?? []} groups={groupNames} />
+      <CategoryList categories={categories} groups={groupNames} />
     </section>
   )
 }
@@ -113,11 +135,7 @@ function GroupRow({ name }: { name: string }) {
           </span>
         </div>
       )}
-      {failure && (
-        <p role="alert" className="mt-2 text-danger">
-          {failure.message}
-        </p>
-      )}
+      {failure && <ErrorMessage error={failure} className="mt-2" />}
     </li>
   )
 }
@@ -227,11 +245,7 @@ function CategoryRow({ category, groups }: { category: Category; groups: string[
           </span>
         </div>
       )}
-      {failure && (
-        <p role="alert" className="mt-2 text-danger">
-          {failure.message}
-        </p>
-      )}
+      {failure && <ErrorMessage error={failure} className="mt-2" />}
     </li>
   )
 }
@@ -260,11 +274,7 @@ function NewGroupForm() {
       <button className="field-submit" type="submit" disabled={create.isPending}>
         {create.isPending ? 'Adding…' : 'Add group'}
       </button>
-      {create.error && (
-        <p role="alert" className="mt-3 text-danger">
-          {create.error.message}
-        </p>
-      )}
+      {create.error && <ErrorMessage error={create.error} className="mt-3" />}
     </form>
   )
 }
@@ -329,11 +339,7 @@ function NewCategoryForm({ groups }: { groups: string[] }) {
       <button className="field-submit" type="submit" disabled={create.isPending}>
         {create.isPending ? 'Adding…' : 'Add category'}
       </button>
-      {create.error && (
-        <p role="alert" className="mt-3 text-danger">
-          {create.error.message}
-        </p>
-      )}
+      {create.error && <ErrorMessage error={create.error} className="mt-3" />}
     </form>
   )
 }
