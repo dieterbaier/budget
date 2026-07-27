@@ -5,7 +5,7 @@ title: Stakeholders
 status: reviewed
 owner: product owner
 created: '2026-07-03'
-updated: '2026-07-24'
+updated: '2026-07-27'
 reviewed: true
 generated: false
 summary: Stakeholders for the private single-user Budget application.
@@ -27,4 +27,5 @@ concerns.
 | Owner / user | Fast entry from bank statements, trustworthy monthly and group views, a sound pension projection, and privacy.
 | Developer | Clean hexagonal boundaries, TDD and Gherkin, swappable datastore and delivery.
 | Operator | Recoverable data (backups), simple local-then-hosted deployment, observable failures.
+| Toolkit author | Whether the architecture-knowledge-toolkit's method holds up on real work: which skills earn their keep, where the metamodel or the generators fall short, and what should change upstream. This hat is served by findings rather than by artifact count.
 |===

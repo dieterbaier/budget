@@ -16,3 +16,15 @@ questions:
   non-monthly fixed costs?
 * Am I on track for retirement given my current pot, costs, inflation, and
   expected return?
+
+Second mission: serve as a working proof of the architecture-knowledge-toolkit.
+The project is deliberately run by the toolkit's own method — its skills,
+contracts, metamodel and templates — on real work rather than on an example, so
+that whether the method holds up, and how it helps day-to-day architectural work,
+can be answered from evidence.
+
+The two missions are not in tension, but they are not the same either. The
+product mission is finished when the owner stops using Notion. The toolkit
+mission is served by *findings*: a place the method helped, a place it got in the
+way, a gap worth fixing upstream. Artifact work that produces no finding and
+answers no question a later reader would get wrong serves neither mission.

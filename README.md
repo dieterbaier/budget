@@ -6,11 +6,29 @@ by category and category group across three accounts; a server-owned domain
 computes monthly expenditure, account reserves, a cash runway, and a pension
 projection, rendered by an installable React PWA.
 
-This repository was bootstrapped with the
-[architecture-knowledge-toolkit](https://github.com/docs-as-code-toolkit/architecture-knowledge-toolkit)
-`bootstrap-project` skill. It holds architecture documentation under `docs/` and
-the application under `application/` (currently a Spring Boot backend walking
-skeleton).
+## Two goals
+
+The project has a second purpose beside the product, and it is worth stating up
+front because it explains the shape of this repository.
+
+1. **Build the budget application** described above — the functional goal.
+2. **Prove the [architecture-knowledge-toolkit](https://github.com/docs-as-code-toolkit/architecture-knowledge-toolkit)
+   on real work** — whether the method holds up outside its own examples, and how
+   it actually helps day-to-day architectural work.
+
+The toolkit was not merely used to bootstrap this repository; exercising it is an
+ongoing objective. That is why a single-user budget tracker carries more recorded
+decisions, constraints and fitness functions than its size alone would justify:
+the density is how the method's strengths and weaknesses surface.
+
+It is not a licence for ceremony. Artifact work earns its place when it produces
+a *finding* — something learned about the method, or a decision a later reader
+would otherwise get wrong. Findings flow back upstream as issues against the
+toolkit, and the same question is asked of every new artifact: would someone
+without it probably decide wrongly or miss an assumption?
+
+This repository holds architecture documentation under `docs/` and the
+application under `application/`.
 
 > The initial content was AI-generated from the toolkit's private-budget
 > example. On 2026-07-24 the owner reviewed the scope and made the first product
