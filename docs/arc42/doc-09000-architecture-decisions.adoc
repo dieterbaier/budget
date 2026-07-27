@@ -127,6 +127,12 @@ relations:
   rationale: The chapter contains this ADR.
   evidence: docs/arc42/doc-09000-architecture-decisions.adoc
   reviewed: true
+- type: documents
+  target: ADR-021-domain-invariant-enforcement
+  status: proposed
+  rationale: The chapter contains this ADR.
+  evidence: docs/arc42/doc-09000-architecture-decisions.adoc
+  reviewed: false
 metadata_version: '1.0'
 ---
 [[architecture-decisions]]
