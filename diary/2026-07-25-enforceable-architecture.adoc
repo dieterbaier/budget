@@ -1,0 +1,47 @@
+== Day 2 — 25 July 2026: making the architecture enforceable
+
+The architecture had been *described*. This was the day it became *checkable*:
+ArchUnit fitness functions (ADR-013) and four constraints, CON-001 to CON-004 —
+framework-free core, hexagonal boundaries, persistence isolation, plain Java.
+
+Review pushback that changed the result: the adapter clause was not the strict
+form, and saying so in the ADR was better than quietly pretending otherwise. A
+fitness function that is weaker than the rule it claims to enforce is a
+half-truth in the record, and the fix is to write down which one it is.
+
+=== The brief that was not the brief
+
+The frontend architecture style was opened the same day, and the opening was
+wrong. The brief mentioned Atomic Design, axios, TanStack Query, UnoCSS and
+React Router, and I began treating that list as settled. It was not — it
+described a *customer's* project. The correction was blunt and useful:
+
+[quote]
+____
+"'Atomic design', 'Screaming architecture' are buzzwords for me… every
+dependency should be one for a reason."
+____
+
+That sentence became a standing rule. Every dependency in this repo now has to
+justify itself against *this* project:
+
+* *axios* lost to `fetch` — nothing in a single-user PWA needed interceptors or
+  the payload.
+* *Atomic Design* lost to a feature-first structure, which names what the app
+  does rather than how big its components are.
+* *React Router* was *deferred*. With one screen there was nothing to route. It
+  arrived on day 4, when a second screen actually existed — and ADR-014 records
+  the deferral, so the later adoption reads as the plan working rather than as a
+  reversal.
+* *TanStack Query* and *UnoCSS* survived, on their own arguments.
+
+The general lesson is not about any of those libraries. It is that a stack named
+in a brief is a *hypothesis about this project*, and inherited context is the
+easiest kind to mistake for a decision.
+
+=== One question at a time
+
+The other process correction that day: I asked three grilling questions in one
+batch. That is not grilling, it is an interrogation, and it is hard to answer —
+the answers collide, and the least interesting question tends to get the most
+attention. One question at a time from then on.

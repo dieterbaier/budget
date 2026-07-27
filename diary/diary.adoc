@@ -1,0 +1,38 @@
+= Development Diary
+Dieter Baier
+:toc: left
+:toclevels: 2
+:icons: font
+:sectanchors:
+:sectlinks:
+
+A working record of this project: what was decided, what was rejected, and —
+mostly — what turned out to be wrong.
+
+This is not architecture documentation. The decisions live in
+`docs/arc42/09-architecture-decisions/`, the constraints in
+`docs/arc42/02-architecture-constraints/`, and those are the authority. This
+diary is the story around them: the reasoning that did not fit in an ADR, and
+the mistakes an ADR has no place to record.
+
+Each recap is its own document, included here. They are written from the commit
+history, the issues and the pull requests, so the dates and numbers are
+checkable rather than remembered.
+
+One recap is cross-cutting rather than chronological, and is the one worth
+reading first: the through-line, which is the single lesson these days keep
+teaching.
+
+include::through-line.adoc[]
+
+include::2026-07-24-walking-skeleton.adoc[]
+
+include::2026-07-25-enforceable-architecture.adoc[]
+
+include::2026-07-26-green-lights.adoc[]
+
+include::2026-07-27-features-and-identity.adoc[]
+
+include::working-agreements.adoc[]
+
+include::open-threads.adoc[]

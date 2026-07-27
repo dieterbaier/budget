@@ -1,0 +1,23 @@
+== Day 1 — 24 July 2026: the walking skeleton
+
+Scope was deliberately cut to the bone: a single-user actuals tracker. Not a
+budgeting product, not multi-tenant, no auth beyond a single deployment
+(ADR-007).
+
+The first slice went end to end rather than layer by layer — domain, ports,
+JPA/Flyway adapter, HTTP adapter, React PWA — so that the architecture was
+exercised by something real before it was written down.
+
+Decisions recorded on the way: DDD with domain identity (ADR-009), Flyway
+(ADR-010), no Lombok (ADR-011), explicit bean configuration (ADR-012).
+
+ADR-009 is the one that kept paying out. The owner's position — *"I don't like
+to have technical IDs as identifiers for my domain objects"* — looked like a
+preference on day 1. It settled two much harder arguments on day 4, and neither
+of them was about identity on its face.
+
+That is the argument for recording a decision whose consequences are not yet
+visible: the value of ADR-009 was not in what it decided but in what it made
+*derivable* later. Three days on, "must category names be unique?" and "how can
+a name be an identity if names can change?" both had answers already, and
+neither needed a new decision.

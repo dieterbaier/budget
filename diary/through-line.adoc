@@ -1,0 +1,42 @@
+== The through-line
+
+If these days have one theme, it is *green signals that check nothing*.
+
+It came up seven times, in seven different disguises:
+
+. a lint rule that reported no cycles because it could not parse the files it was following
+. a locale setting that would have silently reverted to English
+. an npm override that satisfied `npm audit` while breaking the library it pinned
+. a shell check that printed success because it read the exit code of `tail`
+. a payload budget calibrated so loosely that it did not reject the regression it was written for
+. a test for a state bug that had never once seen the bug
+. a claim that a shared query key made a refactor free, when it tripled the requests
+
+Each one *passed*. None of them was checking anything.
+
+The habit that came out of it, and which now applies to every guard added here:
+**break it deliberately and watch it fail, or you do not know that it works.** A
+guard that has never failed is a guard whose failure path has never been
+executed.
+
+It is worth being precise about why this keeps happening rather than treating it
+as carelessness. A check has two ways to be quiet: because the thing it looks
+for is absent, and because it is not looking. Both render identically. Nothing
+in a passing build distinguishes them, and the reporting layer of most tools is
+built to celebrate the first case without ever considering the second.
+
+The seven above split evenly along a second axis, which is the more useful one
+for deciding where to spend suspicion:
+
+Wrong wiring:: the cycle rule, the locale, the shell check. The tool was capable
+and was asked the wrong question, or its answer was read wrong. These are found
+by feeding the tool a known-bad input.
+
+Wrong threshold:: the payload budget. The tool worked perfectly and the number
+was set where it could not bite. These are found by arithmetic against a real
+regression, and never by running the check.
+
+Wrong belief:: the npm override, the test that had never seen its bug, the
+shared-query-key claim. The tool was fine and the mental model was not. These
+are the expensive ones, because everything downstream of the belief looks
+consistent — and they are found only by measuring the thing believed.
