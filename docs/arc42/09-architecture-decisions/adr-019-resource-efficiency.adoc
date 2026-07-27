@@ -2,11 +2,11 @@
 id: ADR-019-resource-efficiency
 type: ADR
 title: Resource Frugality As A Weighed Concern
-status: proposed
+status: accepted
 owner: architecture
 created: '2026-07-26'
 updated: '2026-07-27'
-reviewed: false
+reviewed: true
 summary: Resource cost is weighed with a declared evidence level, enforced where it can be measured, and never allowed to compensate for a regression in correctness, privacy, security or usability.
 derived_from:
 - type: prompt
@@ -18,14 +18,14 @@ tags:
 relations:
 - type: addresses
   target: DOC-01001-quality-goals
-  status: proposed
+  status: accepted
   rationale: Gives QG-005 a working definition, an evidence vocabulary, an enforcement point and a conflict rule.
-  reviewed: false
+  reviewed: true
 - type: relates_to
   target: QS-003-web-client-payload
-  status: proposed
+  status: accepted
   rationale: The bundle budgets are the one part of this concern that is currently measurable and enforced.
-  reviewed: false
+  reviewed: true
 metadata_version: '1.0'
 ---
 [[adr-019-resource-efficiency]]
@@ -33,9 +33,10 @@ metadata_version: '1.0'
 
 === Status
 
-Proposed. The goal was set by the owner on 2026-07-26 and reframed by the owner
-in review on 2026-07-27; this record is AI-drafted and is not accepted
-architecture truth until the owner has reviewed the text.
+Accepted. The goal was set by the owner on 2026-07-26 and reframed by the owner
+in review on 2026-07-27 — the evidence levels, the conflict rule and the demotion
+of hosting dominance to a hypothesis are all theirs. Reviewed and confirmed the
+same day.
 
 === Decision
 

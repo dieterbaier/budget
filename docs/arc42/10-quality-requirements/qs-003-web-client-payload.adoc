@@ -2,11 +2,11 @@
 id: QS-003-web-client-payload
 type: QualityScenario
 title: Web Client Payload Budget
-status: proposed
+status: reviewed
 owner: architecture
 created: '2026-07-26'
 updated: '2026-07-27'
-reviewed: false
+reviewed: true
 summary: The web client's application bundle stays under 70 kB gzipped and its PWA runtime under 10 kB, checked by the build.
 tags:
 - quality
@@ -15,9 +15,9 @@ tags:
 relations:
 - type: refines
   target: DOC-01001-quality-goals
-  status: proposed
+  status: accepted
   rationale: The scenario makes QG-005 measurable for the one resource this project can measure today.
-  reviewed: false
+  reviewed: true
 metadata_version: '1.0'
 ---
 [[qs-003-web-client-payload]]

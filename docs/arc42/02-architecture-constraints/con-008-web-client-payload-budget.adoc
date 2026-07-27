@@ -2,11 +2,11 @@
 id: CON-008-web-client-payload-budget
 type: Constraint
 title: Web Client Payload Budget
-status: proposed
+status: reviewed
 owner: architecture
 created: '2026-07-26'
 updated: '2026-07-27'
-reviewed: false
+reviewed: true
 summary: The web build fails when the application bundle exceeds 70 kB gzipped or the PWA runtime exceeds 10 kB.
 tags:
 - constraint
@@ -16,16 +16,16 @@ tags:
 relations:
 - type: refines
   target: ADR-019-resource-efficiency
-  status: proposed
+  status: accepted
   rationale: The one part of that concern which is measurable today and therefore enforced rather than reviewed.
   evidence: application/web/scripts/check-bundle-budget.mjs
-  reviewed: false
+  reviewed: true
 - type: verifies
   target: QS-003-web-client-payload
-  status: proposed
+  status: accepted
   rationale: Fails the build when the bundle exceeds the budget that scenario states.
   evidence: application/web/scripts/check-bundle-budget.mjs
-  reviewed: false
+  reviewed: true
 metadata_version: '1.0'
 ---
 [[con-008-web-client-payload-budget]]

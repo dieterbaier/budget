@@ -33,9 +33,9 @@ relations:
   reviewed: true
 - type: addresses
   target: DOC-01001-quality-goals
-  status: proposed
+  status: accepted
   rationale: 'Measured: generating only the utility CSS actually used took the stylesheet from 4.20 KB to 3.08 KB, serving QG-005.'
-  reviewed: false
+  reviewed: true
 metadata_version: '1.0'
 ---
 [[adr-014-frontend-architecture-style-and-stack]]
