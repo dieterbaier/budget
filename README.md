@@ -19,7 +19,9 @@ front because it explains the shape of this repository.
 *Validate*, not *prove*: a testbed that can only confirm is worthless. This one
 has already shown the method missing a generator behaviour, permitting overclaims,
 passing checks that were blind, and lacking a proportionality rule for artifacts.
-Those findings are the return on the second goal, not the artifact count.
+Those findings are the return on the second goal, not the artifact count — they
+are gathered, with what the toolkit got right and what it structurally cannot
+catch, in [`diary/toolkit-validation.adoc`](diary/toolkit-validation.adoc).
 
 **The two goals can be in tension, and the product goal wins.** Exercising the
 toolkit adds documentation and review work; the application benefits from
@@ -56,6 +58,9 @@ application under `application/`.
 - `application/web/` — the React + TypeScript PWA (Vite), the single client for
   desktop and mobile (`cd application/web && npm test`). Writes its coverage
   report to `coverage/` (git-ignored).
+- `diary/` — the development diary: `diary.adoc` (level 0) including one
+  document per recap (level 1). Deliberately outside `docs/`, so it is not an
+  architecture artifact — see [Development diary](#development-diary).
 - `metamodel/`, `templates/`, `scripts/`, `build.sh` — executable documentation
   tooling vendored from the toolkit (kept in sync; see the recorded reference in
   `AGENTS.md`).
@@ -78,6 +83,47 @@ than restating them.
 
 Work starts from an issue and lands on `main` through a rebased pull request —
 see [CONTRIBUTING.md](CONTRIBUTING.md).
+
+## Development diary
+
+`diary/diary.adoc` is a running record of what was decided, what was rejected,
+and — mostly — what turned out to be wrong. It is **not** architecture
+documentation: the ADRs and constraints under `docs/` stay the authority, and
+the diary never contradicts them.
+
+It exists because the rest of the record is systematically biased toward things
+that worked. Merged pull requests, accepted ADRs and green pipelines are all
+artifacts of success. A belief that was wrong and got corrected leaves behind
+only the corrected version — the reasoning that produced the mistake is gone,
+and with it the reason the mistake was plausible. An ADR records the decision
+that won; a commit message records why a change was worth making. Neither has a
+place for *"this check was passing and checking nothing, and here is how that
+was missed"*, which is the single most reused entry in this project's diary.
+
+That gap is wider with AI-assisted work, which is the argument for trying this
+elsewhere. Far more reasoning happens per day, and most of it happens in a
+conversation that is not a repository artifact. Commit messages catch the part
+attached to a diff. The diary catches the corrections, the rejected
+alternatives, and the claims that measurement killed — the parts with no diff to
+attach to.
+
+For this repository it also feeds the second goal directly: method findings come
+disproportionately from what went wrong, so `diary/toolkit-validation.adoc`
+gathers what real product work revealed about the toolkit, including an honest
+scorecard of what the automated guardrails caught versus what human review
+caught.
+
+**If you want to copy the idea**, it is cheap: plain AsciiDoc, one file per
+recap, no tooling, no front matter, and deliberately outside `docs/` so the
+metamodel validation ignores it and a diary entry can never break the
+documentation build. `diary/diary.adoc` is the level-0 document and includes
+each recap at level 1, so adding an entry is a new file and one `include::`
+line.
+
+The test that keeps it worth reading — and it is easy to fail — is that an entry
+must record something a reader **could not reconstruct** from the diff, the
+issues and the ADRs. A diary that narrates what the commits already say is a
+changelog with extra steps, and should be deleted rather than maintained.
 
 ## Run the application
 
