@@ -1,4 +1,5 @@
 import { formatEur } from '@/shared/format/money'
+import { QueryBoundary } from '@/shared/ui/QueryBoundary'
 import { useMonthlyExpenditure } from '../queries/useMonthlyExpenditure'
 
 interface Props {
@@ -6,31 +7,31 @@ interface Props {
 }
 
 export function MonthlyExpenditureView({ month }: Props) {
-  const { data, error, isPending } = useMonthlyExpenditure(month)
-
-  if (isPending) return <p>Loading…</p>
-  if (error) return <p role="alert" className="text-danger">{error.message}</p>
-  if (!data) return null
+  const expenditure = useMonthlyExpenditure(month)
 
   return (
-    <section aria-label="Current monthly expenditure">
-      <dl className="grid grid-cols-2 gap-3 m-0">
-        <Figure label="Variable costs" amount={data.variableCosts} />
-        <Figure label="Fixed costs (monthly)" amount={data.fixedCostsMonthly} />
-        <Figure label="Total" amount={data.total} />
-        <Figure label="Average income" amount={data.averageIncome} />
-      </dl>
-      <p
-        role="status"
-        className={`mt-4 p-3 rounded-lg font-semibold ${
-          data.overspending ? 'bg-danger-soft text-danger' : 'bg-good-soft text-good'
-        }`}
-      >
-        {data.overspending
-          ? `Overspending by ${formatEur(data.difference)}`
-          : `Within income by ${formatEur(-data.difference)}`}
-      </p>
-    </section>
+    <QueryBoundary query={expenditure}>
+      {(data) => (
+        <section aria-label="Current monthly expenditure">
+          <dl className="grid grid-cols-2 gap-3 m-0">
+            <Figure label="Variable costs" amount={data.variableCosts} />
+            <Figure label="Fixed costs (monthly)" amount={data.fixedCostsMonthly} />
+            <Figure label="Total" amount={data.total} />
+            <Figure label="Average income" amount={data.averageIncome} />
+          </dl>
+          <p
+            role="status"
+            className={`mt-4 p-3 rounded-lg font-semibold ${
+              data.overspending ? 'bg-danger-soft text-danger' : 'bg-good-soft text-good'
+            }`}
+          >
+            {data.overspending
+              ? `Overspending by ${formatEur(data.difference)}`
+              : `Within income by ${formatEur(-data.difference)}`}
+          </p>
+        </section>
+      )}
+    </QueryBoundary>
   )
 }
 
