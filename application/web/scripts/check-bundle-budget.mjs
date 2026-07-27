@@ -1,18 +1,22 @@
-// CON-008: the web client's JavaScript budget (QS-003, QG-005).
+// CON-008: the web client's JavaScript budgets (QS-003, QG-005).
 //
-// Runs after `vite build`, so exceeding the budget fails `npm run build` and
+// Runs after `vite build`, so exceeding a budget fails `npm run build` and
 // therefore the `web` job of PR validation. A budget nothing enforces is a
 // number in a document.
 //
-// What is measured: the application bundle in dist/assets. That is what the
-// project's own decisions move -- ADR-016 chose Zod Mini over full Zod and saved
-// 13.7 KB here.
+// Two ceilings rather than one, because the two grow for unrelated reasons:
 //
-// What is not: the service worker and the Workbox runtime that vite-plugin-pwa
-// generates. They are the tooling's output rather than a consequence of how this
-// application is written, and budgeting them would make the number move when the
-// plugin is upgraded, for reasons no feature change caused. They are reported
-// anyway, so a jump in them is visible rather than silent.
+//   application  dist/assets/*.js -- what this project's own decisions move.
+//                ADR-016 chose Zod Mini over the full build and took 13.7 kB
+//                out of this number.
+//   pwa runtime  the service worker and Workbox runtime that vite-plugin-pwa
+//                generates. Not something feature work changes; it moves when
+//                the plugin is upgraded.
+//
+// Separating them means feature work cannot consume the tooling allowance and
+// plugin churn cannot consume the application allowance. The first version of
+// this check reported the runtime without bounding it, which left it free to
+// grow to any size: a printed line is not a gate.
 
 import { gzipSync } from 'node:zlib'
 import { readFileSync, readdirSync } from 'node:fs'
@@ -21,7 +25,15 @@ import process from 'node:process'
 
 // Bytes. Displayed as kB (1000 bytes) to match what `vite build` prints, so the
 // two numbers reconcile.
-const BUDGET_BYTES = 75_000
+//
+// The application ceiling is set so that the regression it claims to prevent
+// actually fails it: reverting to the full Zod build measures 74.0 kB, which
+// passes at 75 kB and fails at 70 kB. The first version used 75 kB and would
+// have let that regression through — see QS-003.
+const BUDGETS = {
+  application: 70_000,
+  'pwa runtime': 10_000,
+}
 
 const dist = join(import.meta.dirname, '..', 'dist')
 
@@ -29,27 +41,34 @@ function gzippedSize(files) {
   return files.reduce((total, file) => total + gzipSync(readFileSync(file)).length, 0)
 }
 
-function jsIn(dir, predicate = () => true) {
+function jsIn(dir) {
   return readdirSync(dir, { withFileTypes: true })
-    .filter((entry) => entry.isFile() && entry.name.endsWith('.js') && predicate(entry.name))
+    .filter((entry) => entry.isFile() && entry.name.endsWith('.js'))
     .map((entry) => join(dir, entry.name))
 }
 
-const appBundle = gzippedSize(jsIn(join(dist, 'assets')))
-const tooling = gzippedSize(jsIn(dist))
+const measured = {
+  application: gzippedSize(jsIn(join(dist, 'assets'))),
+  'pwa runtime': gzippedSize(jsIn(dist)),
+}
 
 const kb = (bytes) => `${(bytes / 1000).toFixed(1)} kB`
-const used = ((appBundle / BUDGET_BYTES) * 100).toFixed(0)
 
-console.log(`\nBundle budget (CON-008)`)
-console.log(`  application  ${kb(appBundle)} gzipped of ${kb(BUDGET_BYTES)}  (${used}% of budget)`)
-console.log(`  pwa runtime  ${kb(tooling)} gzipped  (reported, not budgeted)`)
+console.log('\nBundle budget (CON-008)')
+for (const [name, budget] of Object.entries(BUDGETS)) {
+  const used = ((measured[name] / budget) * 100).toFixed(0)
+  console.log(`  ${name.padEnd(12)} ${kb(measured[name])} gzipped of ${kb(budget)}  (${used}%)`)
+}
 
-if (appBundle > BUDGET_BYTES) {
+const over = Object.entries(BUDGETS).filter(([name, budget]) => measured[name] > budget)
+
+if (over.length > 0) {
+  for (const [name, budget] of over) {
+    console.error(`\nThe ${name} is ${kb(measured[name])} gzipped, over the ${kb(budget)} budget.`)
+  }
   console.error(
-    `\nThe application bundle is ${kb(appBundle)} gzipped, over the ${kb(BUDGET_BYTES)} budget.\n` +
-      `Either make it smaller or change the budget deliberately in QS-003 -- but change it\n` +
-      `as a decision, with the number that justifies it, rather than to make this pass.\n`,
+    '\nEither make it smaller or change the budget deliberately in QS-003 -- but change it\n' +
+      'as a decision, with the number that justifies it, rather than to make this pass.\n',
   )
   process.exit(1)
 }
