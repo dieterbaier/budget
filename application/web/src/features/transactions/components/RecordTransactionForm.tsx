@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { CategoryPicker } from '@/features/categories'
 import { useRecordTransaction } from '../queries/useRecordTransaction'
 import type { TransactionType } from '../api/transactions'
 
@@ -48,15 +49,12 @@ export function RecordTransactionForm() {
           required
         />
       </label>
-      <label className="field-label">
-        Category
-        <input
-          className="field-control"
-          value={category}
-          onChange={(e) => setCategory(e.target.value)}
-          required
-        />
-      </label>
+      {/*
+        The category is chosen, not typed (issue #46). This feature knows only
+        that the categories feature offers a picker; how categories are fetched
+        and shaped stays behind that barrel (CON-005).
+      */}
+      <CategoryPicker value={category} onChange={setCategory} />
       <label className="field-label">
         Type
         <select
@@ -71,7 +69,12 @@ export function RecordTransactionForm() {
           ))}
         </select>
       </label>
-      <button className="field-submit" type="submit" disabled={record.isPending}>
+      {/*
+        Without a category there is nothing to record, and when no category
+        exists yet the picker renders a hint instead of a control -- so the
+        button has to be the thing that holds the form shut, not `required`.
+      */}
+      <button className="field-submit" type="submit" disabled={record.isPending || !category}>
         {record.isPending ? 'Saving…' : 'Record'}
       </button>
       {record.error && (
