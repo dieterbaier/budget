@@ -303,4 +303,28 @@ describe('CategoriesPage', () => {
 
     expect(screen.getByLabelText(/new name for Groceries/i)).toHaveValue('Groceries')
   })
+
+  // The group picker fetches its own groups rather than being handed them, which
+  // is what let the page stop threading an array down into every row. That is
+  // only free if the shared query key means one request rather than one per
+  // picker -- so this asserts the count, rather than trusting the cache to do
+  // what it is advertised to do (CON-008).
+  it('fetches the groups once however many pickers ask for them', async () => {
+    const fetchMock = stubApi()
+
+    renderWithQuery(<CategoriesPage />)
+    await screen.findByText('Groceries')
+
+    // Open both edit rows, so two more pickers mount on top of the add form's.
+    fireEvent.click(within(screen.getByText('Groceries').closest('li')!).getByText('Edit'))
+    fireEvent.click(within(screen.getByText('Mortgage').closest('li')!).getByText('Edit'))
+    await screen.findByLabelText(/group for Groceries/i)
+    await screen.findByLabelText(/group for Mortgage/i)
+
+    const groupRequests = fetchMock.mock.calls.filter(([url]) =>
+      String(url).includes('category-groups'),
+    )
+    expect(groupRequests).toHaveLength(1)
+  })
+
 })

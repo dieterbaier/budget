@@ -13,12 +13,31 @@ import {
 export const CATEGORIES_KEY = 'categories'
 export const CATEGORY_GROUPS_KEY = 'category-groups'
 
+// TanStack's default `staleTime` is 0, so data is stale the moment it arrives
+// and every newly mounting observer refires the request. That is invisible with
+// one reader per screen and expensive once a picker is a component: mounting
+// three of them measured three requests for the same list.
+//
+// Every mutation in this feature already invalidates these keys explicitly, so
+// a remount has nothing to learn that an invalidation would not have told it.
+// Five minutes bounds how long a change made on another device stays unseen
+// without paying for a request per mount (QG-005, CON-008).
+const CATALOGUE_STALE_TIME = 5 * 60 * 1000
+
 export function useCategories() {
-  return useQuery({ queryKey: [CATEGORIES_KEY], queryFn: getCategories })
+  return useQuery({
+    queryKey: [CATEGORIES_KEY],
+    queryFn: getCategories,
+    staleTime: CATALOGUE_STALE_TIME,
+  })
 }
 
 export function useCategoryGroups() {
-  return useQuery({ queryKey: [CATEGORY_GROUPS_KEY], queryFn: getCategoryGroups })
+  return useQuery({
+    queryKey: [CATEGORY_GROUPS_KEY],
+    queryFn: getCategoryGroups,
+    staleTime: CATALOGUE_STALE_TIME,
+  })
 }
 
 export function useCreateCategoryGroup() {

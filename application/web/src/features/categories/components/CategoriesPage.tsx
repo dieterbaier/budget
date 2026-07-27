@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { ErrorMessage } from '@/shared/ui/ErrorMessage'
 import { QueryBoundary } from '@/shared/ui/QueryBoundary'
+import { CategoryGroupPicker } from './CategoryGroupPicker'
 import type { Category } from '../api/categories'
 import {
   useCategories,
@@ -53,7 +54,7 @@ function CategoriesSection({
       <NewCategoryForm groups={groupNames} />
 
       <h3 className="mt-8 text-[1.1rem] font-semibold">Categories</h3>
-      <CategoryList categories={categories} groups={groupNames} />
+      <CategoryList categories={categories} />
     </section>
   )
 }
@@ -140,7 +141,7 @@ function GroupRow({ name }: { name: string }) {
   )
 }
 
-function CategoryList({ categories, groups }: { categories: Category[]; groups: string[] }) {
+function CategoryList({ categories }: { categories: Category[] }) {
   if (categories.length === 0) {
     return <p className="text-muted">No categories yet. Add a group, then a category.</p>
   }
@@ -148,13 +149,13 @@ function CategoryList({ categories, groups }: { categories: Category[]; groups: 
   return (
     <ul aria-label="Category list" className="m-0 list-none p-0">
       {categories.map((category) => (
-        <CategoryRow key={category.name} category={category} groups={groups} />
+        <CategoryRow key={category.name} category={category} />
       ))}
     </ul>
   )
 }
 
-function CategoryRow({ category, groups }: { category: Category; groups: string[] }) {
+function CategoryRow({ category }: { category: Category }) {
   const [editing, setEditing] = useState(false)
   const [draft, setDraft] = useState(category)
   const update = useUpdateCategory()
@@ -194,18 +195,11 @@ function CategoryRow({ category, groups }: { category: Category; groups: string[
             onChange={(event) => setDraft({ ...draft, name: event.target.value })}
             required
           />
-          <select
-            className="field-control"
-            aria-label={`Group for ${category.name}`}
+          <CategoryGroupPicker
+            accessibleName={`Group for ${category.name}`}
             value={draft.group}
-            onChange={(event) => setDraft({ ...draft, group: event.target.value })}
-          >
-            {groups.map((option) => (
-              <option key={option} value={option}>
-                {option}
-              </option>
-            ))}
-          </select>
+            onChange={(group) => setDraft({ ...draft, group })}
+          />
           <label className="text-sm">
             <input
               type="checkbox"
@@ -314,17 +308,7 @@ function NewCategoryForm({ groups }: { groups: string[] }) {
       </label>
       <label className="field-label">
         Group
-        <select
-          className="field-control"
-          value={group || groups[0]}
-          onChange={(event) => setGroup(event.target.value)}
-        >
-          {groups.map((option) => (
-            <option key={option} value={option}>
-              {option}
-            </option>
-          ))}
-        </select>
+        <CategoryGroupPicker value={group || groups[0]} onChange={setGroup} />
       </label>
       <label className="field-label">
         <span>
