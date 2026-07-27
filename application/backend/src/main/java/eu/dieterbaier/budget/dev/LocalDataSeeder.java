@@ -1,10 +1,12 @@
 package eu.dieterbaier.budget.dev;
 
+import eu.dieterbaier.budget.adapter.out.persistence.CategoryGroupJpaRepository;
 import eu.dieterbaier.budget.adapter.out.persistence.CategoryJpaRepository;
 import eu.dieterbaier.budget.adapter.out.persistence.FixedCostJpaRepository;
 import eu.dieterbaier.budget.adapter.out.persistence.IncomeEntryJpaRepository;
 import eu.dieterbaier.budget.adapter.out.persistence.TransactionJpaRepository;
 import eu.dieterbaier.budget.adapter.out.persistence.entity.CategoryEntity;
+import eu.dieterbaier.budget.adapter.out.persistence.entity.CategoryGroupEntity;
 import eu.dieterbaier.budget.adapter.out.persistence.entity.FixedCostEntity;
 import eu.dieterbaier.budget.adapter.out.persistence.entity.IncomeEntryEntity;
 import eu.dieterbaier.budget.adapter.out.persistence.entity.TransactionEntity;
@@ -35,13 +37,16 @@ public class LocalDataSeeder implements CommandLineRunner {
 
     private static final Logger log = LoggerFactory.getLogger(LocalDataSeeder.class);
 
+    private final CategoryGroupJpaRepository groups;
     private final CategoryJpaRepository categories;
     private final TransactionJpaRepository transactions;
     private final FixedCostJpaRepository fixedCosts;
     private final IncomeEntryJpaRepository incomeEntries;
 
-    public LocalDataSeeder(CategoryJpaRepository categories, TransactionJpaRepository transactions,
+    public LocalDataSeeder(CategoryGroupJpaRepository groups, CategoryJpaRepository categories,
+                           TransactionJpaRepository transactions,
                            FixedCostJpaRepository fixedCosts, IncomeEntryJpaRepository incomeEntries) {
+        this.groups = groups;
         this.categories = categories;
         this.transactions = transactions;
         this.fixedCosts = fixedCosts;
@@ -55,8 +60,11 @@ public class LocalDataSeeder implements CommandLineRunner {
             return;
         }
 
-        CategoryEntity groceries = categories.save(new CategoryEntity("Groceries", true));
-        CategoryEntity car = categories.save(new CategoryEntity("Car", false));
+        CategoryGroupEntity household = groups.save(new CategoryGroupEntity("Household"));
+        CategoryGroupEntity motoring = groups.save(new CategoryGroupEntity("Car"));
+
+        CategoryEntity groceries = categories.save(new CategoryEntity("Groceries", household, true));
+        CategoryEntity car = categories.save(new CategoryEntity("Car insurance", motoring, false));
 
         transactions.save(expense(LocalDate.of(2026, 7, 3), "800.00", groceries));
         transactions.save(expense(LocalDate.of(2026, 7, 20), "150.00", groceries));

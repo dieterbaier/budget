@@ -6,6 +6,7 @@ import eu.dieterbaier.budget.application.port.out.IncomeRepository;
 import eu.dieterbaier.budget.application.port.out.TransactionRepository;
 import eu.dieterbaier.budget.application.service.MonthlyExpenditureService;
 import eu.dieterbaier.budget.domain.model.Category;
+import eu.dieterbaier.budget.domain.model.CategoryGroup;
 import eu.dieterbaier.budget.domain.model.FixedCost;
 import eu.dieterbaier.budget.domain.model.Money;
 import eu.dieterbaier.budget.domain.model.PaymentInterval;
@@ -31,6 +32,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  * real persistence adapter will plug into.
  */
 public class MonthlyExpenditureSteps {
+
+    // The grouping is irrelevant to expenditure totals; these scenarios are
+    // about amounts, so every category is parked in one group.
+    private static final CategoryGroup GROUP = new CategoryGroup("Household");
 
     private final List<Transaction> transactions = new ArrayList<>();
     private final List<FixedCost> fixedCosts = new ArrayList<>();
@@ -65,7 +70,7 @@ public class MonthlyExpenditureSteps {
 
     @Given("a {interval} fixed cost {string} of {money} EUR")
     public void aFixedCostOf(PaymentInterval interval, String name, Money amount) {
-        fixedCosts.add(new FixedCost(name, amount, interval, Category.of(name), null));
+        fixedCosts.add(new FixedCost(name, amount, interval, Category.in(GROUP, name), null));
     }
 
     @Given("in month {yearMonth} the following expenses:")
@@ -74,7 +79,7 @@ public class MonthlyExpenditureSteps {
             transactions.add(new Transaction(
                     month.atDay(1),
                     Money.of(row.get("amount")),
-                    Category.of(row.get("category")),
+                    Category.in(GROUP, row.get("category")),
                     TransactionType.EXPENSE));
         }
     }
@@ -84,7 +89,7 @@ public class MonthlyExpenditureSteps {
         transactions.add(new Transaction(
                 month.atDay(1),
                 amount.negate(),
-                Category.of(category),
+                Category.in(GROUP, category),
                 TransactionType.EXPENSE));
     }
 
@@ -93,7 +98,7 @@ public class MonthlyExpenditureSteps {
         transactions.add(new Transaction(
                 month.atDay(1),
                 amount,
-                Category.of("Transfer"),
+                Category.in(GROUP, "Transfer"),
                 TransactionType.TRANSFER));
     }
 

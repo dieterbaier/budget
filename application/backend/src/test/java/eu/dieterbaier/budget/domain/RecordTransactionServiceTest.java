@@ -6,6 +6,7 @@ import eu.dieterbaier.budget.application.port.out.TransactionRepository;
 import eu.dieterbaier.budget.application.service.RecordTransactionService;
 import eu.dieterbaier.budget.application.port.in.UnknownCategoryException;
 import eu.dieterbaier.budget.domain.model.Category;
+import eu.dieterbaier.budget.domain.model.CategoryGroup;
 import eu.dieterbaier.budget.domain.model.Money;
 import eu.dieterbaier.budget.domain.model.Transaction;
 import eu.dieterbaier.budget.domain.model.TransactionType;
@@ -32,7 +33,7 @@ class RecordTransactionServiceTest {
 
     @Test
     void recordsTransactionForKnownCategory() {
-        given(categories.findByName("Groceries")).willReturn(Optional.of(new Category("Groceries", true)));
+        given(categories.findByName("Groceries")).willReturn(Optional.of(Category.in(new CategoryGroup("House"), "Groceries")));
 
         Transaction result = service.record(new RecordTransactionCommand(
                 LocalDate.of(2026, 7, 3), new BigDecimal("800.00"), "Groceries", TransactionType.EXPENSE));

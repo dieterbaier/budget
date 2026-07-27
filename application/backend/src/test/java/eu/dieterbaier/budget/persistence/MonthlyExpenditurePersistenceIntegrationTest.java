@@ -1,10 +1,12 @@
 package eu.dieterbaier.budget.persistence;
 
 import eu.dieterbaier.budget.adapter.out.persistence.CategoryJpaRepository;
+import eu.dieterbaier.budget.adapter.out.persistence.CategoryGroupJpaRepository;
 import eu.dieterbaier.budget.adapter.out.persistence.FixedCostJpaRepository;
 import eu.dieterbaier.budget.adapter.out.persistence.IncomeEntryJpaRepository;
 import eu.dieterbaier.budget.adapter.out.persistence.TransactionJpaRepository;
 import eu.dieterbaier.budget.adapter.out.persistence.entity.CategoryEntity;
+import eu.dieterbaier.budget.adapter.out.persistence.entity.CategoryGroupEntity;
 import eu.dieterbaier.budget.adapter.out.persistence.entity.FixedCostEntity;
 import eu.dieterbaier.budget.adapter.out.persistence.entity.IncomeEntryEntity;
 import eu.dieterbaier.budget.adapter.out.persistence.entity.TransactionEntity;
@@ -47,6 +49,8 @@ class MonthlyExpenditurePersistenceIntegrationTest {
     @Autowired
     private RecordTransactionUseCase recordTransaction;
     @Autowired
+    private CategoryGroupJpaRepository groups;
+    @Autowired
     private CategoryJpaRepository categories;
     @Autowired
     private TransactionJpaRepository transactions;
@@ -61,12 +65,14 @@ class MonthlyExpenditurePersistenceIntegrationTest {
         fixedCosts.deleteAll();
         incomeEntries.deleteAll();
         categories.deleteAll();
+        groups.deleteAll();
     }
 
     @Test
     void computesMonthlyExpenditureFromPostgres() {
-        CategoryEntity groceries = categories.save(new CategoryEntity("Groceries", true));
-        CategoryEntity car = categories.save(new CategoryEntity("Car", false));
+        CategoryGroupEntity household = groups.save(new CategoryGroupEntity("Household"));
+        CategoryEntity groceries = categories.save(new CategoryEntity("Groceries", household, true));
+        CategoryEntity car = categories.save(new CategoryEntity("Car", household, false));
 
         transactions.save(expense(LocalDate.of(2026, 7, 3), "800.00", groceries));
         transactions.save(expense(LocalDate.of(2026, 7, 20), "150.00", groceries));
@@ -90,7 +96,8 @@ class MonthlyExpenditurePersistenceIntegrationTest {
 
     @Test
     void recordsTransactionThroughWritePortAndReflectsInExpenditure() {
-        categories.save(new CategoryEntity("Groceries", true));
+        CategoryGroupEntity household = groups.save(new CategoryGroupEntity("Household"));
+        categories.save(new CategoryEntity("Groceries", household, true));
 
         recordTransaction.record(new RecordTransactionCommand(
                 LocalDate.of(2026, 7, 3), new BigDecimal("250.00"), "Groceries", TransactionType.EXPENSE));
