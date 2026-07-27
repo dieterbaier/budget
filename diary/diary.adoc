@@ -19,9 +19,10 @@ Each recap is its own document, included here. They are written from the commit
 history, the issues and the pull requests, so the dates and numbers are
 checkable rather than remembered.
 
-One recap is cross-cutting rather than chronological, and is the one worth
+Two recaps are cross-cutting rather than chronological, and are the ones worth
 reading first: the through-line, which is the single lesson these days keep
-teaching.
+teaching, and the toolkit validation, which is the return on the project's
+second goal.
 
 include::through-line.adoc[]
 
@@ -32,6 +33,8 @@ include::2026-07-25-enforceable-architecture.adoc[]
 include::2026-07-26-green-lights.adoc[]
 
 include::2026-07-27-features-and-identity.adoc[]
+
+include::toolkit-validation.adoc[]
 
 include::working-agreements.adoc[]
 
