@@ -2,11 +2,11 @@
 id: ADR-021-domain-invariant-enforcement
 type: ADR
 title: Where Domain Invariants Are Enforced
-status: proposed
+status: accepted
 owner: architecture
 created: '2026-07-27'
 updated: '2026-07-27'
-reviewed: false
+reviewed: true
 summary: Invariants are declared in the domain; a schema constraint is the persistence adapter implementing a port contract, and no code branches on a persistence exception.
 derived_from:
 - type: prompt
@@ -18,14 +18,14 @@ tags:
 relations:
 - type: relates_to
   target: ADR-009-domain-identity-and-ddd
-  status: proposed
+  status: accepted
   rationale: Uniqueness of a business key is a consequence of the identity that ADR records, not a separate rule.
-  reviewed: false
+  reviewed: true
 - type: relates_to
   target: ADR-004-backend-stack-and-architecture
-  status: proposed
+  status: accepted
   rationale: Applies the hexagonal split to the question of which side of a port an invariant lives on.
-  reviewed: false
+  reviewed: true
 metadata_version: '1.0'
 ---
 [[adr-021-domain-invariant-enforcement]]
@@ -33,9 +33,10 @@ metadata_version: '1.0'
 
 === Status
 
-Proposed. The position was set by the owner on 2026-07-27; this record of it is
-AI-drafted and is not accepted architecture truth until the owner has reviewed
-the text.
+Accepted. The position was set by the owner on 2026-07-27 — the objection that a
+database constraint puts business logic outside the domain is theirs, and it is
+what prompted looking up what DDD actually says. Reviewed and confirmed the same
+day.
 
 === Decision
 
