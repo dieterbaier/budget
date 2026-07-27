@@ -1,0 +1,331 @@
+= Development Diary
+Dieter Baier
+:toc: left
+:toclevels: 2
+:icons: font
+:sectanchors:
+
+A working record of the first four days of this project: what was decided, what
+was rejected, and — mostly — what turned out to be wrong.
+
+This is not architecture documentation. The decisions live in
+`docs/arc42/09-architecture-decisions/`, the constraints in
+`docs/arc42/02-architecture-constraints/`, and those are the authority. This
+file is the story around them: the reasoning that did not fit in an ADR, and the
+mistakes that an ADR has no place to record.
+
+Written from the commit history, the issues and the pull requests, so the dates
+and numbers are checkable rather than remembered.
+
+== The through-line
+
+If these four days have one theme, it is *green signals that check nothing*.
+
+It came up seven times, in seven different disguises:
+
+. a lint rule that reported no cycles because it could not parse the files it was following
+. a locale setting that would have silently reverted to English
+. an npm override that satisfied `npm audit` while breaking the library it pinned
+. a shell check that printed success because it read the exit code of `tail`
+. a payload budget calibrated so loosely that it did not reject the regression it was written for
+. a test for a state bug that had never once seen the bug
+. a claim that a shared query key made a refactor free, when it tripled the requests
+
+Each one *passed*. None of them was checking anything. The habit that came out
+of it, and which now applies to every guard added here: **break it deliberately
+and watch it fail, or you do not know that it works.** A guard that has never
+failed is a guard whose failure path has never been executed.
+
+== Day 1 — 24 July 2026: the walking skeleton
+
+Scope was deliberately cut to the bone: a single-user actuals tracker. Not a
+budgeting product, not multi-tenant, no auth beyond a single deployment
+(ADR-007).
+
+The first slice went end to end rather than layer by layer — domain, ports,
+JPA/Flyway adapter, HTTP adapter, React PWA — so that the architecture was
+exercised by something real before it was written down.
+
+Decisions recorded on the way: DDD with domain identity (ADR-009), Flyway
+(ADR-010), no Lombok (ADR-011), explicit bean configuration (ADR-012).
+
+ADR-009 is the one that kept paying out. The owner's position — *"I don't like to
+have technical IDs as identifiers for my domain objects"* — looked like a
+preference on day 1. It settled two much harder arguments on day 4.
+
+== Day 2 — 25 July 2026: making the architecture enforceable
+
+The architecture had been *described*. This was the day it became *checkable*:
+ArchUnit fitness functions (ADR-013) and four constraints, CON-001 to CON-004 —
+framework-free core, hexagonal boundaries, persistence isolation, plain Java.
+
+Review pushback that changed the result: the adapter clause was not the strict
+form, and saying so in the ADR was better than quietly pretending otherwise.
+
+The frontend architecture style was opened the same day, and the opening was
+wrong. The brief mentioned Atomic Design, axios, TanStack Query, UnoCSS and
+React Router, and I began treating that list as settled. It was not — it
+described a *customer's* project. The correction was blunt and useful:
+
+[quote]
+____
+"'Atomic design', 'Screaming architecture' are buzzwords for me… every
+dependency should be one for a reason."
+____
+
+That sentence became a standing rule. Every dependency in this repo now has to
+justify itself against *this* project. Axios lost to `fetch`. Atomic Design lost
+to a feature-first structure that names what the app does rather than how big
+its components are. React Router was *deferred* — with one screen there was
+nothing to route — and only adopted on day 4 when a second screen actually
+existed.
+
+The other process correction that day: I asked three grilling questions in one
+batch. That is not grilling, it is an interrogation, and it is hard to answer.
+One question at a time from then on.
+
+== Day 3 — 26 July 2026: five green lights that were not
+
+The heaviest day for false confidence.
+
+=== The blind cycle rule
+
+`import/no-cycle` was configured and reporting nothing. It was reporting nothing
+because `settings['import/parsers']` was missing, so it could not parse the
+`.ts` files it followed, found no exports, and concluded there were no cycles.
+
+It passed because it was *blind*, not because the code was acyclic.
+
+The expensive part: this same omission had already made me blame
+`eslint-plugin-import-x` and rip it out for a different plugin, which was then
+equally blind for the same reason. One missing setting, diagnosed wrong twice.
+The comment in `eslint.config.js` is long on purpose — it is the note I wish had
+been there.
+
+Verified now by a deliberate two-file cycle, which goes undetected without the
+setting and is reported with it.
+
+=== The override that broke what it pinned
+
+A `minimatch` override cleared the last `npm audit` advisory and broke the
+library: `expand is not a function`. `npm audit` was satisfied; the code was not.
+Fixed by scoping the override to `filelist.minimatch`, and — on review insistence
+— covered by a regression test, because "we fixed it once" is not a guard.
+
+=== `${PIPESTATUS[0]}` is bash, not zsh
+
+My lint checks were reading an empty variable and printing success. Lint had been
+failing. Every check since reads the tool's own exit code directly.
+
+=== Zod, and a budget that did not bite
+
+Zod Mini plus `zod/locales` replaced full Zod for response validation
+(ADR-016) — the locale import matters because without it error messages silently
+fall back to English, which is a regression nothing would have reported.
+
+Coverage thresholds went in (ADR-018, CON-006, CON-007): 80/80 globally, with the
+domain held to 95/90, because the domain is where the rules live.
+
+Then the payload budget (CON-008, QS-003, ADR-019). I proposed 75 kB. The owner
+did the arithmetic I had not: the Zod regression it was written to catch measured
+74.0 kB. **The budget would have let it through.** It went in at 70 kB instead,
+verified by re-applying the regression and watching it fail — the commit is
+titled "Set the ceiling that rejects the regression", which is the whole point.
+75 kB was never committed.
+
+A budget that does not reject the thing it was written for is decoration.
+
+The ceiling later moved from 70 kB to 92 kB, on day 4, to admit React Router
+("Raise the payload ceiling for the router"). That is the precedent worth
+keeping: it was raised *deliberately, with a named cause, in its own commit* —
+not nudged upward to make a build go green.
+
+=== CON-005 caught me
+
+Worth recording because it is the good case: my own test deep-imported a
+feature's api module in order to mock it, and the boundary rule I had just
+written rejected it. Fixed by stubbing `fetch` instead. The rule earned its keep
+within a day of existing, against its own author.
+
+== Day 4 — 27 July 2026: features, and identity paying off
+
+=== Two goals, not one
+
+The README gained a second purpose: this repo is also a working validation of the
+sibling `architecture-knowledge-toolkit`. The wording matters and was corrected
+twice — *validate*, not *prove*, because a single project cannot prove a method;
+and QG-005 asks for *declared evidence levels* (Measured / Estimated /
+Directional / Hypothesis / Unknown) rather than demanding a number for every
+claim, which would only produce invented numbers.
+
+=== Category groups and categories (#8)
+
+The first real feature. Two questions from the owner shaped it more than the
+issue did.
+
+*First:* deleting a category that is already assigned to a transaction must be
+refused — and the same for a group that still holds categories. Not a validation
+message bolted on the edge: an invariant.
+
+*Second, and sharper:*
+
+[quote]
+____
+"This constraint should be explicit at the domain model… I don't like constraints
+at DB at all."
+____
+
+This looked like a genuine conflict. Uniqueness has to hold under concurrency,
+which is a database's job, and the domain is where the rule belongs. Both are
+true.
+
+The DDD literature dissolved it, and ADR-021 records the answer: uniqueness is
+not a separate constraint at all — it is a *consequence of identity*. ADR-009
+made the name the identity. A repository is a collection of things identified
+that way (Evans), so "no duplicate names" is simply what the port promises, and a
+unique index is the relational adapter *implementing* that promise, not a rule
+living in the wrong place.
+
+The same identity decision dissolved a second conflict the same day: how can a
+name be the identity if names can be renamed? Answer: the JPA adapter mutates the
+existing row, so its surrogate key carries the foreign keys while the domain
+never sees one. The in-memory Cucumber steps have to do that re-pointing by hand,
+which is exactly the right amount of honesty about what the database is doing for
+free.
+
+Two arguments, one decision from day 1, no technical ID.
+
+=== The test that had never seen the bug
+
+Review found that `CategoryRow` seeded its edit draft once at mount. The row's key
+is the category name, so renaming its *group* leaves the component mounted with a
+new prop and a stale `draft.group` — the next save would submit a group that no
+longer exists.
+
+A real bug, found by a human reading code, not by the test suite. The fix was
+four lines. The part worth recording is what came after: I reverted the fix and
+watched the new test fail, because a test written *after* a bug has often never
+seen it.
+
+=== The category picker (#46)
+
+The transaction form's free-text category became a picker. The design question
+was what the categories feature should export: the `useCategories` hook plus the
+list, or a component.
+
+A component. A hook hands the caller the shape of a category and the job of
+rendering it, so every future caller restates the same select and the same empty
+case, and a change to how categories are fetched leaks outward. The caller asks
+for a *choice*.
+
+Two states a free-text field never had to answer: while the catalogue loads the
+field renders disabled rather than empty, and when no category exists yet it
+renders a link to the categories page instead of a dropdown that cannot be
+opened.
+
+=== Shared query-state primitives (#50)
+
+An observation from the owner, and a correct one: every reader repeats
+`isPending → error → data`.
+
+Counting first changed the priority. The gate appeared *3* times. The *error
+rendering* appeared *9* times — and the copying had already caused a defect:
+`CategoriesPage` rendered its query errors without `text-danger`, so a failed load
+appeared in ordinary ink while every other error in the app was red. Nobody chose
+that. It is what nine hand-copied paragraphs do.
+
+Three things worth keeping:
+
+* The loading states are *not* interchangeable. Two readers want a paragraph; the
+  picker wants a disabled select, or the form jumps when data lands. So the shared
+  thing is the branching, with the pending state overridable.
+* The real win is *type narrowing*, not line count. `?? []` and
+  `if (!data) return null` were written to convince the compiler of something the
+  code already knew. A render-prop child states it in the signature.
+* `QueryBoundary` types its `query` prop *structurally*, not as TanStack's
+  `UseQueryResult`. The boundary rule keeps `shared/ui` away from features and
+  from `shared/api` — but it says nothing about npm packages, so importing the
+  query library's types would have walked the data layer in through a door
+  nothing watches.
+
+That `shared-ui` rule had been in the config since day 3 and had never been
+exercised, because the folder did not exist. Probed in both directions before
+trusting it.
+
+=== The claim that measurement killed (#51)
+
+Extracting `CategoryGroupPicker` meant it would fetch its own groups instead of
+being handed them. I justified that as free: TanStack shares by query key, so one
+request.
+
+I wrote the test to show it rather than assert it:
+
+[source]
+----
+AssertionError: expected [ [ '/api/category-groups' ], …(2) ] to have a length of 1 but got 3
+----
+
+*Three pickers, three requests.* The default `staleTime` is 0, so data is stale
+on arrival and every newly mounting observer refires. Key sharing collapses
+*concurrent* requests, not sequential mounts — and turning a select into a
+component creates exactly the second case.
+
+So the tidy-up refactor would have quietly tripled traffic on that endpoint, in a
+project with resource frugality as a stated quality goal. Fixed with a five
+minute `staleTime`, which is safe here for a specific reason and not by taste:
+every mutation already invalidates those keys explicitly, so a remount learns
+nothing an invalidation would not have told it.
+
+The wrong claim was corrected on the issue as well, so the record does not keep
+the wrong version.
+
+== What the tooling actually caught
+
+Honest scorecard, because it bears on whether the toolkit is worth its cost:
+
+[cols="2,5"]
+|===
+| Caught by automation
+| CON-005 rejecting my own test's deep import; ArchUnit on the backend layering;
+  the payload budget once it was calibrated properly; the coverage floors;
+  `import-x/no-cycle` after it was made to work
+
+| Caught by human review
+| Rename and delete not reachable from the PWA; the stale edit draft; two
+  inaccurate claims in my own writing; the budget arithmetic that showed 75 kB
+  would not bite; wording that overstated what this project can prove
+
+| Caught by measuring a claim I believed
+| The three-requests-not-one finding
+|===
+
+The middle column is the longest, which is the point worth remembering. The
+fitness functions are good at the failures someone already anticipated. They
+caught nothing about *reachability*, *staleness* or *overstatement* — and those
+were the findings that changed the code most.
+
+== Working agreements that emerged
+
+* One issue, one branch, one PR, rebase merges only.
+* One commit per slice of a request, with the *why* in the body — these commit
+  messages are the primary record and are written to be read later.
+* AI-authored architecture content stays `proposed` / `reviewed: false` until the
+  owner reviews it. Marking one's own homework is not review.
+* Every dependency justifies itself against this project.
+* Every guard gets broken on purpose before it is trusted.
+* Caveats need an ask. Listing a concern that requires no action from the reader
+  is noise, and it was rightly called out.
+
+== Open threads
+
+* The web payload budget sits at 98% of 92 kB — 2.2 kB of headroom. The next
+  dependency will hit the ceiling. The question then is whether the budget was
+  set right or whether the payload genuinely grew; it should be raised
+  deliberately with a reason, never to make a build green.
+* Quality reports are generated but not published. #48 was closed as not planned:
+  every gate already fails the build when broken, so a deployed report adds no
+  signal a red pull request does not.
+* Stacked pull requests need the dependent PR retargeted to `main` *before* the
+  one below it merges. Learned the hard way on 27 July: deleting a base branch
+  auto-closes the PRs pointing at it, and a closed PR's base cannot be
+  retargeted or reopened.
