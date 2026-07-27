@@ -26,12 +26,14 @@ import process from 'node:process'
 // Bytes. Displayed as kB (1000 bytes) to match what `vite build` prints, so the
 // two numbers reconcile.
 //
-// The application ceiling is set so that the regression it claims to prevent
-// actually fails it: reverting to the full Zod build measures 74.0 kB, which
-// passes at 75 kB and fails at 70 kB. The first version used 75 kB and would
-// have let that regression through — see QS-003.
+// The application ceiling was 70 kB, chosen so that reverting to the full Zod
+// build (74.0 kB) would fail it. Issue #8 took the bundle to 88.8 kB by adopting
+// React Router at the trigger ADR-014 recorded, so the ceiling had to move — and
+// above 74 kB it no longer catches that Zod regression. The loss is recorded in
+// QS-003 rather than discovered later; the ceiling is now a ratchet against
+// further growth, not a guard on one past decision.
 const BUDGETS = {
-  application: 70_000,
+  application: 92_000,
   'pwa runtime': 10_000,
 }
 
