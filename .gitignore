@@ -14,3 +14,7 @@
 
 # JVM/AsciiDoctor-PlantUML font cache (build noise)
 .java/
+
+# Scratch space for material that must never be committed but is needed while
+# working — source screenshots, exports, notes.
+.private/
