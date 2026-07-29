@@ -23,6 +23,15 @@ admonition with the generated include; and delete the local `refine-adr` skill
 if upstream guidance then covers it. Until then the hand-written note stays,
 marked as a stopgap.
 
+The vendored copies are now measurably behind:: toolkit PR #70 landed on
+29 July and changed `scripts/validate-metamodel.rb` and `templates/risk.adoc`,
+both of which are vendored here. Until they are re-synced, this project's risk
+register keeps rendering the inverted `Mitigation/action` column — `R-002` is on
+`main` showing it right now. This is the first part of #45 that no longer waits
+on toolkit #68, and it is a concrete demonstration of what vendoring costs:
+upstream fixing a defect does not fix it here, and nothing in either repository
+fails while the two disagree.
+
 The proportionality gate is not yet applied here:: budget issue #42 waits for
 toolkit issue #66 to define the test. Applying a home-made version first would
 defeat the purpose of validating the toolkit's.

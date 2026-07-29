@@ -2,7 +2,7 @@
 
 If these days have one theme, it is *green signals that check nothing*.
 
-It came up seven times, in seven different disguises:
+It came up eight times, in eight different disguises:
 
 . a lint rule that reported no cycles because it could not parse the files it was following
 . a locale setting that would have silently reverted to English
@@ -11,6 +11,7 @@ It came up seven times, in seven different disguises:
 . a payload budget calibrated so loosely that it did not reject the regression it was written for
 . a test for a state bug that had never once seen the bug
 . a claim that a shared query key made a refactor free, when it tripled the requests
+. a fully tested monthly calculation that answered a different question than the product needed
 
 Each one *passed*. None of them was checking anything.
 
@@ -25,8 +26,8 @@ for is absent, and because it is not looking. Both render identically. Nothing
 in a passing build distinguishes them, and the reporting layer of most tools is
 built to celebrate the first case without ever considering the second.
 
-The seven above split evenly along a second axis, which is the more useful one
-for deciding where to spend suspicion:
+The eight above split along a second axis, which is the more useful one for
+deciding where to spend suspicion:
 
 Wrong wiring:: the cycle rule, the locale, the shell check. The tool was capable
 and was asked the wrong question, or its answer was read wrong. These are found
@@ -38,5 +39,19 @@ regression, and never by running the check.
 
 Wrong belief:: the npm override, the test that had never seen its bug, the
 shared-query-key claim. The tool was fine and the mental model was not. These
-are the expensive ones, because everything downstream of the belief looks
-consistent — and they are found only by measuring the thing believed.
+are expensive, because everything downstream of the belief looks consistent —
+and they are found only by measuring the thing believed.
+
+Wrong question:: the monthly calculation. Nothing was miswired, no threshold was
+slack, and no belief about the tooling was false. The tests verified that the
+implementation matched the specification, correctly, and the *specification* was
+wrong: the owner reads a long-run average and the code computed the current
+calendar month. This is the one the other three cannot reach. Testing harder does
+not find it, because the tests were right about everything they were asked. It is
+found only by putting the artifact next to the thing it is supposed to replace —
+which here meant five screenshots of the tool the owner actually uses.
+
+The fourth category arrived last and is the most uncomfortable, because it has no
+technical remedy. The first three are answered by better checking. This one is
+answered by checking against *reality* instead of against the specification, and
+nothing in a repository contains reality.
