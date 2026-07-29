@@ -249,8 +249,8 @@ those, and it is not obvious that one could: each requires knowing what the
 system is *for*, which is the part that stays human.
 
 Day 5 added a category worse than all of them: everything green, everything
-internally consistent, and the central calculation answering a question the owner
-had not asked. No toolkit can find that, because the corrective evidence was not
+internally consistent, and the central calculation answering a question we had
+not asked. No toolkit can find that, because the corrective evidence was not
 in the repository at all — it was in five screenshots of the spreadsheet the
 application is meant to replace. Worth stating as method: *the artifact being
 replaced is a test oracle, and it is the only one that can fail a specification.*
@@ -261,7 +261,7 @@ the mistake this project keeps making in other forms.
 
 === A candidate not yet sent upstream
 
-The evidence-level vocabulary the owner introduced for QG-005 — Measured /
+The evidence-level vocabulary we introduced for QG-005 — Measured /
 Estimated / Directional / Hypothesis / Unknown — is a method idea, not a budget
 idea. It replaced "every claim carries a number", which sounds rigorous and
 manufactures false precision.

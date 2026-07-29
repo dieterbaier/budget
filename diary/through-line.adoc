@@ -45,11 +45,11 @@ and they are found only by measuring the thing believed.
 Wrong question:: the monthly calculation. Nothing was miswired, no threshold was
 slack, and no belief about the tooling was false. The tests verified that the
 implementation matched the specification, correctly, and the *specification* was
-wrong: the owner reads a long-run average and the code computed the current
+wrong: we read a long-run average and the code computed the current
 calendar month. This is the one the other three cannot reach. Testing harder does
 not find it, because the tests were right about everything they were asked. It is
 found only by putting the artifact next to the thing it is supposed to replace —
-which here meant five screenshots of the tool the owner actually uses.
+which here meant five screenshots of the tool we actually use.
 
 The fourth category arrived last and is the most uncomfortable, because it has no
 technical remedy. The first three are answered by better checking. This one is
