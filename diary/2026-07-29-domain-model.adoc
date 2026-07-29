@@ -1,0 +1,164 @@
+== Day 5 — 29 July 2026: the model was a level short
+
+No code changed today. The owner put five screenshots of the Notion budget this
+application replaces into `.private/`, and the job was to map them onto what the
+documentation claims and what the backend actually does.
+
+That turned out to be the most productive day so far, which is worth noticing on
+its own: four days of building produced a model that a twenty-minute look at the
+real data corrected in three places.
+
+=== The first commit was a `.gitignore` line
+
+`.private/` was not ignored. The screenshots hold real balances, real payees and
+a real pension figure, and this repository is public. One `git add -A` away.
+
+Recorded here because the sequencing is the lesson: the material arrived, was
+read, and only then did anyone check whether it could leak. The safe order is the
+other one.
+
+=== The figure that was answering a different question
+
+The sharpest finding, and it belongs in the through-line.
+
+`MonthlyExpenditureCalculator` sums the EXPENSE transactions of the current
+calendar month. Increment 1 was built around it, it is covered by tests, ArchUnit
+passes, coverage passes, the requirements overview describes it, and the roadmap
+calls it "the single view the owner would miss most".
+
+The number the owner actually reads is a *long-run average*: every recorded
+booking divided by the months tracked so far. It answers "what does this cost me
+per month", not "what have I spent since the first".
+
+Both figures are legitimate. Only one of them is the product. Nothing in the
+pipeline could have noticed, because everything was verifying that the
+implementation matched the specification — and the specification was wrong.
+
+The Notion divisor gave it away: 15.63. Three separate rows all divided by the
+same non-integer. A calendar month cannot produce that.
+
+This is a fourth way for a green build to be quiet, and the most expensive one.
+The three the diary already had — wrong wiring, wrong threshold, wrong belief —
+are all recoverable by testing harder. This one is not reachable by any amount of
+testing discipline, because the tests were right about everything they were asked.
+
+=== A name that hid a moving value
+
+`FixedCost.anchorDate`, described in the glossary as "an anchor date", modelled as
+a fixed reference point.
+
+It is the date of the *last payment*. It moves forward every time the cost is
+paid, and it is the input to two derived figures. "Anchor" is precisely the wrong
+word for something that advances — and the name had been sitting in the domain,
+the schema and the glossary for four days without anyone reading it twice.
+
+Nothing was broken. `monthlyPortion()` never touched the field. The name was
+wrong in a place where being wrong had no consequence *yet*, which is exactly how
+it survives until it does.
+
+=== Two derivations recovered, one constant invented
+
+The screenshots show computed columns without their formulas. Three were
+reverse-engineered from the numbers.
+
+Two held up and were confirmed by the owner, and they fully specify two open
+issues that had been vague for a week:
+
+reserve requirement (#16):: whole months since the last payment × the monthly
+portion, zero for monthly costs. Two independent rows both landed on 4 × 5.00 =
+20.00.
+
+cash runway (#17):: the monthly figure ÷ 30, giving a daily rate. Three rows
+agreed on the divisor.
+
+The third did not, and the failure is the part worth keeping. Assuming
+`minimum need = costs at retirement − expected pension` left a residual of
+*173.50* in both pension scenarios. Identical in both. So it was reported as a
+constant to be explained — tax on the pension, health insurance, something.
+
+The owner's reply: *"Woher hast Du die konstanten 173,50? Ich finde diese Zahl
+nirgends."*
+
+It is not in his data. It is the gap between his numbers and *my assumed
+formula*, and it appeared in both rows because both rows used the same wrong
+assumption. A residual is not a discovered quantity. It looked like a finding
+because it was stable, and stability is what a systematic error looks like from
+the inside.
+
+The pension formula is now specified from scratch in #18, with an explicit
+instruction not to reconstruct it from the sheet — the owner reports a known
+calculation error in that part of it, so reverse-engineering would have imported
+the bug along with the arithmetic.
+
+=== Asking about the model and getting an answer about the workflow
+
+The Notion budget has a level the domain model does not: `Verwendungszweck`,
+below the category. `Fernwärme` under `Nebenkosten`, `Streaming (Musik)` under
+`Lizenzen`.
+
+The question put to the owner was whether a purpose belongs to one category or
+crosses them. The answer that came back described *data entry* — "the purpose is
+entered at the transaction, so it is automatically visible for all transactions
+of a category" — which does not settle it. But the option he picked on the
+follow-up question carried the invariant `purpose.category == category`, which
+does.
+
+The question was too abstract to answer. What resolved it was a concrete
+scenario: *you book the vet and type "Vasko"; two weeks later you book dog food
+and type "Vasko" — same purpose, or two that happen to share a name?* One
+sentence, and the modelling question became answerable.
+
+Worth generalising: when a modelling question is answered with a description of
+the workflow, the question was about the wrong thing. Ask for a case, not for a
+rule.
+
+The single row in the real data that contradicts the hierarchy — a booking
+tagged `Gesundheit / Arzt Dieter` with the purpose `Vasko`, next to a whole
+`Hund` group — was almost certainly a mis-tag rather than a design intent. But it
+was the only evidence either way, so it had to be put to the owner rather than
+quietly ruled out.
+
+=== A risk that was a missing feature
+
+Fixed costs are deliberately never booked; their definition already contributes
+its monthly portion. So a fixed-cost debit transcribed from the bank statement by
+mistake is counted twice, and the application cannot detect it — the duplicate is
+a well-formed booking in a plausible category.
+
+That was raised as a risk to record and accept, and `R-002` was written.
+
+The owner's answer reframed it. He already runs the control in Notion: a view of
+the fixed costs currently due, reconciled by eye. And it does more than catch
+duplicates — a cost whose last payment is older than its own interval is a
+contract that no longer exists, like the cancelled gym membership still inflating
+the monthly figure every month until someone notices.
+
+So the mitigation was not a control to be designed. It was a feature already in
+daily use that nobody had written down, and it became issue #61.
+
+Worth keeping as a question to ask: *does the user already do this by hand?* If
+yes, it is a requirement wearing a risk's clothing.
+
+`R-002` still exists, reviewed and released — but with its mitigation named and
+the trigger for going further recorded: if this causes *repeated* mistakes, a
+duplicate-suspicion warning becomes worth building. Not a deferral; a condition.
+
+=== What landed
+
+Documentation only, six commits, PR #57.
+
+* Q-PO-005 to Q-PO-010 record the six decisions; Q-PO-004 was wrong in three
+  places and is corrected *in place* rather than rewritten, so the record still
+  shows what the earlier notes claimed.
+* The glossary gained `Purpose`, tracking window, last payment, due fixed cost,
+  refunds per month and the inflation series — and several existing entries
+  described something the owner does not do.
+* One sentence from the session governs the rest and is now written where a later
+  reader will find it: *this is not an accounting system.* It explains why there
+  are no derived balances, no business-day handling and no automatic
+  reconciliation. Those had looked like gaps.
+* Five new issues (#58–#62), five revised (#10, #15, #16, #17, #18).
+
+The backlog was the point as much as the documentation. Two issues that had said
+"compute the reserve" and "compute the runway" now carry the arithmetic and a
+worked example.
