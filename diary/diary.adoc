@@ -34,6 +34,8 @@ include::2026-07-26-green-lights.adoc[]
 
 include::2026-07-27-features-and-identity.adoc[]
 
+include::2026-07-29-domain-model.adoc[]
+
 include::toolkit-validation.adoc[]
 
 include::working-agreements.adoc[]
