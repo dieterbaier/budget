@@ -21,10 +21,10 @@ relations:
   reviewed: true
 - type: documents
   target: R-002-fixed-cost-double-counting
-  status: proposed
+  status: accepted
   rationale: The chapter contains this risk.
   evidence: docs/arc42/doc-11000-risks-and-technical-debt.adoc
-  reviewed: false
+  reviewed: true
 metadata_version: '1.0'
 ---
 [[risks-and-technical-debt]]
