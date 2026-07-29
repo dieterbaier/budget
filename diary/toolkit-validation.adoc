@@ -9,9 +9,9 @@ This recap is the return on that goal. It is kept separate from the daily
 recaps on purpose: a finding about the *method* is reusable by other projects,
 while a finding about the budget application is not.
 
-The measure is findings, not artifact count. Three went upstream in these four
-days, and each came out of ordinary product work rather than out of looking for
-something to report.
+The measure is findings, not artifact count. Four have gone upstream so far, and
+each came out of ordinary product work rather than out of looking for something
+to report. The fourth is the first one to be *fixed* rather than filed.
 
 === Finding 1 — AI removed the friction that kept the record proportionate
 
@@ -137,6 +137,56 @@ stopgap, names the staleness risk, and requires both sides to be fixed in the
 same commit as any relation change. Issue #45 lists the follow-ups for when the
 upstream change lands.
 
+=== Finding 4 — the risk register asserted the opposite of the truth
+
+Upstream: toolkit issue
+https://github.com/docs-as-code-toolkit/architecture-knowledge-toolkit/issues/69[#69],
+fixed by
+https://github.com/docs-as-code-toolkit/architecture-knowledge-toolkit/pull/70[PR #70]
+(merged 29 July 2026).
+
+The generated risk register has a column headed `Mitigation/action`. It was
+filled from each risk's outgoing `affects` relations — which point at what the
+risk *endangers*.
+
+So every row told the reader that the quality scenario a risk threatens is the
+thing mitigating it. Exactly backwards, in the one artifact people scan without
+opening the detail pages behind it.
+
+Two things make this more than a typo.
+
+*`mitigates` existed and no generator had ever read it.* It is in the relation
+enum. The toolkit's own ADRs declare it four times. `grep` across the generator
+returned nothing. A relation type had been available, documented and used, and
+produced no output anywhere — for long enough that nobody noticed the register
+was filling that column from somewhere else.
+
+*It was invisible with one risk.* This project had exactly one risk artifact for
+four days. A single row showing `QS-001` under "Mitigation/action" reads as
+plausible: of course the integrity scenario has something to do with the data
+risk. It only became *wrong* when a second risk produced a second row and the
+pattern showed that the column always contained whatever the risk harmed.
+
+That is the transferable part. A generated view with one row cannot be seen to be
+wrong, because there is no pattern to contradict. The register was not
+under-tested; it was under-*populated*, and no amount of validation would have
+changed that.
+
+A second, smaller defect rode along. The assessment fields were lifted verbatim
+into columns one tenth of the table wide, so writing the explanatory sentence an
+assessment actually wants collapsed the generated table — discoverable only by
+rendering it. The fix takes the leading sentence, and says so in the template and
+the risk skill, because truncating silently would have swapped one invisible rule
+for another.
+
+==== The consequence here
+
+`scripts/validate-metamodel.rb` and `templates/risk.adoc` are vendored from the
+toolkit, so this project's own copies are now behind. `R-002` landed on `main`
+this morning still rendering the old, inverted register. The re-vendoring is
+tracked on issue #45, which until today was waiting entirely on toolkit #68 —
+part of it is now actionable without it.
+
 === What the toolkit got right
 
 Findings are the point, but a validation that only lists complaints is as
@@ -165,7 +215,7 @@ placement, not correctness.
 
 === What the toolkit structurally cannot catch
 
-The honest scorecard from these four days:
+The honest scorecard so far:
 
 [cols="2,5"]
 |===
@@ -181,9 +231,15 @@ The honest scorecard from these four days:
 
 | Caught by measuring a claim I believed
 | The three-requests-not-one finding
+
+| Caught only by looking at the thing being replaced
+| The missing classification level; the monthly figure computing the wrong
+  quantity; `anchorDate` naming a value that moves; the reserve and runway
+  formulas nobody had written down
 |===
 
-The middle column is the longest, and that is the finding.
+The middle column is the longest, and that is the finding. The last column is the
+newest, and it is the one no tooling reaches.
 
 The fitness functions are good at the failures someone already anticipated well
 enough to encode. They caught nothing about *reachability* (a backend endpoint
@@ -191,6 +247,13 @@ with no path to it in the UI), *staleness* (a note that was true when written),
 or *overstatement* (a claim the project cannot support). No metamodel validates
 those, and it is not obvious that one could: each requires knowing what the
 system is *for*, which is the part that stays human.
+
+Day 5 added a category worse than all of them: everything green, everything
+internally consistent, and the central calculation answering a question the owner
+had not asked. No toolkit can find that, because the corrective evidence was not
+in the repository at all — it was in five screenshots of the spreadsheet the
+application is meant to replace. Worth stating as method: *the artifact being
+replaced is a test oracle, and it is the only one that can fail a specification.*
 
 This is not an argument against the toolkit. It is an argument against reading a
 green pipeline as coverage of the risk space, which — see the through-line — is
