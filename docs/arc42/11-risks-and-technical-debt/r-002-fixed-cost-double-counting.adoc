@@ -1,0 +1,100 @@
+---
+id: R-002-fixed-cost-double-counting
+type: Risk
+title: Fixed Cost Counted Twice
+status: proposed
+owner: architecture
+created: '2026-07-29'
+updated: '2026-07-29'
+reviewed: false
+summary: A fixed-cost debit transcribed from the bank statement is counted both as a booking and as its amortized monthly portion.
+tags:
+- risk
+- integrity
+relations:
+- type: affects
+  target: QS-001-budget-total-integrity
+  status: proposed
+  rationale: Silent duplication is exactly the drift the integrity scenario exists to exclude.
+  evidence: docs/arc42/11-risks-and-technical-debt/r-002-fixed-cost-double-counting.adoc
+  reviewed: false
+metadata_version: '1.0'
+---
+[[r-002-fixed-cost-double-counting]]
+== R-002: Fixed Cost Counted Twice
+
+=== Risk Statement
+
+Because fixed costs contribute their amortized monthly portion from their
+definition and are deliberately never booked (Q-PO-007), a fixed-cost debit that
+the owner nevertheless transcribes from the bank statement is counted twice — and
+nothing in the application can tell that it happened.
+
+The duplicate is invisible by construction. A transcribed debit is a
+well-formed booking in a plausible category; only the owner knows that a fixed
+cost already covers it. The effect is silent inflation of the monthly cost
+figure, the group total, and every figure derived from them — including the
+overspending signal and the pension-relevant cost base.
+
+This is the accepted cost of not booking fixed costs. The alternative — entering
+every fixed-cost payment so the ledger is complete — was rejected by the owner as
+work the application exists to save, and it would replace this risk with a
+different one: forgetting an entry would understate costs instead.
+
+=== Assessment
+
+[cols="1,3", options="header"]
+|===
+| Field | Value
+| Likelihood | Medium (one lapse while transcribing).
+| Impact | Medium (silent drift in every derived figure).
+| Priority | Medium.
+| Timeframe | From the first month of real use.
+| Confidence | Medium (no usage data yet).
+|===
+
+Likelihood is medium because it takes a single lapse of attention and the entry
+looks perfectly correct afterwards. Impact is medium because figures drift rather
+than break — but every derived view inherits the error, and a wrong overspending
+signal is the one thing the product exists to get right.
+
+=== Mitigation Options
+
+The mitigation is the workflow the owner already runs in Notion and wants in the
+application: a *due fixed costs* list, reconciled by eye against the bank
+statement.
+
+* Show the fixed costs whose next payment has arrived, so a debit on the
+  statement can be matched against a definition rather than transcribed.
+* Flag a fixed cost whose last payment is older than its own interval. That
+  catches both directions of the same problem — a payment the owner forgot to
+  acknowledge, and a fixed cost that no longer exists at all, such as a
+  cancelled contract still inflating the monthly figure.
+* Considered and not chosen: warning when a new booking resembles a due fixed
+  cost by amount and payee. It would catch the duplicate at the moment it is
+  made, but it needs matching rules the owner has not asked for, and a system
+  that is explicitly not an accounting system should not start guessing at
+  reconciliation.
+
+=== Decision or Acceptance
+
+The owner accepted the risk on 2026-07-29 in favour of not entering fixed-cost
+payments, and named the due-fixed-costs list as the control he relies on. That
+part is decided.
+
+The assessment above is not his: the likelihood, impact and priority ratings are
+an architectural estimate and have not been reviewed.
+
+=== Open Questions
+
+* Does the due-fixed-costs list reduce the likelihood enough, or should a
+  duplicate-suspicion warning be reconsidered once real usage shows how often
+  this happens?
+
+=== Review Notes
+
+Confirm the likelihood, impact and priority ratings, then set `reviewed: true`.
+Revisit the rating after the first months of real use — it is currently an
+estimate with no usage data behind it.
+
+include::generated/r-002-fixed-cost-double-counting-traceability.adoc[leveloffset=+1]
