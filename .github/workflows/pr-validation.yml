@@ -88,7 +88,13 @@ jobs:
 
       # `all` = fail on stale agent adapters, then validate the metamodel and
       # relations and render the arc42 HTML. Same pinned docs-toolbox image as a
-      # local run, so a green PR here means the Pages deployment will render.
+      # local run, so a green PR here means the *model and the content* will
+      # render on the Pages deployment.
+      #
+      # It promises nothing about the machinery. On 2026-07-29 this check passed
+      # under podman while the publish job was failing under it, so read a green
+      # result here as "the documentation is sound", not "the deployment will
+      # succeed".
       #
       # Docker, not the podman that build.sh would otherwise prefer: podman on
       # these runners intermittently fails to start the container at all
