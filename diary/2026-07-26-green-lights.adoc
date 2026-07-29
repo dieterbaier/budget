@@ -54,7 +54,7 @@ Coverage thresholds went in (ADR-018, CON-006, CON-007): 80/80 globally, with
 the domain held to 95/90, because the domain is where the rules live and a rule
 without a test is a suggestion.
 
-Then the payload budget (CON-008, QS-003, ADR-019). I proposed 75 kB. The owner
+Then the payload budget (CON-008, QS-003, ADR-019). I proposed 75 kB. Then we
 did the arithmetic I had not: the Zod regression it was written to catch
 measured 74.0 kB. **The budget would have let it through.** It went in at 70 kB
 instead, verified by re-applying the regression and watching it fail — the

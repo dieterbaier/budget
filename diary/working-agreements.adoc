@@ -9,7 +9,7 @@ None of these were agreed up front. Each one came out of something going wrong.
   says what changed and only the message can say why it was worth changing.
 
 * *AI-authored architecture content stays `proposed` / `reviewed: false` until
-  the owner reviews it.* Marking one's own homework is not review.
+  a human reviews it.* Marking one's own homework is not review.
 
 * *Every dependency justifies itself against this project* — not against a
   reference stack, and not against another project it was borrowed from.
@@ -27,8 +27,8 @@ None of these were agreed up front. Each one came out of something going wrong.
 
 === On the collaboration itself
 
-Two corrections from the owner shaped how the work is done more than any
-technical decision did.
+Two corrections shaped how the work is done more than any technical decision
+did.
 
 *Ask one question at a time.* A batch of three grilling questions is an
 interrogation. The answers collide, and the least important question tends to
@@ -36,6 +36,6 @@ attract the most attention.
 
 *Ceremony is a cost, not a virtue.* Filing an issue to describe a request that
 was just made, or publishing a report that carries no signal a red pull request
-does not, adds process without adding information. The stop test the owner
-applies: without it, would a later reader probably decide wrongly or miss an
-important assumption? If not, it does not get built.
+does not, adds process without adding information. The stop test we apply:
+without it, would a later reader probably decide wrongly or miss an important
+assumption? If not, it does not get built.

@@ -11,7 +11,7 @@ exercised by something real before it was written down.
 Decisions recorded on the way: DDD with domain identity (ADR-009), Flyway
 (ADR-010), no Lombok (ADR-011), explicit bean configuration (ADR-012).
 
-ADR-009 is the one that kept paying out. The owner's position — *"I don't like
+ADR-009 is the one that kept paying out. Our position — *"I don't like
 to have technical IDs as identifiers for my domain objects"* — looked like a
 preference on day 1. It settled two much harder arguments on day 4, and neither
 of them was about identity on its face.

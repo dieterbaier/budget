@@ -20,8 +20,7 @@ What that goal actually returned is its own recap — see the toolkit validation
 
 === Category groups and categories (#8)
 
-The first real feature. Two questions from the owner shaped it more than the
-issue did.
+The first real feature. Two questions shaped it more than the issue did.
 
 *First:* deleting a category that is already assigned to a transaction must be
 refused — and the same for a group that still holds categories. Not a validation
@@ -93,7 +92,7 @@ state.
 
 === Shared query-state primitives (#50)
 
-An observation from the owner, and a correct one: every reader repeats
+An observation, and a correct one: every reader repeats
 `isPending → error → data`.
 
 Counting first changed the priority. The gate appeared *3* times. The *error

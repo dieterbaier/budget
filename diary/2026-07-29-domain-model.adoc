@@ -1,7 +1,7 @@
 == Day 5 — 29 July 2026: the model was a level short
 
-No code changed today. The owner put five screenshots of the Notion budget this
-application replaces into `.private/`, and the job was to map them onto what the
+No code changed today. Five screenshots of the Notion budget this application
+replaces went into `.private/`, and the job was to map them onto what the
 documentation claims and what the backend actually does.
 
 That turned out to be the most productive day so far, which is worth noticing on
@@ -26,9 +26,9 @@ calendar month. Increment 1 was built around it, it is covered by tests, ArchUni
 passes, coverage passes, the requirements overview describes it, and the roadmap
 calls it "the single view the owner would miss most".
 
-The number the owner actually reads is a *long-run average*: every recorded
-booking divided by the months tracked so far. It answers "what does this cost me
-per month", not "what have I spent since the first".
+The number we actually read is a *long-run average*: every recorded booking
+divided by the months tracked so far. It answers "what does this cost me per
+month", not "what have I spent since the first".
 
 Both figures are legitimate. Only one of them is the product. Nothing in the
 pipeline could have noticed, because everything was verifying that the
@@ -61,8 +61,8 @@ it survives until it does.
 The screenshots show computed columns without their formulas. Three were
 reverse-engineered from the numbers.
 
-Two held up and were confirmed by the owner, and they fully specify two open
-issues that had been vague for a week:
+Two held up and were confirmed, and they fully specify two open issues that had
+been vague for a week:
 
 reserve requirement (#16):: whole months since the last payment × the monthly
 portion, zero for monthly costs. Two independent rows both landed on 4 × 5.00 =
@@ -76,19 +76,19 @@ The third did not, and the failure is the part worth keeping. Assuming
 *173.50* in both pension scenarios. Identical in both. So it was reported as a
 constant to be explained — tax on the pension, health insurance, something.
 
-The owner's reply: *"Woher hast Du die konstanten 173,50? Ich finde diese Zahl
+The reply: *"Woher hast Du die konstanten 173,50? Ich finde diese Zahl
 nirgends."*
 
-It is not in his data. It is the gap between his numbers and *my assumed
+It is not in the data. It is the gap between the real numbers and *my assumed
 formula*, and it appeared in both rows because both rows used the same wrong
 assumption. A residual is not a discovered quantity. It looked like a finding
 because it was stable, and stability is what a systematic error looks like from
 the inside.
 
 The pension formula is now specified from scratch in #18, with an explicit
-instruction not to reconstruct it from the sheet — the owner reports a known
-calculation error in that part of it, so reverse-engineering would have imported
-the bug along with the arithmetic.
+instruction not to reconstruct it from the sheet — there is a known calculation
+error in that part of it, so reverse-engineering would have imported the bug
+along with the arithmetic.
 
 === Asking about the model and getting an answer about the workflow
 
@@ -96,12 +96,11 @@ The Notion budget has a level the domain model does not: `Verwendungszweck`,
 below the category. `Fernwärme` under `Nebenkosten`, `Streaming (Musik)` under
 `Lizenzen`.
 
-The question put to the owner was whether a purpose belongs to one category or
-crosses them. The answer that came back described *data entry* — "the purpose is
-entered at the transaction, so it is automatically visible for all transactions
-of a category" — which does not settle it. But the option he picked on the
-follow-up question carried the invariant `purpose.category == category`, which
-does.
+The question we had to settle was whether a purpose belongs to one category or
+crosses them. The first answer described *data entry* — "the purpose is entered
+at the transaction, so it is automatically visible for all transactions of a
+category" — which does not settle it. But the option picked on the follow-up
+question carried the invariant `purpose.category == category`, which does.
 
 The question was too abstract to answer. What resolved it was a concrete
 scenario: *you book the vet and type "Vasko"; two weeks later you book dog food
@@ -115,8 +114,8 @@ rule.
 The single row in the real data that contradicts the hierarchy — a booking
 tagged `Gesundheit / Arzt Dieter` with the purpose `Vasko`, next to a whole
 `Hund` group — was almost certainly a mis-tag rather than a design intent. But it
-was the only evidence either way, so it had to be put to the owner rather than
-quietly ruled out.
+was the only evidence either way, so it had to be asked about rather than quietly
+ruled out.
 
 === A risk that was a missing feature
 
@@ -127,11 +126,11 @@ a well-formed booking in a plausible category.
 
 That was raised as a risk to record and accept, and `R-002` was written.
 
-The owner's answer reframed it. He already runs the control in Notion: a view of
-the fixed costs currently due, reconciled by eye. And it does more than catch
-duplicates — a cost whose last payment is older than its own interval is a
-contract that no longer exists, like the cancelled gym membership still inflating
-the monthly figure every month until someone notices.
+Then the obvious thing surfaced, and it was not a risk at all: we already run
+this control in Notion. A view of the fixed costs currently due, reconciled by
+eye. And it does more than catch duplicates — a cost whose last payment is older
+than its own interval is a contract that no longer exists, like the cancelled gym
+membership still inflating the monthly figure every month until someone notices.
 
 So the mitigation was not a control to be designed. It was a feature already in
 daily use that nobody had written down, and it became issue #61.
@@ -152,7 +151,7 @@ Documentation only, six commits, PR #57.
   shows what the earlier notes claimed.
 * The glossary gained `Purpose`, tracking window, last payment, due fixed cost,
   refunds per month and the inflation series — and several existing entries
-  described something the owner does not do.
+  described something we do not do.
 * One sentence from the session governs the rest and is now written where a later
   reader will find it: *this is not an accounting system.* It explains why there
   are no derived balances, no business-day handling and no automatic
