@@ -70,31 +70,31 @@ statement.
   catches both directions of the same problem — a payment the owner forgot to
   acknowledge, and a fixed cost that no longer exists at all, such as a
   cancelled contract still inflating the monthly figure.
-* Considered and not chosen: warning when a new booking resembles a due fixed
-  cost by amount and payee. It would catch the duplicate at the moment it is
-  made, but it needs matching rules the owner has not asked for, and a system
-  that is explicitly not an accounting system should not start guessing at
-  reconciliation.
+* Held in reserve: a warning when a new booking resembles a due fixed cost by
+  amount and payee. It would catch the duplicate at the moment it is made, but it
+  needs matching rules nobody has asked for yet, and a system that is explicitly
+  not an accounting system should not start guessing at reconciliation before
+  there is evidence it must.
 
 === Decision or Acceptance
 
 The owner accepted the risk on 2026-07-29 in favour of not entering fixed-cost
-payments, and named the due-fixed-costs list as the control he relies on. That
-part is decided.
+payments, and named the due-fixed-costs list as the control he relies on.
+
+He confirmed the same day that the list alone is enough for now, and set the
+condition under which that changes: *if this leads to repeated mistakes, a
+duplicate-suspicion warning becomes worth building.* The trigger is real
+recurrence in use, not a single slip — which is what makes it a decision rather
+than a deferral.
 
 The assessment above is not his: the likelihood, impact and priority ratings are
 an architectural estimate and have not been reviewed.
-
-=== Open Questions
-
-* Does the due-fixed-costs list reduce the likelihood enough, or should a
-  duplicate-suspicion warning be reconsidered once real usage shows how often
-  this happens?
 
 === Review Notes
 
 Confirm the likelihood, impact and priority ratings, then set `reviewed: true`.
 Revisit the rating after the first months of real use — it is currently an
-estimate with no usage data behind it.
+estimate with no usage data behind it, and that same usage is what decides
+whether the duplicate-suspicion warning gets built.
 
 include::generated/r-002-fixed-cost-double-counting-traceability.adoc[leveloffset=+1]
