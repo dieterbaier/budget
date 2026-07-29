@@ -39,7 +39,14 @@ jobs:
       # `build` = validate metadata + relations, regenerate derived fragments,
       # then render docs/doc-001-arc42.adoc to build/architecture/index.html.
       # A validation failure fails the job, so a broken model never publishes.
+      #
+      # Docker, not the podman that build.sh would otherwise prefer: this job is
+      # what went red on 2026-07-29 with "crun: unknown version specified", twice,
+      # while docker on the same runner was healthy. `podman info` reports that
+      # the engine is configured, never that it can start a container.
       - name: Build architecture documentation
+        env:
+          DOCS_TOOLBOX_ENGINE: docker
         run: ./build.sh build
 
       # Asciidoctor Diagram's cache is build scaffolding, not part of the site.

@@ -89,7 +89,15 @@ jobs:
       # `all` = fail on stale agent adapters, then validate the metamodel and
       # relations and render the arc42 HTML. Same pinned docs-toolbox image as a
       # local run, so a green PR here means the Pages deployment will render.
+      #
+      # Docker, not the podman that build.sh would otherwise prefer: podman on
+      # these runners intermittently fails to start the container at all
+      # ("crun: unknown version specified"), and `podman info` cannot see it
+      # coming. Docker on the same runner is what the backend job drives
+      # Testcontainers with.
       - name: Validate and render the documentation
+        env:
+          DOCS_TOOLBOX_ENGINE: docker
         run: ./build.sh all
 
   backend:
