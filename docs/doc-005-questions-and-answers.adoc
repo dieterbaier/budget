@@ -240,9 +240,9 @@ date of the *last payment*, maintained by hand — the field the model called
 next payment date follows from it, without business-day correction: a due date
 landing on a Sunday is fine, because nothing is executed from it.
 
-Two figures derive from that date. The *reserve target* is the number of whole
-months elapsed since the last payment multiplied by the monthly portion, and is
-zero for monthly costs — that is the money that must sit on the call-money
+Two figures derive from that date. The *reserve requirement* is the number of
+whole months elapsed since the last payment multiplied by the monthly portion,
+and is zero for monthly costs — that is the money that must sit on the call-money
 reserve account. The *due list* shows what is payable now, and the owner uses it
 in both directions: to catch a payment forgotten while transcribing, and to
 retire a fixed cost that no longer exists — a cancelled gym contract shows up as
