@@ -74,7 +74,17 @@ find `../architecture-knowledge-toolkit` (the toolkit lives under a sibling
 - Local checkout:
   `../docs-as-code-toolkit/architecture-knowledge-toolkit`
 - Pinned public reference (fallback):
-  `docs-as-code-toolkit/architecture-knowledge-toolkit@0e162fc0e00ba92876cc8c4459ed9a3ecf5eb8cd`
+  `docs-as-code-toolkit/architecture-knowledge-toolkit@1197086`
+
+Last resynchronized on 2026-07-29. The vendored copies differ from the toolkit in
+exactly five lines, all of them the `src/docs` → `docs` path adaptation this
+project needs: three constants in `scripts/validate-metamodel.rb` and two example
+paths in `metamodel/relations.schema.yaml`. `templates/` and the adapter
+generators under `scripts/` are byte-identical to their upstream counterparts
+(the adapter generators against `templates/scripts/`, not the toolkit's own).
+
+Keeping that list short is the point. A resync stays a copy for as long as the
+divergence is only paths; the moment logic differs here, it becomes a merge.
 
 Prefer the local checkout when present; use the pinned public reference when it
 is not. Update this pin when the vendored tooling under `metamodel/`,

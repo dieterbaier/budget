@@ -496,17 +496,22 @@ class ArtifactIndexGenerator
       output: '11-risks-and-technical-debt/generated/doc-11001-risks.adoc',
       anchor: 'risks',
       title: 'Risks',
-      cols: '1,3,1,1,1,3',
-      columns: ['ID', 'Risk', 'Probability', 'Impact', 'Priority', 'Mitigation/action'],
+      cols: '1,3,1,1,1,2,2',
+      columns: ['ID', 'Risk', 'Probability', 'Impact', 'Priority', 'Affects', 'Mitigation/action'],
       row: lambda do |artifact, helper|
         fields = helper.definition_table_fields(artifact)
         [
           helper.artifact_link(artifact, label: helper.short_id(artifact.metadata['id'])),
           helper.cell(artifact.metadata['title']),
-          helper.cell(fields['Likelihood']),
-          helper.cell(fields['Impact']),
-          helper.cell(fields['Priority']),
-          helper.relation_targets(artifact, 'affects')
+          # The assessment fields are prose in the source artifact; only their
+          # verdict fits a register column. See #summary_cell.
+          helper.summary_cell(fields['Likelihood']),
+          helper.summary_cell(fields['Impact']),
+          helper.summary_cell(fields['Priority']),
+          # What the risk endangers, and what is being done about it. These are
+          # opposites and had shared one column headed "Mitigation/action".
+          helper.relation_targets(artifact, 'affects'),
+          helper.incoming_relation_sources(artifact, 'mitigates')
         ]
       end
     }
@@ -1030,6 +1035,27 @@ class ArtifactRenderHelper
     matches.map { |relation| artifact_ref(relation['target']) }.join(" +\n")
   end
 
+  # The mirror of #relation_targets: who points *at* this artifact with the given
+  # relation type. Relations are only ever authored outgoing, so a question like
+  # "what mitigates this risk?" can only be answered from the other side.
+  def incoming_relation_sources(artifact, type)
+    id = artifact.metadata['id']
+    return '-' unless id
+
+    sources = @artifacts_by_id.values.select do |candidate|
+      next false unless candidate.metadata
+
+      Array(candidate.metadata['relations']).any? do |relation|
+        relation['type'] == type && relation['target'] == id
+      end
+    end
+    return '-' if sources.empty?
+
+    sources.sort_by { |source| source.metadata['id'].to_s }
+           .map { |source| artifact_link(source) }
+           .join(" +\n")
+  end
+
   def derived_from_cell(entries)
     origins = Array(entries).compact
     return '-' if origins.empty?
@@ -1055,6 +1081,21 @@ class ArtifactRenderHelper
     return '-' if text.empty?
 
     text.gsub('|', '\|').gsub("\n", ' ')
+  end
+
+  # For narrow index columns fed from prose fields. An assessment reads
+  # "Medium. It takes one lapse of attention while transcribing." — the verdict
+  # belongs in the register, the reasoning belongs in the artifact. Without this,
+  # writing a normal sentence in the source silently wrecks the generated table,
+  # and the author only finds out by rendering it.
+  #
+  # Only a sentence boundary counts: "Medium (rises when hosted)" survives whole.
+  def summary_cell(value)
+    text = value.to_s.strip
+    return '-' if text.empty?
+
+    verdict = text[/\A(.+?)\.(?:\s|\z)/, 1]
+    cell(verdict && !verdict.empty? ? verdict : text)
   end
 
   private
