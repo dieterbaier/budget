@@ -2,7 +2,7 @@
 
 If these days have one theme, it is *green signals that check nothing*.
 
-It came up eight times, in eight different disguises:
+It came up ten times, in ten different disguises:
 
 . a lint rule that reported no cycles because it could not parse the files it was following
 . a locale setting that would have silently reverted to English
@@ -12,6 +12,8 @@ It came up eight times, in eight different disguises:
 . a test for a state bug that had never once seen the bug
 . a claim that a shared query key made a refactor free, when it tripled the requests
 . a fully tested monthly calculation that answered a different question than the product needed
+. a container-engine probe reporting that podman was configured, on a host where podman could not start a container
+. a PR check whose own comment promised the deployment would render, while that deployment was failing
 
 Each one *passed*. None of them was checking anything.
 
@@ -26,12 +28,17 @@ for is absent, and because it is not looking. Both render identically. Nothing
 in a passing build distinguishes them, and the reporting layer of most tools is
 built to celebrate the first case without ever considering the second.
 
-The eight above split along a second axis, which is the more useful one for
+The ten above split along a second axis, which is the more useful one for
 deciding where to spend suspicion:
 
-Wrong wiring:: the cycle rule, the locale, the shell check. The tool was capable
-and was asked the wrong question, or its answer was read wrong. These are found
-by feeding the tool a known-bad input.
+Wrong wiring:: the cycle rule, the locale, the shell check, the container-engine
+probe. The tool was capable and was asked the wrong question, or its answer was
+read wrong. These are found by feeding the tool a known-bad input.
++
+The engine probe is the clearest specimen of the whole family. `podman info`
+answers "is podman configured?" and was read as "can podman run a container?".
+Both are questions about podman; only one of them is the question that mattered,
+and on the day it mattered they gave opposite answers.
 
 Wrong threshold:: the payload budget. The tool worked perfectly and the number
 was set where it could not bite. These are found by arithmetic against a real
@@ -55,3 +62,12 @@ The fourth category arrived last and is the most uncomfortable, because it has n
 technical remedy. The first three are answered by better checking. This one is
 answered by checking against *reality* instead of against the specification, and
 nothing in a repository contains reality.
+
+One of the ten is not a check at all: the PR-validation comment promising that a
+green result meant the Pages deployment would render. A comment cannot fail, so
+it cannot be broken deliberately, and the habit above has nothing to bite on. It
+was written as a reassurance, it was believed, and it was wrong the first time
+the machinery rather than the content broke.
+
+Worth adding to the habit, then: **a claim in a comment is a check nobody can
+run.** It gets the same scrutiny as an assertion or it does not get written.

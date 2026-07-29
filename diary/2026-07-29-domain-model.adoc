@@ -142,9 +142,82 @@ yes, it is a requirement wearing a risk's clothing.
 the trigger for going further recorded: if this causes *repeated* mistakes, a
 duplicate-suspicion warning becomes worth building. Not a deferral; a condition.
 
+=== The build went red while we were writing about green builds
+
+Late in the day `main` stopped publishing:
+
+----
+Error: OCI runtime error: crun: unknown version specified
+----
+
+Podman failing before the container had started, for a command that had worked
+eight minutes earlier on the same runner image. Reproduced on a re-run. Docker on
+that same runner was healthy enough to carry the backend job's Testcontainers.
+
+`build.sh` preferred podman whenever it was present, with no way to say
+otherwise. Its probe was:
+
+[source,sh]
+----
+command -v podman >/dev/null 2>&1 && podman info >/dev/null 2>&1
+----
+
+`podman info` reports that the engine is *configured*. It says nothing about
+whether the OCI runtime can start a container — which is precisely the gap the
+failure lived in. A green probe about something that did not work, in the tooling
+we use to check everything else.
+
+The fix upstream (toolkit #71, PR #72) is a `DOCS_TOOLBOX_ENGINE` override, and
+both workflows now name docker. A *faithful* probe — actually starting a
+throwaway container with the real runtime flags — was considered and rejected: it
+costs an image pull before every run, and two on a host where podman is broken.
+Taxing the common case to fix an uncommon one is the wrong trade, and saying so
+in the issue is worth more than the code would have been.
+
+==== The claim that had never been tested
+
+The failure is *intermittent*, not deterministic. A pull-request check passed
+under podman while `main` was failing under it. Which makes this comment, sitting
+in `pr-validation.yml` since it was written, untrue:
+
+[quote]
+____
+Same pinned docs-toolbox image as a local run, so a green PR here means the Pages
+deployment will render.
+____
+
+It did not. The sentence is true about *content* — same image, same model, same
+renderer — and it was read, including by us, as a guarantee about the deployment.
+It never covered the machinery, and nobody noticed because until today the
+machinery had never been the thing that broke.
+
+Ninth entry for the through-line, and the first where the false claim was a
+*comment* rather than a check. The comment has been corrected rather than
+deleted, on the same principle as correcting a wrong justification in an issue: a
+reassurance that overstates outlives the situation that made it plausible.
+
+=== Upstream fixed it, and here it stayed broken
+
+Toolkit PR #70 fixed the risk register in the morning. `R-002` sat on `main` all
+day still rendering the inverted column, because the tooling is *vendored* and
+an upstream fix changes nothing here until it is copied.
+
+That is the cost of vendoring, stated plainly for once: two repositories can
+disagree indefinitely and neither one fails. The resync (#45) closed it, and
+`AGENTS.md` now records the resync date and the exact divergence — seven lines
+across four files, all of them the `src/docs` → `docs` adaptation.
+
+Keeping that list short is the whole discipline. A resync is a copy for as long
+as only paths differ; the moment logic differs here, it becomes a merge, and
+merges are where vendored tooling quietly forks.
+
+One reward for doing it: `R-001` gained a mitigation entry with nobody writing
+one. ADR-007 had declared `mitigates` at it all along, and no generator had ever
+read that relation.
+
 === What landed
 
-Documentation only, six commits, PR #57.
+The model work was documentation only — six commits, PR #57:
 
 * Q-PO-005 to Q-PO-010 record the six decisions; Q-PO-004 was wrong in three
   places and is corrected *in place* rather than rewritten, so the record still
@@ -161,3 +234,8 @@ Documentation only, six commits, PR #57.
 The backlog was the point as much as the documentation. Two issues that had said
 "compute the reserve" and "compute the runway" now carry the arithmetic and a
 worked example.
+
+Then the tooling took the rest of the evening: two toolkit findings filed and
+fixed upstream (#69/PR #70, #71/PR #72), the vendored copies resynced here (#45,
+PR #64), and `main` publishing again. Four pull requests across two repositories,
+none of which was on the plan when the day started with five screenshots.

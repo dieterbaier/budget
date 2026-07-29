@@ -15,22 +15,23 @@ report adds no signal a red pull request does not, while costing build time and
 storage on every merge. Recorded as a decision rather than an omission, because
 "not published" reads like something forgotten.
 
-Toolkit follow-ups are waiting on upstream:: budget issue #45 lists what happens
-here once toolkit issue #68 lands — re-vendor `scripts/`, `templates/` and
-`metamodel/`, reapplying only the `src/docs` → `docs` path adaptation; update
-the pinned toolkit commit in `AGENTS.md`; replace ADR-001's hand-written
-admonition with the generated include; and delete the local `refine-adr` skill
-if upstream guidance then covers it. Until then the hand-written note stays,
-marked as a stopgap.
+Part of the toolkit follow-ups is still waiting on upstream:: the re-vendoring
+half of budget issue #45 is done — `scripts/`, `templates/`, `metamodel/` and
+`build.sh` are at toolkit `de7c2ad`, and `AGENTS.md` carries the pin, the resync
+date and the exact divergence. What remains still waits on toolkit issue #68:
+replacing ADR-001's hand-written admonition with the generated include, and
+deleting the local `refine-adr` skill if upstream guidance then covers it. Until
+then the hand-written note stays, marked as a stopgap.
 
-The vendored copies are now measurably behind:: toolkit PR #70 landed on
-29 July and changed `scripts/validate-metamodel.rb` and `templates/risk.adoc`,
-both of which are vendored here. Until they are re-synced, this project's risk
-register keeps rendering the inverted `Mitigation/action` column — `R-002` is on
-`main` showing it right now. This is the first part of #45 that no longer waits
-on toolkit #68, and it is a concrete demonstration of what vendoring costs:
-upstream fixing a defect does not fix it here, and nothing in either repository
-fails while the two disagree.
+The engine override is a workaround, not a diagnosis:: both workflows pin
+`DOCS_TOOLBOX_ENGINE: docker` because podman on the GitHub runner intermittently
+cannot start the container. Why it fails there is still unknown — the runner
+image version was identical between a passing and a failing run, so the obvious
+explanation (an image roll) is ruled out and no better one replaced it. Docker is
+demonstrably healthy on those runners, so pinning it is a sound decision on the
+evidence, but the evidence is thin. If it recurs on docker, or if podman starts
+working again, the pin should be revisited rather than left as folklore. Toolkit
+#71 records the faithful-probe alternative that was rejected on cost.
 
 The proportionality gate is not yet applied here:: budget issue #42 waits for
 toolkit issue #66 to define the test. Applying a home-made version first would
