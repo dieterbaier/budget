@@ -32,6 +32,30 @@ The corresponding technology decisions are recorded in ADR-001 and ADR-003
 through ADR-008. Content confirmed in that session is marked `reviewed`;
 newly derived or still-uncertain content stays `draft`/`proposed`.
 
+On 2026-07-29 the owner supplied screenshots of the Notion budget being replaced
+and the domain model was specified against them in a second clarification
+session. The screenshots hold real financial data and are deliberately not part
+of this repository; what they established is recorded in Q-PO-005 through
+Q-PO-010 below, and Q-PO-004 was corrected where the notes had been wrong.
+
+One statement from that session governs the rest and is easy to lose in the
+detail:
+
+[quote]
+____
+The system is not an accounting system. It helps the owner keep an eye on
+spending — that was the original intention — and the categories and groups make
+the household book configurable enough to see, from real figures, what the money
+goes on. That is what helps with planning.
+____
+
+Several decisions only make sense in that light. The application derives no
+account balances, keeps no ledger, and does not reconcile itself: fixed-cost
+payments are checked by eye against the bank statement rather than booked, a
+payment date landing on a Sunday needs no correction, and account balances are
+typed in. A ledger would have to be right; this has to be *useful*, and the owner
+pays for the difference with a small amount of manual care.
+
 include::arc42/09-architecture-decisions/generated/open-questions.adoc[]
 
 == Open Questions For Product Owner
@@ -141,3 +165,126 @@ tracks net worth (life insurance, house value, account balances, investment
 portfolio) and the latest statutory pension figures; the projected need minus
 tracked net worth yields the *pension shortfall*. The precise compounding
 mechanics are refined during the pension increment.
+
+Corrected on 2026-07-29 in three places:
+
+* *Where the pension-relevance flag is decided.* The original answer listed
+  categories, costs and fixed costs without saying which wins. The booking wins:
+  a category carries the default and a transaction or fixed cost may override it.
+  The owner's example is `Auto` — the category stays relevant because fuel is
+  still a cost in retirement, while the car loan (a fixed cost that will be
+  repaid by then) and a one-off spoiler purchase (a transaction) are each flagged
+  not relevant on the booking itself.
+* *Where the inflation rate comes from.* Not a rate the owner looks up and types
+  in. The application stores the historical annual rates as entered data and
+  computes the average itself, so the figure moves as the series grows.
+* *How the monthly need in retirement is derived.* Notion offers a manual
+  override of the computed figure; the owner does not want it carried over,
+  because it only obscures where the number comes from. The need is
+  `value of pension-relevant costs at retirement − expected statutory pension`,
+  computed and not overridable.
+
+The Notion pension figures were *not* used to reverse-engineer the formula. The
+owner reports that the sheet's capital requirement carries a known calculation
+error, and two of its figures could not be reconciled with any plausible formula
+during analysis. The projection is specified from scratch in the pension
+increment rather than reproduced.
+
+[[q-po-005]]
+=== Q-PO-005: At what level is spending classified?
+
+Answer: Three levels. A *category group* holds *categories*, and a category holds
+*purposes* (German `Verwendungszweck`). A purpose belongs to exactly one
+category; a transaction and a fixed cost may carry one, optionally.
+
+The purpose is what the money was actually for — `Fernwärme` under the category
+`Nebenkosten`, `Streaming (Musik)` under `Lizenzen`. The owner wants to see what
+a single purpose costs per month, fixed and variable together, which is why it
+cannot be a free-text field: aggregation needs identity.
+
+It stays optional so quick entry does not require inventing a purpose first; the
+purpose view then carries an explicit "without purpose" bucket. Because a purpose
+belongs to one category, its total always rolls up into that category and its
+group without contradiction.
+
+[[q-po-006]]
+=== Q-PO-006: Does "costs per month" mean the current month or a long-run average?
+
+Answer: A long-run average — the recorded bookings divided by a *tracking
+window*, which runs from the first recorded booking to today and is measured
+day-precise rather than in whole months.
+
+This is the figure the owner reads, and it answers a structural question ("what
+does this group cost me per month") rather than a momentary one ("what have I
+spent so far this month"). Day-precise matters: a half-finished month
+contributes half a month to the divisor and its bookings so far to the numerator,
+so a partially elapsed month does not drag the average down.
+
+Fixed costs enter the same figure as their amortized monthly portion. Variable
+costs are the averaged bookings. The overspending signal compares that total
+against average monthly income and therefore also states something structural.
+
+This re-scopes what Increment 1 delivered: `MonthlyExpenditureCalculator`
+computes the current calendar month and no longer produces the leading figure.
+
+[[q-po-007]]
+=== Q-PO-007: How does a fixed-cost payment enter the record?
+
+Answer: It does not. Fixed costs are defined once and checked, never booked.
+
+The owner recognizes fixed-cost debits on the bank statement and skips them when
+transcribing; the definition already contributes its monthly portion, so booking
+them as well would count them twice. What the definition needs instead is the
+date of the *last payment*, maintained by hand — the field the model called
+`anchorDate`, which is not an abstract anchor but a value that moves forward. The
+next payment date follows from it, without business-day correction: a due date
+landing on a Sunday is fine, because nothing is executed from it.
+
+Two figures derive from that date. The *reserve target* is the number of whole
+months elapsed since the last payment multiplied by the monthly portion, and is
+zero for monthly costs — that is the money that must sit on the call-money
+reserve account. The *due list* shows what is payable now, and the owner uses it
+in both directions: to catch a payment forgotten while transcribing, and to
+retire a fixed cost that no longer exists — a cancelled gym contract shows up as
+a last payment older than its own interval.
+
+The payment intervals in use are monthly, quarterly, half-yearly, yearly and
+two-yearly. Payment method (direct debit, credit card, PayPal) is recorded for
+information only and enters no calculation.
+
+[[q-po-008]]
+=== Q-PO-008: How are refunds recorded, and does the gross figure stay visible?
+
+Answer: A refund stays what the glossary already says it is — a booking with a
+negative amount in the same category. No separate concept.
+
+The group view additionally shows the sum of the negative amounts as `refunds per
+month`, so gross and net are both readable: health costs of 133 EUR per month
+against 178 EUR of reimbursements read better than the net figure of −45 EUR
+alone. Both are derived from the same bookings, so nothing can drift apart. A
+group total may legitimately be negative, and no view may treat that as an error.
+
+[[q-po-009]]
+=== Q-PO-009: Do savings and pension contributions count as costs?
+
+Answer: Yes, deliberately.
+
+They are roughly a fifth of the owner's monthly outgoings, so the overspending
+signal reports "spending exceeds income" while part of that spending builds
+wealth. That is the intended reading: the question the signal answers is whether
+income matches outgoings, and *saving too much* is a valid answer to it — one the
+owner can act on immediately by saving less, at the price of slower growth in net
+worth. Excluding savings would hide a lever rather than sharpen the signal.
+
+[[q-po-010]]
+=== Q-PO-010: How is uncertainty in net worth and the pension projection expressed?
+
+Answer: As a fixed band, not as a configurable scenario model.
+
+Net worth carries a minimum, a likely and a maximum value. The pension projection
+is computed twice: once with inflation only, once with inflation plus an
+estimated cost increase. The inflation rate is derived from the entered
+historical series; the cost increase is a single estimated percentage.
+
+A named, parameterized scenario concept was considered and rejected as more model
+than the two cases justify.
