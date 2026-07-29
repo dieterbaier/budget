@@ -2,11 +2,11 @@
 id: R-002-fixed-cost-double-counting
 type: Risk
 title: Fixed Cost Counted Twice
-status: proposed
+status: reviewed
 owner: architecture
 created: '2026-07-29'
 updated: '2026-07-29'
-reviewed: false
+reviewed: true
 summary: A fixed-cost debit transcribed from the bank statement is counted both as a booking and as its amortized monthly portion.
 tags:
 - risk
@@ -14,10 +14,10 @@ tags:
 relations:
 - type: affects
   target: QS-001-budget-total-integrity
-  status: proposed
+  status: accepted
   rationale: Silent duplication is exactly the drift the integrity scenario exists to exclude.
   evidence: docs/arc42/11-risks-and-technical-debt/r-002-fixed-cost-double-counting.adoc
-  reviewed: false
+  reviewed: true
 metadata_version: '1.0'
 ---
 [[r-002-fixed-cost-double-counting]]
@@ -87,14 +87,14 @@ duplicate-suspicion warning becomes worth building.* The trigger is real
 recurrence in use, not a single slip — which is what makes it a decision rather
 than a deferral.
 
-The assessment above is not his: the likelihood, impact and priority ratings are
-an architectural estimate and have not been reviewed.
+The owner reviewed and released this risk as described on 2026-07-29, including
+the assessment above.
 
 === Review Notes
 
-Confirm the likelihood, impact and priority ratings, then set `reviewed: true`.
-Revisit the rating after the first months of real use — it is currently an
-estimate with no usage data behind it, and that same usage is what decides
-whether the duplicate-suspicion warning gets built.
+Revisit the rating after the first months of real use. It rests on an estimate
+rather than usage data, and that same usage is what decides whether the
+duplicate-suspicion warning gets built — so the two are worth re-reading
+together.
 
 include::generated/r-002-fixed-cost-double-counting-traceability.adoc[leveloffset=+1]
