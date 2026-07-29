@@ -5,7 +5,7 @@ title: Requirements Overview
 status: reviewed
 owner: product owner
 created: '2026-07-03'
-updated: '2026-07-24'
+updated: '2026-07-29'
 reviewed: true
 generated: false
 summary: Scope for the private single-user actuals-tracking budget application.
@@ -17,33 +17,61 @@ metadata_version: '1.0'
 [[requirements-overview]]
 == Requirements Overview
 
-The owner records transactions from bank statements — each with a booking date,
-amount, category, account, and type (expense, income, or transfer). Refunds are
-entered as a negative expense in the same category. The application organizes
-categories into groups and manages three accounts (current account, a
-call-money reserve account for non-monthly fixed costs, and a call-money savings
-account) whose balances are entered manually.
+**This is not an accounting system.** It exists so the owner can see where the
+money goes and plan from real figures; it derives no balances, keeps no ledger,
+and does not reconcile itself. That is a scope statement, not a shortcoming —
+several requirements below are deliberately lax because of it, and the owner pays
+the difference with a small amount of manual care. See
+`doc-005-questions-and-answers.adoc`.
 
-Fixed-cost definitions carry an amount, a payment interval (monthly, quarterly,
-half-yearly, or yearly), and an anchor date; from a booking the next payment date
-and a monthly reserve amount are derived. A monthly income table holds salary and
-yields an average income for the overspending comparison.
+The owner records transactions from bank statements — each with a name, booking
+date, amount, category, account, and type (expense, income, or transfer).
+Refunds are entered as a negative expense in the same category, so a category or
+group total may legitimately be negative. Spending is classified on three levels:
+category groups hold categories, and categories hold *purposes* (German
+`Verwendungszweck`) — what the money was actually for. A purpose belongs to
+exactly one category and is optional on a booking. Three accounts are managed
+(current account, a call-money reserve account for non-monthly fixed costs, and a
+call-money savings account) whose balances are entered manually.
+
+Fixed-cost definitions carry a payee, an amount per cycle, a payment interval
+(monthly, quarterly, half-yearly, yearly, or two-yearly), a category, an optional
+purpose, a payment method, and the date of the last payment. **Fixed-cost
+payments are never booked as transactions** — they are checked against the bank
+statement instead, because the definition already contributes its monthly
+portion. From the last payment date follow the next payment date (without
+business-day correction) and the reserve requirement. A monthly income table
+holds salary and yields an average income for the overspending comparison.
+
+Monthly cost figures are *long-run averages*: recorded bookings divided by a
+tracking window that runs from the first booking to today, measured day-precise.
+The figure answers what something costs per month in general, not what has been
+spent so far this month.
 
 In scope for the first increments:
 
-* Bootstrap of accounts, category groups, categories, fixed costs, and balances.
+* Bootstrap of accounts, category groups, categories, purposes, fixed costs, and
+  balances.
 * Transaction entry and editing.
-* Current monthly expenditure (variable costs plus amortized fixed costs) with an
-  overspending signal against average income.
-* Spend per category group.
-* Reserve requirement for the non-monthly-fixed-cost account.
-* Cash runway from today to month end.
+* Monthly cost (averaged variable costs plus amortized fixed costs) with an
+  overspending signal against average income. Savings and pension contributions
+  count as costs, deliberately.
+* Spend per category group, per category, and per purpose — fixed and variable
+  each, with refunds shown beside the net figure.
+* Reserve requirement for the non-monthly-fixed-cost account, and a list of the
+  fixed costs currently due.
+* Cash runway from today to month end: remaining days at the variable daily rate,
+  plus the fixed costs still due this month.
 * Net-worth tracking (life insurance, house value, account balances, investment
-  portfolio, and the latest statutory pension figures).
-* Pension projection (nominal), driven by a pension-relevance flag on
-  categories, costs, and fixed costs, and yielding the pension shortfall against
-  tracked net worth.
+  portfolio, and the latest statutory pension figures), each as a minimum, likely
+  and maximum value.
+* Pension projection (nominal), driven by a pension-relevance flag whose default
+  sits on the category and whose override sits on the booking, computed twice —
+  with inflation only and with inflation plus an estimated cost increase — and
+  yielding the pension shortfall against tracked net worth. The inflation rate is
+  averaged from an entered series of historical annual rates.
 
 Out of scope: bank/API synchronization, cash-payment tracking (beyond a
 `Barabhebung` booking), spending forecasts/planning, multi-user or shared
-budgets, offline capture, financial advice, and payment execution.
+budgets, offline capture, financial advice, payment execution, and any
+configurable scenario model beyond the fixed cases named above.
