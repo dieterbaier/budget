@@ -75,7 +75,7 @@ Initial aggregate map (refined as slices land):
 | CategoryGroup | Name | Groups categories.
 | Category | Name | Reference entity; carries the pension-relevance flag.
 | Transaction | Bank reference or generated `TransactionId` | See Q-ARCH-003.
-| FixedCost | Generated id | References a category; has amount, interval, anchor date.
+| FixedCost | Generated id | References a category; has amount, interval, last payment date.
 | IncomeEntry | Month | One recorded monthly income per month.
 |===
 

@@ -1,0 +1,148 @@
+---
+id: ADR-023-ui-language
+type: ADR
+title: The Interface Speaks German
+status: accepted
+owner: architecture
+created: '2026-07-31'
+updated: '2026-07-31'
+reviewed: true
+summary: The PWA is German because its only user is the domain expert; the glossary carries a display form for every term whose agreed form is not German.
+derived_from:
+- type: prompt
+  description: The owner asked that the interface language be decided explicitly at the start of a project rather than settled by habit, and observed that this project had failed to do so.
+tags:
+- decision
+- web
+- domain
+relations:
+- type: depends_on
+  target: ADR-022-ubiquitous-language
+  status: accepted
+  rationale: The display form exists only because the agreed terms are deliberately mixed-language.
+  reviewed: true
+- type: relates_to
+  target: ADR-005-web-client-as-pwa
+  status: accepted
+  rationale: Fixes the interface language of the client that ADR records.
+  reviewed: true
+metadata_version: '1.0'
+---
+[[adr-023-ui-language]]
+== ADR-023: The Interface Speaks German
+
+=== Status
+
+Accepted. Decided by the owner on 2026-07-31, together with
+xref:adr-022-ubiquitous-language[ADR-022] but deliberately as a separate record.
+
+=== Decision
+
+The PWA is in **German**.
+
+Every term whose agreed form under ADR-022 is not already German carries a
+*display form* in the glossary, and the interface uses that form. `Category`
+displays as "Kategorie"; `Sollansparung` displays as itself. The display form is
+presentation only — it never appears in the domain model, in an API payload or in
+architecture documentation.
+
+Where a term needs a different word on screen for readability rather than
+translation, that word is the display form too, and the glossary is where the
+difference is recorded rather than discovered in a component.
+
+=== Context
+
+Three languages are in play in any product, and they answer to different
+authorities:
+
+[cols="2,1,3", options="header"]
+|===
+| Language | Here | Bound to
+
+| Domain — what the expert says
+| German
+| —
+
+| Code — identifiers
+| Mixed, per ADR-022
+| The domain, by DDD's ubiquitous-language rule
+
+| Interface — what the user reads
+| German
+| The *user*, by ordinary internationalization
+|===
+
+Conflating the second and third is what produced the current state: the interface
+is English because the code is English, which is not a reason. Nobody chose it.
+
+Here the user *is* the domain expert, and he reads German. That settles it
+without needing an argument about audiences.
+
+It also has to be settled, rather than left to follow ADR-022, because ADR-022
+deliberately produces a **mixed** term list. An interface that rendered the
+agreed terms directly would read "Category", "Sollansparung", "Fixed costs" side
+by side. That is not a language, and no user should be asked to read it.
+
+==== Why record it separately when the two coincide today
+
+Because they will not always. A second user who does not speak German, or an
+ambition to show the project outside this household, changes the interface
+language and changes nothing about the domain. Holding the decision separately
+makes that a visible change to one ADR instead of a silent reinterpretation of
+another — and it records, now, that the coincidence is a coincidence.
+
+The owner's reason for asking is the more practical one: an interface language
+decided at the start is cheap, and one settled by habit is expensive to revisit.
+This project is the evidence — the interface reached a dozen strings before
+anyone asked.
+
+=== Considered Options
+
+==== German interface with a display form per term (chosen)
+
+The user reads his own language; the mapping lives in one place.
+
+==== Let the interface render the agreed terms directly
+
+No mapping to maintain. Rejected: the agreed terms are mixed by design, so the
+interface would be mixed, and a user would be reading two languages at once.
+
+==== English interface
+
+The current state. Rejected: nothing argues for it. The only user does not read
+English by preference, and the reason the interface is English today is that the
+code is, which is not a reason.
+
+=== Consequences
+
+==== Positive
+
+* The user reads the words he uses. For the terms ADR-022 keeps in German —
+  `Sollansparung`, `Verwendungszweck` — screen and speech match exactly, with no
+  step in between.
+* The mapping has one home. A change to how something is labelled is a glossary
+  change, not a search through components.
+
+==== Negative
+
+* Unlike ADR-022, this one costs implemented work. Roughly a dozen strings in the
+  PWA — "Add category group", "Current monthly expenditure", "Loading…" — have to
+  be replaced, and every future component has to reach for a display form instead
+  of writing a label.
+* It reintroduces a translation boundary that ADR-022 removed between domain and
+  code. The boundary is now between domain and screen. That is a normal place for
+  one, and it only goes one way, but the claim "this decision removes translation
+  from the project" would be false and is not made.
+* The glossary takes on a third column and a third job.
+
+==== Neutral or Follow-Up
+
+* The mechanism is not chosen here. Whether the display form is read from the
+  glossary at build time, kept in a resource bundle, or simply written into
+  components against a reviewed list is an implementation decision for the slice
+  that does the work.
+* Nothing enforces that a component uses a display form rather than an invented
+  label. That is the same gap ADR-022 leaves for the term register, and it is
+  worth solving once for both.
+
+include::generated/adr-023-ui-language-traceability.adoc[leveloffset=+1]
