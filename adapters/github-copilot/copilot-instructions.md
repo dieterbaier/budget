@@ -21,6 +21,7 @@ repository:
 
 Paths are relative to the budget repository root.
 
+- `language-profile`: `skills/language-profile/SKILL.md`
 - `refine-adr`: `skills/refine-adr/SKILL.md`
 
 ## Toolkit Source Of Truth

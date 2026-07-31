@@ -9,9 +9,14 @@ Apply instructions in this order:
 
 1. User instruction
 2. This project `AGENTS.md`
-3. Relevant local skill under `skills/` — currently only
-   `skills/refine-adr/SKILL.md`, for recording a decision that narrows part of an
-   already-accepted ADR
+3. Relevant local skill under `skills/`:
+   - `skills/refine-adr/SKILL.md` — recording a decision that narrows part of an
+     already-accepted ADR
+   - `skills/language-profile/SKILL.md` — which register an artifact is written
+     in. **Applies to every document this project produces**, so consult it
+     before writing an ADR, a glossary entry, a diary recap, an issue, a pull
+     request body or a code comment, not only when something looks like a
+     style question
 4. Relevant toolkit skill, for example `skills/bootstrap-project/SKILL.md`,
    `skills/implement-issue-workflow/SKILL.md`, `skills/commit-message/SKILL.md`,
    `skills/pr-review/SKILL.md`, `skills/slice-issues/SKILL.md`,
@@ -125,14 +130,23 @@ only. Local skills and contracts extend the toolkit — their bodies read the
 toolkit baseline first, then add the project-specific steps — or explicitly
 override a specific toolkit rule; they never silently duplicate toolkit rules.
 
-This project has one local skill, `skills/refine-adr/SKILL.md`. It extends the
-toolkit's ADR workflow for the case where a new ADR narrows part of an
-already-accepted one: the toolkit's `refines` relation records the fact, and the
-skill adds how to make it visible to a reader who is not looking at a generated
-traceability view. Everything else — including the ADR workflow it builds on —
-stays delegated to the toolkit. If the rule proves general rather than
-project-specific, it belongs upstream and this skill should be deleted in favour
-of the toolkit's.
+This project has two local skills, and both are deltas that name the condition
+under which they should be deleted.
+
+`skills/refine-adr/SKILL.md` extends the toolkit's ADR workflow for the case where
+a new ADR narrows part of an already-accepted one: the toolkit's `refines`
+relation records the fact, and the skill adds how to make it visible to a reader
+who is not looking at a generated traceability view. If the rule proves general
+rather than project-specific, it belongs upstream and this skill should be deleted
+in favour of the toolkit's.
+
+`skills/language-profile/SKILL.md` records which register each artifact is written
+in. The toolkit's skills decide what an artifact must *contain*; this one decides
+how it *reads*, and it defers entirely to `skills/commit-message/SKILL.md` for
+commit text. Its mechanism — profiles chosen by what happens to a text when it
+turns out wrong — is general; its profiles are not. The upstream shape would
+therefore be the mechanism plus a requirement that each project declare its own
+profiles.
 
 ## Pull Request Workflow
 
