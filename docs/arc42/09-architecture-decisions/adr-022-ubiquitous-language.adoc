@@ -1,0 +1,209 @@
+---
+id: ADR-022-ubiquitous-language
+type: ADR
+title: One Agreed Term Per Domain Concept
+status: accepted
+owner: architecture
+created: '2026-07-31'
+updated: '2026-07-31'
+reviewed: true
+summary: Each domain concept has one agreed term, chosen per concept rather than per language, recorded in the glossary and used unchanged in code and documentation.
+derived_from:
+- type: prompt
+  description: The owner observed that the domain is spoken in German while the code is English, that DDD forbids translating domain terms, and that this project never decided which language its ubiquitous language is.
+tags:
+- decision
+- architecture
+- domain
+relations:
+- type: refines
+  target: ADR-009-domain-identity-and-ddd
+  status: accepted
+  rationale: ADR-009 fixed the tactical building blocks but left the language half of the ubiquitous language undecided.
+  reviewed: true
+metadata_version: '1.0'
+---
+[[adr-022-ubiquitous-language]]
+== ADR-022: One Agreed Term Per Domain Concept
+
+=== Status
+
+Accepted. Decided by the owner on 2026-07-31, after he observed that the domain
+is spoken in German while the code is English and that nothing in this repository
+had ever decided that.
+
+=== Decision
+
+The project has one ubiquitous language. Every domain concept has **exactly one
+agreed term**, and that term is used unchanged in the domain model, in the
+architecture documentation and in conversation.
+
+Four rules follow.
+
+. *The term is chosen per concept, not per language.* Where an English rendering
+  carries the concept faithfully, it is the term. Where it loses meaning, the
+  domain expert's German word is the term — in code, spelled as an identifier
+  (`Verwendungszweck`, `Sollansparung`), not translated and not glossed.
+. *Faithfulness is judged once, by the domain expert, when the term enters the
+  glossary.* It is not re-judged at each use. A term that is in the glossary is
+  settled.
+. *The glossary is the register.* No type in `domain/model/` and no term in the
+  architecture documentation may name a concept that has no glossary entry, and
+  no glossary entry may name a concept the domain does not have.
+. *An invented concept is adopted, not translated.* Some concepts came from the
+  architecture rather than from the expert — the tracking window, the cash
+  runway, the overspending signal. These have no German original. They enter the
+  language when the expert accepts a term for them, which is a different act from
+  translating one.
+
+Technical vocabulary is unaffected. `repository`, `service`, `findAll`, `Money`
+and the framework's own words stay English; the rule governs the nouns that name
+*domain concepts*.
+
+=== Context
+
+DDD's ubiquitous-language rule is not about which natural language a team uses.
+It is about there being **only one**, with no translation step between what the
+expert says and what the code says, because a translation step is where knowledge
+leaks.
+
+That leak has already cost this project once, before the rule was written down.
+`FixedCost.anchorDate` named a *fixed reference point*. The domain has no such
+thing: it has "letzte Zahlung", a value that moves forward every time the cost is
+paid, and from which the next due date and the reserve are derived. The English
+name invented a concept, and it stood in the model, the schema and the glossary
+for four days without anyone reading it twice. Had the field been called
+`letzteZahlung`, the error would have been impossible to make.
+
+Two more of the same kind were queued when this decision was taken.
+`Sollansparung` had been rendered as `reserve requirement`: the German says *what
+should have been saved up by now*, the English says *what must be held*. Those
+are different quantities that happen to be equal today.
+`Verwendungszweck` had been rendered as `Purpose`, which is generic where the
+original is the banking term for what a payment is for.
+
+Neither had been marked as a translation. That is the actual failure mode — not
+English, but *unagreed* translation. `Category` for "Kategorie" costs nothing and
+nobody would object to it.
+
+The timing matters and made the decision cheap. Every lossy term identified was
+still unimplemented — `Sollansparung` in issue #16, `Verwendungszweck` in #58,
+`letzte Zahlung` in #10 — so adopting this rule changed issues and the glossary,
+not working code.
+
+=== Considered Options
+
+==== One agreed term per concept, chosen per concept (chosen)
+
+Faithful renderings stay English; lossy ones keep the expert's word. The glossary
+records the decision and a check enforces it.
+
+==== Domain words everywhere, English only for plumbing
+
+Every domain noun in the expert's language, through the model, the API payload
+and the client types. Structurally the strongest answer: with no translation
+boundary anywhere, the `anchorDate` class of error cannot occur at all.
+
+Rejected on cost against benefit. It rewrites the model, the schema, the REST
+payload, the TypeScript types and the Zod schemas, to protect a set of terms that
+is small and already identified — and the concepts where translation actually
+hurts are the minority. Worth revisiting only if this project ever gains
+German-speaking contributors, which a single-user product will not.
+
+==== Declare the domain language to be English
+
+Adopt the English terms as *the* domain language, including in speech, and keep
+the code untouched.
+
+Rejected because it cannot be enforced where it matters. It asks the domain
+expert to change how he talks about his own budget; the moment he says
+"Sollansparung" in a working session, the rule is broken and the project is back
+to translating without a table — which is exactly the state this ADR exists to
+end. It also has no answer for `Barabhebung`, a concept with no English word,
+which would need an exception on the first day.
+
+=== Pugh Matrix
+
+[cols="2,1,1,1", options="header"]
+|===
+| Criterion | Per-concept term | Domain words everywhere | Domain declared English
+
+| No unagreed translation
+| +1
+| +1
+| 0
+
+| Cost to existing code today
+| +1
+| -1
+| +1
+
+| Enforceable by a check
+| +1
+| +1
+| -1
+
+| Survives a term with no English word
+| +1
+| +1
+| -1
+
+| Reads coherently to one reader
+| 0
+| +1
+| +1
+
+s| Sum
+s| 4
+s| 3
+s| 0
+|===
+
+The chosen option and the rejected first alternative are close, and the matrix
+says so. The deciding criterion was cost today, not correctness: option two is
+the better model and the worse trade.
+
+=== Consequences
+
+==== Positive
+
+* The class of error that produced `anchorDate` becomes impossible for every term
+  the glossary settles, because there is no name to invent.
+* The decision cost no implemented code, because every lossy term was still in
+  the backlog when it was taken.
+* The glossary stops being merely descriptive and becomes authoritative. It is
+  the artifact a later reader consults to find out what something is *called*,
+  not only what it means.
+
+==== Negative
+
+* Identifiers will be mixed-language. `record Fixkosten` next to
+  `FixedCostRepository` is not going to look tidy, and no amount of rule-writing
+  makes it look tidy.
+* "Is this rendering faithful?" is a judgement, and this project's own record is
+  a long list of unchecked judgements drifting. The mitigation is real but
+  partial: the judgement is made once per term and written down, so it is not
+  re-made silently — but nothing validates the judgement itself.
+* The glossary now has two jobs, explaining and registering. Splitting them into
+  two artifacts was considered and rejected because it costs a second lookup and
+  invites the two to disagree; the cost of not splitting is that one table serves
+  two readers.
+
+==== Neutral or Follow-Up
+
+* This decision does not settle the UI language. A mixed-language term list would
+  produce an interface reading "Category", "Sollansparung" and "Fixed costs" side
+  by side, which is not a language. See
+  xref:adr-023-ui-language[ADR-023].
+* The term list itself is not in this ADR. Building it needs a working session
+  with the domain expert, and a first pass already found questions no rule
+  answers: the expert says "Rentengap", a German-English hybrid; he uses
+  "Erstattung" and "Gutschrift" for what appears to be one concept; and
+  "Vermögen" is his word for the total where the glossary currently calls the
+  total `Net worth` and a single position `Asset`.
+* The check in rule 3 is not implemented. Until it is, rule 3 is a convention,
+  and this project has ten recorded instances of what happens to those.
+* ADR-009's aggregate map still described `FixedCost` as carrying an "anchor
+  date"; it is corrected in the same change as this ADR.
+
+include::generated/adr-022-ubiquitous-language-traceability.adoc[leveloffset=+1]

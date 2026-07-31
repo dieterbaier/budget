@@ -133,6 +133,18 @@ relations:
   rationale: The chapter contains this ADR.
   evidence: docs/arc42/doc-09000-architecture-decisions.adoc
   reviewed: true
+- type: documents
+  target: ADR-022-ubiquitous-language
+  status: accepted
+  rationale: The chapter contains this ADR.
+  evidence: docs/arc42/doc-09000-architecture-decisions.adoc
+  reviewed: true
+- type: documents
+  target: ADR-023-ui-language
+  status: accepted
+  rationale: The chapter contains this ADR.
+  evidence: docs/arc42/doc-09000-architecture-decisions.adoc
+  reviewed: true
 metadata_version: '1.0'
 ---
 [[architecture-decisions]]
