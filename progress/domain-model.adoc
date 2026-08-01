@@ -1,0 +1,72 @@
+= Domain model and its language
+
+Getting the model to describe the budget the owner actually keeps, and fixing the
+words it is described in.
+
+*Status:* in flight
+
+== The plan
+
+[options="checklist"]
+* [x] Specify the model from the Notion views — #56, merged as PR #57
+* [x] Decide the ubiquitous language and the UI language — #66, merged as PR #67
+      (ADR-022, ADR-023)
+* [ ] Agree the term list and rework the glossary — #68. Needs a working session
+      with the owner, not a guess
+* [ ] Rename the terms that are already in code — see *Open in this topic*
+* [ ] Check that domain types resolve to glossary terms — #69, blocked on #68
+* [ ] Then the slices that carry the corrected terms: #58 Verwendungszweck,
+      #10 fixed costs including the last payment, #16 Sollansparung,
+      #62 tracking window, #59 inflation series, #60 transaction name,
+      #61 due fixed costs
+
+The order is the point of this file. #68 comes before every slice below it
+because each of those slices names concepts whose terms are not settled yet.
+Implementing first means renaming afterwards in the model, the schema, the REST
+payload and the TypeScript types at once — which is exactly the cost ADR-022
+declined to pay, and it would be paid by accident.
+
+The rename step sits between #68 and #69 rather than inside #69: the check
+enforces agreement, so it can only be switched on once what it enforces exists.
+
+== Where we are
+
+The tactical model is decided (ADR-009) and the language is decided (ADR-022,
+ADR-023), but the register those decisions point at — the glossary — has not been
+reworked yet. Until it is, rule 3 of ADR-022 is a convention.
+
+The domain model in `application/backend/src/main/java/.../domain/model/` holds
+`Transaction`, `Category`, `CategoryGroup`, `FixedCost`, `Money`,
+`PaymentInterval` and `TransactionType`. Only `FixedCost` carries a term the
+language decision rejects.
+
+== Open in this topic
+
+*`anchorDate` is in implemented code, not only in the backlog.* ADR-022 uses it
+as the example of the error it prevents, and it is still there:
+
+* `domain/model/FixedCost.java` — the record component and its Javadoc
+* `adapter/out/persistence/entity/FixedCostEntity.java`
+* `db/migration/V1__initial_schema.sql` — column `anchor_date`
+* `docs/doc-004-roadmap.adoc` (twice) and
+  `docs/arc42/doc-08000-crosscutting-concepts.adoc`
+
+The occurrence in `docs/doc-005-questions-and-answers.adoc` line 22 stays: it is
+a historical answer, and that document corrects visibly rather than silently.
+
+A rename touches a Flyway migration that has already run. Whether that is a new
+migration or an edit of V1 is undecided and is not a language question.
+
+*Questions #68 has to settle*, from the first pass: `Rentengap` as the owner's
+actual word; whether `Erstattung` and `Gutschrift` are one concept or two;
+the `Vermögen` / `Net worth` / `Asset` / `Geldguthaben` cluster; and the invented
+concepts — tracking window, cash runway, overspending signal — which ADR-022
+rule 4 says must be adopted rather than translated.
+
+== Checks
+
+[source,sh]
+----
+./build.sh all
+grep -rn 'anchorDate\|anchor_date' application/ docs/ | grep -v generated
+----
