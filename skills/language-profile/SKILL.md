@@ -42,7 +42,7 @@ turns out to be wrong**:
 |---|---|---|
 | Decision core fixed once accepted; a changed decision becomes a new record | ADR, architecture constraint | [1](#1-decided-once) |
 | Reassessed in place as evidence arrives | Risk, quality scenario | [2](#2-reassessed-in-place) |
-| Corrected in place, silently | Glossary, requirements overview, arc42 chapters, README, CONTRIBUTING, `AGENTS.md`, `skills/**` | [3](#3-corrected-silently) |
+| Corrected in place, silently | Glossary, requirements overview, arc42 chapters, README, CONTRIBUTING, `AGENTS.md`, `skills/**`, `progress/**` | [3](#3-corrected-silently) |
 | Corrected in place, visibly | `docs/doc-005-questions-and-answers.adoc` | [4](#4-corrected-visibly) |
 | Never revised | `diary/**` | [5](#5-never-revised) |
 | Corrected when a claim fails | Issue, pull request body, commit message | [6](#6-working-traffic) |
@@ -153,7 +153,7 @@ Whether a threshold or a grade may move at all is not this skill's call. See
 ## 3. Corrected silently
 
 Glossary, requirements overview, arc42 chapter documents, README, CONTRIBUTING,
-`AGENTS.md`, local skills under `skills/`.
+`AGENTS.md`, local skills under `skills/`, progress files under `progress/`.
 
 Read by someone who needs to act now.
 
@@ -193,10 +193,9 @@ Read by us, later, looking for why a mistake was plausible.
   record nobody can learn from.
 - **No cynicism.** Mocking a past belief deletes exactly what the entry is for.
 - Every claim checkable: dates, issue numbers, commit ids, quoted output.
-- **A recap is open until the day it covers is closed. After that, append only.**
-  What we believed and when is never revised; how it reads may be — voice,
-  typography, a cross-reference. Changing a past claim, softening a past error or
-  deleting an entry is forbidden; that becomes a new entry.
+- **What we believed and when it is never revised; how it reads may be** — voice,
+  typography, a cross-reference. That is the register consequence of the diary's
+  lifecycle rule, which is `skills/diary/SKILL.md`'s and is not restated here.
 
 ## 6. Working traffic
 
@@ -237,7 +236,11 @@ Read by whoever changes this next.
   work.
 - **Commit message format.** The toolkit owns it.
 - **Lifecycle and ownership.** When an artifact may be edited, superseded or
-  re-graded is the toolkit's, in every case.
+  re-graded belongs to whoever owns the artifact — the toolkit for everything it
+  defines, `skills/diary/SKILL.md` for the diary. Never this skill.
+- **What an entry contains and where it goes.** For the diary and the progress
+  files that is `skills/diary/SKILL.md`, `skills/clock-in/SKILL.md` and
+  `skills/clock-out/SKILL.md`.
 
 ## When this skill should be deleted
 
