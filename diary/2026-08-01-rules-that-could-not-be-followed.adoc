@@ -1,0 +1,125 @@
+== Day 7 — 1 August 2026: rules that could not be followed
+
+No product code changed today. Two pull requests that had been open since
+yesterday morning went through four rounds of review between them, and every
+round found the same shape of defect: a rule that reads well and cannot be
+obeyed.
+
+=== Day 6 has no recap
+
+31 July produced ADR-022, ADR-023 and the first version of the language-profile
+skill — commits `f20842a` at 08:57 and `10088d6` at 09:18, pull requests #67 and
+#71 opened within twenty minutes of each other. There is no `2026-07-31` file in
+this directory.
+
+It is worth recording as the first entry of a day whose whole subject is the
+start and end of a working day. The day without the ritual is the day with no
+record, and nobody noticed at the time. That is the argument for
+`skills/clock-out/SKILL.md` in one sentence, and it is stronger evidence than
+anything written in the skill itself.
+
+The gap is not being backfilled. What happened on 31 July is in the two pull
+requests and in the commits; what we *believed* on 31 July is gone, and inventing
+it a day later would be exactly the failure the diary exists to prevent.
+
+=== The rule that obliged the owner to speak English
+
+ADR-022 fixed the ubiquitous language. Its central rule required the agreed term
+to be used unchanged "in the domain model, in the architecture documentation and
+in conversation", and in the same document it accepted `Category` as the term for
+"Kategorie".
+
+Read together, those two sentences oblige a German-speaking domain expert to say
+"Category" out loud. And the ADR itself gives precisely that consequence as its
+reason for rejecting the option *Domain declared English*: "the moment he says
+'Sollansparung' in a working session, the rule is broken".
+
+So the central rule was unsatisfiable, and the option comparison rested on a
+criterion the chosen option failed too. Neither of us saw it while the ADR was
+being written; the review found it by reading two paragraphs against one another.
+
+The resolution the owner named is better than the original: a binding register
+with an explicit, expert-checked mapping between the spoken term and the code
+identifier. Translation is permitted; the silent or lossy kind is not — which is
+the failure mode the ADR had already identified as the real one. The position on
+which identifier belongs to which concept did not change at all. Only the claim
+about what the decision achieves.
+
+`37cbf85` reworked it, and the ADR now carries a *What The Review Changed*
+section rather than being fixed quietly. The contradiction is the more useful
+half: two paragraphs can each be defensible and jointly impossible.
+
+=== The skill that broke its own boundary
+
+The language-profile skill states, under *Purpose*, that it governs how a text
+reads while structure, metadata and lifecycle stay with the toolkit. The first
+row of its own table then said ADR, constraint, quality scenario and risk are
+"superseded, never rewritten".
+
+That is false for two of the four, and checkably so: the toolkit's
+`skills/risk/SKILL.md` names updating an existing risk as a core workflow, and
+`skills/quality-scenario/SKILL.md` reads the same. Both are listed under *Read
+first* in the skill that contradicted them. Following the rule would have created
+a new risk artifact per reassessment.
+
+The second fault is the one to keep. "Never revised, only superseded" is not a
+register rule at all — it is lifecycle governance. The skill was overriding the
+area it declares it does not own, in the first row of its table, on the first day
+it existed.
+
+Two more rounds followed, both the same shape. Profile 2 grouped risk and quality
+scenario correctly and then wrote only about *grades* — whether the current grade
+is right, what would move it, how terse an assessment cell may be — while a
+quality scenario has no grades at all; an agent applying it would have had to
+invent a likelihood the metamodel has nowhere to put. And the replacement rule,
+"every element names a concrete occasion in the active voice, with an actor",
+is contradicted by QS-003, the very scenario the same skill cites as exemplary:
+its `Artifact`, `Environment` and `Response Measure` read "the web client's
+application bundle in `dist/assets`", "a production build" and "≤ 92 kB gzipped".
+
+Three of the four findings were disprovable against a file the offending document
+itself points at. Not one of them needed knowledge from outside the repository.
+
+=== What the four rounds have in common
+
+They are not the through-line. Nothing here was a green signal that checked
+nothing; there was no signal at all, because prose has none.
+
+The shape is different and worth naming separately: **a rule stated in one place
+and contradicted in another place of the same document.** Each half was
+defensible alone. What was missing was the pass that reads them against each
+other, and that pass is cheap — it needs no tooling, only a reader who has not
+just written the text.
+
+The pattern also has a tell, visible in all four: the rule was written from the
+example in front of us. `Category` was in view, "in conversation" was not.
+Risks were in view, quality scenarios were not. `Source` was in view, `Artifact`
+was not. Generalising from the case at hand produces a rule that is exactly right
+for the case at hand.
+
+=== The day boundary, and a term that was not in the backlog after all
+
+Late in the day the owner brought two skills from a colleague, `clock-in` and
+`clock-out`, to try here. The pattern is good; the text needed most of a rewrite,
+including a template that asks for `Test status: 42/43 passing` — hand-copied
+numbers in a file nobody re-runs, which is this project's through-line moved
+somewhere it survives longer than a comment.
+
+What made it worth doing beyond the ritual is the split it forced. The diary is
+never revised and holds what we learned; a file under `progress/` describes now,
+is overwritten wholesale and is deleted when its topic ends. Two artifacts, one
+rule to keep them apart: a sentence that fits both goes in the diary, because
+that is the one that may not be rewritten later.
+
+Writing the first three progress files found something on the first attempt.
+`anchorDate` — the term ADR-022 is named after, the example of the error the
+whole decision prevents — is still in `FixedCost.java`, in `FixedCostEntity`, in
+`V1__initial_schema.sql` as the column `anchor_date`, and in two documents. Pull
+request #67 said the decision "cost no implemented code". That was true of the
+terms it listed and false of the term it was built on, and neither of us checked
+before merging it four hours ago.
+
+It surfaced because the format asks for the *order* of the work rather than a
+list of it. Writing "rename before the check, because a check that enforces
+agreed terms needs the terms agreed" is what made someone look at where the term
+actually sits today.

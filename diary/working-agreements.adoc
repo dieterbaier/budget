@@ -25,6 +25,13 @@ None of these were agreed up front. Each one came out of something going wrong.
   justification turns out to be wrong, the issue gets corrected too — not only
   the code.
 
+* *A document gets read against itself before it is published.* Four review
+  findings in one day were a rule stated in one paragraph and contradicted in
+  another paragraph of the same file — each half defensible alone. The pass that
+  catches this needs no tooling, only a reader who did not just write the text.
+  Its companion: a rule generalised from the example in front of you is right for
+  that example and usually wrong for the next one.
+
 === On the collaboration itself
 
 Two corrections shaped how the work is done more than any technical decision

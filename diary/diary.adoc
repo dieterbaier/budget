@@ -36,6 +36,8 @@ include::2026-07-27-features-and-identity.adoc[]
 
 include::2026-07-29-domain-model.adoc[]
 
+include::2026-08-01-rules-that-could-not-be-followed.adoc[]
+
 include::toolkit-validation.adoc[]
 
 include::working-agreements.adoc[]
