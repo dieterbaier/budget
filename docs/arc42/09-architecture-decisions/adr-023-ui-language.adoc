@@ -5,9 +5,9 @@ title: The Interface Speaks German
 status: accepted
 owner: architecture
 created: '2026-07-31'
-updated: '2026-07-31'
+updated: '2026-08-01'
 reviewed: true
-summary: The PWA is German because its only user is the domain expert; the glossary carries a display form for every term whose agreed form is not German.
+summary: The PWA is German because its only user is the domain expert; the glossary carries a display form for every concept whose registered identifier is not German.
 derived_from:
 - type: prompt
   description: The owner asked that the interface language be decided explicitly at the start of a project rather than settled by habit, and observed that this project had failed to do so.
@@ -40,9 +40,9 @@ xref:adr-022-ubiquitous-language[ADR-022] but deliberately as a separate record.
 
 The PWA is in **German**.
 
-Every term whose agreed form under ADR-022 is not already German carries a
-*display form* in the glossary, and the interface uses that form. `Category`
-displays as "Kategorie"; `Sollansparung` displays as itself. The display form is
+Every concept whose registered identifier under ADR-022 is not already German
+carries a *display form* in the glossary, and the interface uses that form.
+`Category` displays as "Kategorie"; `Sollansparung` displays as itself. The display form is
 presentation only — it never appears in the domain model, in an API payload or in
 architecture documentation.
 
@@ -129,11 +129,11 @@ code is, which is not a reason.
   PWA — "Add category group", "Current monthly expenditure", "Loading…" — have to
   be replaced, and every future component has to reach for a display form instead
   of writing a label.
-* It reintroduces a translation boundary that ADR-022 removed between domain and
-  code. The boundary is now between domain and screen. That is a normal place for
-  one, and it only goes one way, but the claim "this decision removes translation
-  from the project" would be false and is not made.
-* The glossary takes on a third column and a third job.
+* It adds a second translation boundary. ADR-022 keeps one between domain and
+  code, explicit and recorded; this one sits between domain and screen. That is a
+  normal place for one, and it only goes in one direction, but the claim "this
+  project translates nowhere" would be false and is not made.
+* The glossary takes on another column and another job.
 
 ==== Neutral or Follow-Up
 
