@@ -141,12 +141,13 @@ rather than project-specific, it belongs upstream and this skill should be delet
 in favour of the toolkit's.
 
 `skills/language-profile/SKILL.md` records which register each artifact is written
-in. The toolkit's skills decide what an artifact must *contain*; this one decides
-how it *reads*, and it defers entirely to `skills/commit-message/SKILL.md` for
-commit text. Its mechanism — profiles chosen by what happens to a text when it
-turns out wrong — is general; its profiles are not. The upstream shape would
-therefore be the mechanism plus a requirement that each project declare its own
-profiles.
+in. The toolkit's skills decide what an artifact must *contain* and what may
+happen to it; this one decides how it *reads*, and it defers entirely to
+`skills/commit-message/SKILL.md` for commit text and to the toolkit for lifecycle
+and ownership. Its mechanism — registers chosen by what the lifecycle does to a
+text once it turns out wrong — is general; its profiles are not. The upstream
+shape would therefore be the mechanism plus a requirement that each project
+declare its own profiles.
 
 ## Pull Request Workflow
 
