@@ -1,13 +1,13 @@
 ---
 id: ADR-022-ubiquitous-language
 type: ADR
-title: One Agreed Term Per Domain Concept
+title: A Term Register For The Domain Language
 status: accepted
 owner: architecture
 created: '2026-07-31'
-updated: '2026-07-31'
+updated: '2026-08-01'
 reviewed: true
-summary: Each domain concept has one agreed term, chosen per concept rather than per language, recorded in the glossary and used unchanged in code and documentation.
+summary: Every domain concept has one register entry fixing both the term the expert speaks and the identifier used in code; translation is permitted, silent or lossy translation is not.
 derived_from:
 - type: prompt
   description: The owner observed that the domain is spoken in German while the code is English, that DDD forbids translating domain terms, and that this project never decided which language its ubiquitous language is.
@@ -24,37 +24,54 @@ relations:
 metadata_version: '1.0'
 ---
 [[adr-022-ubiquitous-language]]
-== ADR-022: One Agreed Term Per Domain Concept
+== ADR-022: A Term Register For The Domain Language
 
 === Status
 
 Accepted. Decided by the owner on 2026-07-31, after he observed that the domain
 is spoken in German while the code is English and that nothing in this repository
-had ever decided that.
+had ever decided that. Reworked on 2026-08-01 after his review; see
+<<adr-022-what-the-review-changed,What the review changed>>.
 
 === Decision
 
-The project has one ubiquitous language. Every domain concept has **exactly one
-agreed term**, and that term is used unchanged in the domain model, in the
-architecture documentation and in conversation.
+The project has one ubiquitous language, and it is **recorded rather than
+assumed**. Every domain concept has one entry in the glossary, and that entry
+fixes both forms the concept is allowed to take: the term the domain expert uses
+when he speaks, and the identifier used in the domain model and in the
+architecture documentation. Usually they are the same word. Where they are not,
+the difference is a translation the expert has examined and accepted, and it is
+legible in the register.
 
 Four rules follow.
 
-. *The term is chosen per concept, not per language.* Where an English rendering
-  carries the concept faithfully, it is the term. Where it loses meaning, the
-  domain expert's German word is the term — in code, spelled as an identifier
-  (`Verwendungszweck`, `Sollansparung`), not translated and not glossed.
-. *Faithfulness is judged once, by the domain expert, when the term enters the
-  glossary.* It is not re-judged at each use. A term that is in the glossary is
-  settled.
+. *The identifier is chosen per concept, not per language.* Where an English
+  rendering carries the concept faithfully, it is the identifier — `Category` for
+  "Kategorie". Where it loses meaning, the expert's German word is the
+  identifier, spelled as an identifier (`Verwendungszweck`, `Sollansparung`), not
+  translated and not glossed.
+. *Faithfulness is judged once, by the domain expert, when the concept enters the
+  register.* It is not re-judged at each use, and it is not judged by whoever
+  happens to be writing the code. A concept that is in the register is settled.
 . *The glossary is the register.* No type in `domain/model/` and no term in the
-  architecture documentation may name a concept that has no glossary entry, and
-  no glossary entry may name a concept the domain does not have.
+  architecture documentation may name a concept that has no entry; no entry may
+  name a concept the domain does not have; and no identifier for a domain concept
+  may differ from the one its entry records.
 . *An invented concept is adopted, not translated.* Some concepts came from the
   architecture rather than from the expert — the tracking window, the cash
   runway, the overspending signal. These have no German original. They enter the
   language when the expert accepts a term for them, which is a different act from
   translating one.
+
+What these rules forbid is a translation nobody agreed to and nobody can see —
+the kind a developer performs at the keyboard, in the second it takes to pick an
+English word. They do not forbid translation. That is a weaker rule than DDD's
+own, deliberately, and the price is stated under
+<<adr-022-consequences-negative,Negative>>.
+
+Nothing here governs how the owner speaks. He says "Kategorie"; the register
+records that the identifier for that concept is `Category`, and the two are the
+same concept because the register says so.
 
 Technical vocabulary is unaffected. `repository`, `service`, `findAll`, `Money`
 and the framework's own words stay English; the rule governs the nouns that name
@@ -67,7 +84,13 @@ It is about there being **only one**, with no translation step between what the
 expert says and what the code says, because a translation step is where knowledge
 leaks.
 
-That leak has already cost this project once, before the rule was written down.
+This decision does not remove that step. For every concept whose identifier is an
+English rendering it keeps one, and pays for it by making it explicit: examined
+once by the expert, written into the register, and checkable afterwards. The
+strict reading — no step anywhere — is the second option below, and it was
+rejected on cost rather than on merit.
+
+The leak has already cost this project once, before the rule was written down.
 `FixedCost.anchorDate` named a *fixed reference point*. The domain has no such
 thing: it has "letzte Zahlung", a value that moves forward every time the cost is
 paid, and from which the next due date and the reserve are derived. The English
@@ -93,10 +116,11 @@ not working code.
 
 === Considered Options
 
-==== One agreed term per concept, chosen per concept (chosen)
+==== A register, with the identifier chosen per concept (chosen)
 
-Faithful renderings stay English; lossy ones keep the expert's word. The glossary
-records the decision and a check enforces it.
+Faithful renderings stay English; lossy ones keep the expert's word. Each entry
+records both forms, so the mapping between them is a reviewed artifact rather
+than something a reader reconstructs. A check enforces it.
 
 ==== Domain words everywhere, English only for plumbing
 
@@ -112,38 +136,33 @@ German-speaking contributors, which a single-user product will not.
 
 ==== Declare the domain language to be English
 
-Adopt the English terms as *the* domain language, including in speech, and keep
-the code untouched.
+Fix the identifier as English for every concept, by policy, and keep the code
+untouched.
 
-Rejected because it cannot be enforced where it matters. It asks the domain
-expert to change how he talks about his own budget; the moment he says
-"Sollansparung" in a working session, the rule is broken and the project is back
-to translating without a table — which is exactly the state this ADR exists to
-end. It also has no answer for `Barabhebung`, a concept with no English word,
-which would need an exception on the first day.
+Rejected because it decides the rendering before the concept has been looked at.
+Where no faithful English word exists the policy still requires one:
+`Sollansparung` becomes `reserve requirement`, which is a different quantity, and
+`Barabhebung` has no English word at all and would need an exception on its first
+day. It is the chosen option with rule 1 deleted and rule 2 answered in advance —
+which is the mechanism that produced `anchorDate`, promoted to a policy.
 
 === Pugh Matrix
 
 [cols="2,1,1,1", options="header"]
 |===
-| Criterion | Per-concept term | Domain words everywhere | Domain declared English
+| Criterion | Register, per-concept identifier | Domain words everywhere | Domain declared English
 
-| No unagreed translation
+| Translation examined before it is used
 | +1
 | +1
-| 0
+| -1
 
 | Cost to existing code today
 | +1
 | -1
 | +1
 
-| Enforceable by a check
-| +1
-| +1
-| -1
-
-| Survives a term with no English word
+| Survives a concept with no faithful English word
 | +1
 | +1
 | -1
@@ -154,10 +173,14 @@ which would need an exception on the first day.
 | +1
 
 s| Sum
-s| 4
 s| 3
+s| 2
 s| 0
 |===
+
+Enforceability is not a row. All three options are checkable against a register,
+so the criterion separates nothing; it is a requirement each option had to meet
+rather than a way of telling them apart.
 
 The chosen option and the rejected first alternative are close, and the matrix
 says so. The deciding criterion was cost today, not correctness: option two is
@@ -167,16 +190,24 @@ the better model and the worse trade.
 
 ==== Positive
 
-* The class of error that produced `anchorDate` becomes impossible for every term
-  the glossary settles, because there is no name to invent.
+* The class of error that produced `anchorDate` has to get past the one person
+  who would notice it. A name that invents a concept can still be proposed, but
+  it cannot be adopted at the keyboard: it reaches the register first, and the
+  register is where the expert reads it.
 * The decision cost no implemented code, because every lossy term was still in
   the backlog when it was taken.
 * The glossary stops being merely descriptive and becomes authoritative. It is
   the artifact a later reader consults to find out what something is *called*,
   not only what it means.
 
+[[adr-022-consequences-negative]]
 ==== Negative
 
+* A translation step survives, between what the expert says and what the code
+  says, wherever the identifier is an English rendering. This ADR makes it
+  explicit and reviewable; it does not abolish it, and the claim that this
+  project translates nowhere would be false and is not made. Abolishing it is the
+  second option, and it was priced and declined.
 * Identifiers will be mixed-language. `record Fixkosten` next to
   `FixedCostRepository` is not going to look tidy, and no amount of rule-writing
   makes it look tidy.
@@ -184,10 +215,12 @@ the better model and the worse trade.
   a long list of unchecked judgements drifting. The mitigation is real but
   partial: the judgement is made once per term and written down, so it is not
   re-made silently — but nothing validates the judgement itself.
-* The glossary now has two jobs, explaining and registering. Splitting them into
-  two artifacts was considered and rejected because it costs a second lookup and
-  invites the two to disagree; the cost of not splitting is that one table serves
-  two readers.
+* The glossary now has three jobs: explaining a concept, recording the term the
+  expert speaks, and registering the identifier that term maps to — with a
+  display form arriving from ADR-023 on top. Splitting them into separate
+  artifacts was considered and rejected because it costs a second lookup and
+  invites the copies to disagree; the cost of not splitting is that one table
+  serves several readers at once.
 
 ==== Neutral or Follow-Up
 
@@ -205,5 +238,27 @@ the better model and the worse trade.
   and this project has ten recorded instances of what happens to those.
 * ADR-009's aggregate map still described `FixedCost` as carrying an "anchor
   date"; it is corrected in the same change as this ADR.
+
+[[adr-022-what-the-review-changed]]
+=== What The Review Changed
+
+The first version of this ADR required the agreed term to be used unchanged "in
+the domain model, in the architecture documentation and in conversation", while
+also accepting `Category` as the term for "Kategorie". Read together, those two
+statements obliged a German-speaking domain expert to say "Category" — the exact
+consequence this ADR gives as its reason for rejecting *Domain declared English*.
+The rule was therefore unsatisfiable as written, and the option comparison rested
+on a criterion the chosen option did not meet either.
+
+The owner named the resolution in his review: a binding register with an
+explicit, expert-checked mapping between the spoken term and the identifier. It
+permits translation and forbids the silent or lossy kind, which is the failure
+this ADR had already identified as the real one. The Decision, rule 1, the
+rejected option and the matrix were reworked to say that; the position on which
+identifier belongs to which concept did not change.
+
+Recorded here rather than fixed silently, because the contradiction is the more
+useful half: two paragraphs of an ADR can each be defensible and jointly
+impossible, and only reading them against one another finds it.
 
 include::generated/adr-022-ubiquitous-language-traceability.adoc[leveloffset=+1]
