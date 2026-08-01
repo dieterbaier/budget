@@ -1,0 +1,62 @@
+= Feature development
+
+Building the budget the owner uses: the master data, the views, and the numbers
+they show.
+
+*Status:* on ice since 2026-07-29 — the domain model turned out to be a level
+short, and building on it would have produced more code answering the wrong
+question. It resumes when #68 has settled the terms and the affected issues carry
+them.
+
+== The plan
+
+[options="checklist"]
+* [x] Increment 1 — record a transaction, show a monthly figure. Backend,
+      PostgreSQL, installable PWA
+* [x] Manage category groups and categories — #8, merged as PR #47
+* [ ] Correct the figure Increment 1 ships — #62. The current view survives as a
+      secondary view
+* [ ] Master data the rest depends on: #9 accounts and balance snapshots,
+      #10 fixed costs, #11 income
+* [ ] Increment 2 — #15 cost by group, category and purpose; #16 the reserve for
+      non-monthly fixed costs
+* [ ] Increment 3 — #17 cash runway, #18 net worth and the pension projection
+* [ ] Transaction identity and editing — #12, #13, #14
+* [ ] Operations — #6 credential, #19 host over HTTPS, #20 backup
+
+Master data comes before the views because every view in Increments 2 and 3
+reads it. The reserve (#16) cannot be computed without fixed costs (#10), and the
+runway (#17) cannot be computed without accounts (#9).
+
+#62 is placed first among the unfinished work rather than with Increment 2,
+because it corrects something already shipped and already relied upon.
+
+== Where we are
+
+The backend has `Transaction`, `Category`, `CategoryGroup`, `FixedCost`, `Money`,
+`PaymentInterval` and `TransactionType` under `domain/model/`, with
+`MonthlyExpenditureCalculator` in `domain/service/`. The web client has three
+features: `transactions`, `categories`, `monthly-expenditure`.
+
+`MonthlyExpenditureCalculator` sums the expense transactions of the current
+calendar month. The number the product needs is a long-run average over the
+tracking window. Everything about it passes — tests, ArchUnit, coverage — because
+no check can ask whether the right quantity is being computed. That is #62, and
+it is the origin of the "wrong question" category in the through-line.
+
+== Open in this topic
+
+`FixedCost` carries `anchorDate`, a term ADR-022 rejects. The rename is tracked
+in `progress/domain-model.adoc`, because it is a language change rather than
+feature work — but it lands in this code.
+
+Nothing here is blocked on a decision that has not been taken. It is on ice by
+choice, not by obstacle.
+
+== Checks
+
+[source,sh]
+----
+cd application/backend && ./gradlew test --console=plain
+cd application/web && npm run build && npm test
+----

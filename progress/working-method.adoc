@@ -1,0 +1,54 @@
+= Working method
+
+The project's second goal: validating the architecture-knowledge-toolkit by using
+it, and writing down the practices that emerge here.
+
+*Status:* in flight
+
+== The plan
+
+[options="checklist"]
+* [x] Record the toolkit-validation goal — #43, merged as PR #44
+* [x] Resync the vendored toolkit tooling to `de7c2ad` — part of #45, merged as
+      PR #64
+* [x] `skills/language-profile/SKILL.md` — which register each artifact is
+      written in — #70, merged as PR #71
+* [x] `skills/diary`, `skills/clock-in`, `skills/clock-out` — the day boundary,
+      #73
+* [ ] Check the language rules that can be checked — #72
+* [ ] Remaining half of #45: replace ADR-001's hand-written admonition with the
+      generated include, and delete `skills/refine-adr` if upstream guidance then
+      covers it. Blocked on toolkit issue #68
+
+#72 comes after the skills rather than with them, because two design questions
+had no answer while they were being written: the check script must not go into
+`scripts/`, which `AGENTS.md` now documents as vendored with a five-line
+divergence, and `diary/` is not in the `docs` path filter of
+`pr-validation.yml`, so a diary check would not run on a diary-only change. Both
+are in #72.
+
+== Where we are
+
+Five local skills, each a delta that names the condition under which it should be
+deleted: `refine-adr`, `language-profile`, `diary`, `clock-in`, `clock-out`.
+`AGENTS.md` routes to all of them and the agent adapters are generated from it.
+
+`diary/toolkit-validation.adoc` holds five findings so far; two produced upstream
+pull requests that are merged.
+
+== Open in this topic
+
+The upstream half of #45 waits on toolkit issue #68. Until that lands, ADR-001's
+hand-written admonition stays and is marked as a stopgap.
+
+Whether the day boundary belongs upstream is deliberately not decided yet. One
+project is not evidence, and each of the three skills says so in its own
+deletion condition.
+
+== Checks
+
+[source,sh]
+----
+./build.sh all
+node scripts/check-agent-adapters.js
+----
