@@ -128,11 +128,20 @@ differ accordingly.
 **A quality scenario** — `Source`, `Stimulus`, `Artifact`, `Environment`,
 `Response`, `Response Measure`:
 
-- **Every element names a concrete occasion in the active voice, with an actor.**
-  "A developer adding a feature or a dependency to the web client", not "when
-  dependencies are added". The passive hides who has to be present for the
-  scenario to occur, and a scenario nobody can stage is not testable.
-- **The Response Measure is checkable without asking the author**: a number, its
+- **The scenario as a whole describes one concrete, stageable occasion.** That
+  is the test the elements serve, and it is a property of the six read together,
+  not of each cell.
+- **Each element writes what its own job needs.** `Source` names the actor — "a
+  developer adding a feature or a dependency to the web client", not "when
+  dependencies are added", because the passive hides who has to be present for
+  the scenario to occur at all. `Stimulus` states what happens. `Artifact` names
+  what is affected. `Environment` states the operating condition that matters.
+  `Response` says actively what the system does.
+- **Three of the six are nominal and stay that way.** `Artifact`, `Environment`
+  and `Response Measure` name things and conditions — "the web client's
+  application bundle in `dist/assets`", "a production build", "≤ 92 kB gzipped".
+  Demanding a verb there buys nothing and blurs what each field is for.
+- **The Response Measure is checkable without asking the author**: a value, its
   unit, and where it is measured. "Fast enough" and "acceptable" are not measures.
 - **A scenario carries no grade.** It has no likelihood, no priority and no
   confidence. Do not import them from the risk rules above — the metamodel has
