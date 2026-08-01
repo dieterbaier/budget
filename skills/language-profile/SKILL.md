@@ -49,8 +49,13 @@ turns out to be wrong**:
 | Changes with the code | Code comment, Javadoc, Gherkin | [7](#7-code-and-specifications) |
 
 An author who knows the core of a text is fixed writes differently from one who
-knows it will be re-graded next month. That difference is what the profiles
+knows it will be re-judged next month. That difference is what the profiles
 encode.
+
+Fate picks the register. It does not pick the sentences: two artifacts can share
+a fate and still have different fields to fill, which is why a profile may carry
+sub-rules per artifact type. Where it does, the shared part is the register and
+the sub-rules are the vocabulary.
 
 **The first column is a reading of the toolkit's lifecycle, not a rule issued
 here.** It is the diagnostic used to pick a register, nothing more. This skill
@@ -88,18 +93,30 @@ rewrite of the decision. The rules above govern the decision's *prose*.
 
 Risk, quality scenario.
 
-Read by someone asking whether the current grade is still right — often the
-person who has to re-grade it.
+Read by someone asking whether the claim still holds — usually the person who
+then has to re-judge it.
 
-- **Present tense, stating the assessment that holds now.** Not the history of
-  assessments. If how the grade moved matters, the toolkit's lifecycle and the
-  git history carry it.
-- **When a grade changes, the prose under it changes with it.** A likelihood
-  moved from medium to high while the paragraph explaining "medium" stays put
-  leaves two answers in one artifact, and the reader cannot tell which is stale.
-- **Say what would move the grade.** `Likelihood: medium` with no statement of
-  what would make it high can be re-graded by nobody except its author, which is
-  the opposite of what the artifact is for.
+Both artifacts share a fate and therefore a register. They do not share a
+vocabulary: a risk is graded, a scenario is specified, and the sub-rules below
+differ accordingly.
+
+**Shared:**
+
+- **Present tense, stating the claim that holds now.** Not the history of
+  claims. If how it moved matters, the toolkit's lifecycle and the git history
+  carry it.
+- **Keep the claim and the evidence for it in separate sentences.** A number
+  that is simultaneously the requirement and the last measurement cannot be
+  checked against itself. QS-003 keeps them apart: the budget is 92 kB, the
+  measurement today is 88.8 kB, and the headroom is a third statement.
+- **When the claim moves, the prose under it moves with it.** A threshold or a
+  likelihood raised while the paragraph justifying the old one stays put leaves
+  two answers in one artifact, and the reader cannot tell which is stale.
+- **Say what would move it**, so that someone other than the author can re-judge
+  it.
+
+**A risk** — `Likelihood`, `Impact`, `Priority`, `Timeframe`, `Confidence`:
+
 - **Attribute the evidence, not a decider.** Nobody decides a risk. Where an ADR
   names the role that chose, a risk names what the grade rests on —
   `Confidence: medium (no usage data yet)`.
@@ -108,8 +125,21 @@ person who has to re-grade it.
   there is unreadable where it is actually consulted. Two examples that fit:
   `Medium (one lapse while transcribing)`, `From the first month of real use`.
 
-Whether a change is an edit or warrants a new artifact is not this skill's call.
-See `skills/risk/SKILL.md` and `skills/quality-scenario/SKILL.md`.
+**A quality scenario** — `Source`, `Stimulus`, `Artifact`, `Environment`,
+`Response`, `Response Measure`:
+
+- **Every element names a concrete occasion in the active voice, with an actor.**
+  "A developer adding a feature or a dependency to the web client", not "when
+  dependencies are added". The passive hides who has to be present for the
+  scenario to occur, and a scenario nobody can stage is not testable.
+- **The Response Measure is checkable without asking the author**: a number, its
+  unit, and where it is measured. "Fast enough" and "acceptable" are not measures.
+- **A scenario carries no grade.** It has no likelihood, no priority and no
+  confidence. Do not import them from the risk rules above — the metamodel has
+  no place to put them, so an invented grade lands in prose and reads as fact.
+
+Whether a threshold or a grade may move at all is not this skill's call. See
+`skills/risk/SKILL.md` and `skills/quality-scenario/SKILL.md`.
 
 ## 3. Corrected silently
 
