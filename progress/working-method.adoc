@@ -40,8 +40,9 @@ Five local skills, each a delta that names the condition under which it should b
 deleted: `refine-adr`, `language-profile`, `diary`, `clock-in`, `clock-out`.
 `AGENTS.md` routes to all of them and the agent adapters are generated from it.
 
-`diary/toolkit-validation.adoc` holds six findings so far; two produced upstream
-pull requests that are merged.
+`diary/toolkit-validation.adoc` holds seven findings so far; two produced
+upstream pull requests that are merged. The seventh is the first to come out of
+application code rather than out of documentation work.
 
 `language-profile` gained one rule that is not a profile: domain concepts are
 named by their registered identifier in backticks, in every register. It came out
