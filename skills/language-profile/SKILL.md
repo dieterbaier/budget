@@ -64,6 +64,34 @@ never says whether an artifact may be edited, superseded, re-graded or retired �
 say that, and if the column ever contradicts them, they are right and the column
 is stale.
 
+## Across every profile: naming a domain concept
+
+One rule holds in all seven, because it is about how a sentence reads rather than
+what happens to it later.
+
+**When prose names a domain concept, write the registered identifier in
+backticks.** A `Fixkostenposition`, not a fixed cost; `letzteZahlung`, not the
+last payment. ADR-022 rule 3 already decides *which* form belongs in architecture
+documentation; this adds only that it is marked.
+
+The marking is what makes a mixed-language sentence readable. ADR-022 produces a
+deliberately mixed register, so a `Fixkostenposition` will keep turning up inside
+an English clause. Unmarked, it reads as though the author slipped into German
+mid-sentence. Marked, it reads as a name — and a reader who does not recognise it
+knows exactly which document to open.
+
+Two things are not this:
+
+- **Quoting a rendering in order to reject it.** "Kept German because
+  \"reserve requirement\" names a different quantity" is prose about a word, not
+  a use of a term. Quotation marks, not backticks.
+- **Example data.** "Fernwärme" and "Streaming (Musik)" are values a
+  `Verwendungszweck` can take, not concepts in the register.
+
+The spoken form appears in only two places: the register's own Term column, and a
+sentence that is explicitly about what the owner says. Everywhere else the
+identifier is the form, including where it is the uglier word.
+
 ## 1. Decided once
 
 ADR, architecture constraint.
