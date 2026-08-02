@@ -2,51 +2,191 @@
 id: DOC-12000-glossary
 type: Document
 title: Glossary
-status: reviewed
+status: draft
 owner: product owner
 created: '2026-07-03'
-updated: '2026-07-29'
-reviewed: true
+updated: '2026-08-02'
+reviewed: false
 generated: false
-summary: Shared terms for the private Budget domain.
+summary: The term register for the private Budget domain, fixing the spoken term, the identifier and the display form of every domain concept.
 tags:
 - arc42
 - glossary
-relations: []
+relations:
+- type: depends_on
+  target: ADR-022-ubiquitous-language
+  status: accepted
+  rationale: ADR-022 makes this document the term register and fixes what an entry has to record.
+  reviewed: false
+- type: depends_on
+  target: ADR-023-ui-language
+  status: accepted
+  rationale: ADR-023 requires a display form for every concept whose identifier is not already German.
+  reviewed: false
 metadata_version: '1.0'
 ---
 [[glossary]]
 = Glossary
 
-[cols="1,3", options="header"]
+This is the term register. Per ADR-022 every domain concept has exactly one entry
+here, and the entry fixes both forms the concept may take: the *term* the owner
+speaks, and the *identifier* used in `domain/model/` and in the architecture
+documentation. Where the two differ, the entry is the agreement that they name
+one concept.
+
+The *display* column carries the form the interface uses, per ADR-023. It is
+presentation only and appears in no model, payload or document. A dash means the
+identifier is already the word on screen.
+
+Umlauts are transliterated in identifiers — `Vermoegen`, not `Vermögen` — so one
+spelling serves Java, SQL, JSON and TypeScript. The display form carries the real
+spelling, which is the only place it is read by a human.
+
+Three concepts came from the architecture rather than from the domain and were
+*adopted* under ADR-022 rule 4 rather than translated: `Auswertungszeitraum`,
+`Restmonatsbedarf` and `Ausgabenwarnung`.
+
+[cols="1,1,1,3", options="header"]
 |===
-| Term | Meaning
-| Transaction | A recorded expense, income, or transfer taken from a bank statement, with a name (the payee or what it was). Fixed-cost payments are *not* transactions — see Fixed cost.
-| Fixed cost | A recurring cost, defined once and never booked: a payee, an amount per cycle, an interval, a category, an optional purpose, a payment method, and the date of the last payment.
-| Variable cost | Any recorded expense that is not a fixed cost. Averaged over the tracking window to give its monthly figure.
-| Category | A user-defined classification a transaction is assigned to; holds purposes and belongs to one category group.
-| Category group | A grouping of categories (for example dog, car, household, daughter, licensing) used for the group view.
-| Purpose | German `Verwendungszweck`. What the money was actually for (`Fernwärme`, `Streaming (Musik)`), one level below the category. Belongs to exactly one category; optional on a transaction and on a fixed cost.
-| Tracking window | The period the averages are computed over: from the first recorded booking to today, measured day-precise rather than in whole months.
-| Last payment | The date a fixed cost was last paid. Maintained by hand, moves forward, and drives both the next payment date and the reserve requirement.
-| Next payment | Last payment plus one interval. No business-day correction — a due date on a Sunday is left as it is, because nothing is executed from it.
-| Due fixed cost | A fixed cost whose next payment has arrived. Used to catch a payment missed while transcribing, and to spot a fixed cost that no longer exists (its last payment is older than its own interval).
-| Payment method | Direct debit, credit card or PayPal. Recorded for information only; enters no calculation.
-| Account | One of the three tracked accounts: current account, reserve call-money account, savings call-money account.
-| Balance snapshot | A manually entered account balance with its "as of" date; not derived from transactions.
-| Transfer | Money moved between accounts; never counted as an expense.
-| Refund | A booking with a negative amount in the same category as the original cost. A group total may legitimately be negative.
-| Refunds per month | The sum of the negative amounts in a group, shown beside the net figure so gross and net are both readable.
-| Reserve requirement | Money that must sit on the call-money reserve account to cover non-monthly fixed costs: whole months elapsed since the last payment, times the monthly portion. Zero for monthly fixed costs.
-| Monthly portion | A fixed cost's amount per cycle divided by the months in its cycle, which is how it enters the monthly cost figure.
-| Overspending signal | Comparison of the long-run monthly cost against average monthly income. Savings and pension contributions count as costs, deliberately.
-| Cash runway | What must be on the current account from today to month end: the remaining days times the daily rate of the variable costs, plus the fixed costs still due this month.
-| Pension projection | Nominal estimate of the monthly need in retirement, computed twice — with inflation only, and with inflation plus an estimated cost increase.
-| Inflation series | The historical annual inflation rates, entered by the owner. The application averages them itself rather than taking a single typed-in rate.
-| Cost increase | A single estimated percentage on top of inflation, giving the second pension projection.
-| Pension-relevance flag | Marks whether a cost still applies in retirement. The category carries the default; a transaction or fixed cost may override it, and the override wins.
-| Asset | A manually entered net-worth position (life insurance, house value, account balance, investment portfolio, latest statutory pension figure), carrying a minimum, likely and maximum value.
-| Net worth | The sum of tracked assets, as a minimum/likely/maximum band, used against the projected retirement need.
-| Pension shortfall | Projected retirement need minus tracked net worth.
-| Barabhebung | A cash withdrawal booking; the only cash movement the owner records.
+| Term | Identifier | Display | Meaning
+
+| Transaktion
+| `Transaction`
+| Transaktion
+| A recorded expense, income or transfer taken from a bank statement, with a name (the payee or what it was). Fixed-cost payments are *not* Transaktionen — see Fixkosten.
+
+| Fixkosten
+| `Fixkostenposition`
+| Fixkosten
+| A recurring cost, defined once and never booked: a payee, an amount per cycle, an interval, a category, an optional Verwendungszweck, a Zahlungsart, and the letzte Zahlung. The spoken term is plural and names the whole class; the identifier is the singular position, because the model holds one at a time.
+
+| variable Kosten
+| `VariableKosten`
+| Variable Kosten
+| Any recorded expense that is not Fixkosten. Averaged over the Auswertungszeitraum to give its monthly figure. A classification of Transaktionen rather than something stored, so the identifier appears in calculations and not in the schema.
+
+| Kategorie
+| `Category`
+| Kategorie
+| A user-defined classification a Transaktion is assigned to; holds Verwendungszwecke and belongs to one Kategoriegruppe.
+
+| Kategoriegruppe
+| `CategoryGroup`
+| Kategoriegruppe
+| A grouping of Kategorien (for example dog, car, household, daughter, licensing) used for the group view.
+
+| Verwendungszweck
+| `Verwendungszweck`
+| —
+| The banking term for what a payment is for (`Fernwärme`, `Streaming (Musik)`), one level below the Kategorie. Belongs to exactly one Kategorie; optional on a Transaktion and on Fixkosten. Kept German because `Purpose` is generic where the original is specific.
+
+| Auswertungszeitraum
+| `Auswertungszeitraum`
+| —
+| The period the averages are computed over: from the first recorded booking to today, measured day-precise rather than in whole months. Adopted, not translated.
+
+| letzte Zahlung
+| `letzteZahlung`
+| Letzte Zahlung
+| The date Fixkosten were last paid. Maintained by hand, moves forward, and drives both the nächste Zahlung and the Sollansparung. Kept German because the English rendering `anchorDate` invented a fixed reference point the domain does not have.
+
+| nächste Zahlung
+| `naechsteZahlung`
+| Nächste Zahlung
+| Letzte Zahlung plus one interval. No business-day correction — a due date on a Sunday is left as it is, because nothing is executed from it.
+
+| fällige Fixkosten
+| `faelligeFixkostenposition`
+| Fällige Fixkosten
+| Fixkosten whose nächste Zahlung has arrived. Used to catch a payment missed while transcribing, and to spot Fixkosten that no longer exist (their letzte Zahlung is older than their own interval).
+
+| Zahlungsart
+| `PaymentMethod`
+| Zahlungsart
+| Direct debit, credit card or PayPal. Recorded for information only; enters no calculation.
+
+| Konto
+| `Account`
+| Konto
+| One of the three tracked accounts: current account, reserve call-money account, savings call-money account.
+
+| Kontostand
+| `BalanceSnapshot`
+| Kontostand
+| A manually entered account balance with its "as of" date; not derived from Transaktionen. The identifier keeps "snapshot" because the German word names the value and drops the point in time, which is the half that matters here.
+
+| Umbuchung
+| `Umbuchung`
+| —
+| Money moved between the owner's own Konten; never counted as an expense. Kept German because `Überweisung` would also cover payments to third parties, which are expenses.
+
+| Erstattung
+| `Erstattung`
+| —
+| A booking with a negative amount in the same Kategorie as the original cost. A group total may legitimately be negative. Also spoken as "Gutschrift"; the two are one concept here, and `Erstattung` is the registered term.
+
+| Erstattungen pro Monat
+| `ErstattungenProMonat`
+| Erstattungen pro Monat
+| The sum of the negative amounts in a Kategoriegruppe, shown beside the net figure so gross and net are both readable.
+
+| Sollansparung
+| `Sollansparung`
+| —
+| What should have been saved up by now on the reserve call-money account to cover non-monthly Fixkosten: whole months elapsed since the letzte Zahlung, times the Monatsanteil. Zero for monthly Fixkosten. Kept German because `reserve requirement` names what must be held, which is a different quantity that happens to be equal today.
+
+| Monatsanteil
+| `MonthlyPortion`
+| Monatsanteil
+| A Fixkostenposition's amount per cycle divided by the months in its cycle, which is how it enters the monthly cost figure.
+
+| Ausgabenwarnung
+| `Ausgabenwarnung`
+| —
+| Comparison of the long-run monthly cost against average monthly income, raised when cost exceeds income. Savings and pension contributions count as costs, deliberately. Adopted, not translated.
+
+| Restmonatsbedarf
+| `Restmonatsbedarf`
+| —
+| What must be on the current account from today to month end: the remaining days times the daily rate of the variable Kosten, plus the Fixkosten still due this month. An amount, not a duration — which is why it is not called a runway. Adopted, not translated.
+
+| Rentenprognose
+| `Rentenprognose`
+| —
+| Nominal estimate of the monthly need in retirement, computed twice — with inflation only, and with inflation plus an estimated Kostensteigerung. Kept German with the rest of the Renten- concepts, because "pension" and "Rente" are not the same institution.
+
+| Inflationsraten
+| `InflationSeries`
+| Inflationsraten
+| The historical annual inflation rates, entered by the owner. The application averages them itself rather than taking a single typed-in rate.
+
+| Kostensteigerung
+| `CostIncrease`
+| Kostensteigerung
+| A single estimated percentage on top of inflation, giving the second Rentenprognose.
+
+| rentenrelevant
+| `rentenrelevant`
+| Rentenrelevant
+| Marks whether a cost still applies in retirement. The Kategorie carries the default; a Transaktion or Fixkosten may override it, and the override wins.
+
+| Vermögensposition
+| `Vermoegensposition`
+| Vermögensposition
+| One manually entered entry in the Vermögen: life insurance, house value, investment portfolio, the latest statutory pension figure, or the Geldguthaben across the Konten. Carries a minimum, likely and maximum value.
+
+| Vermögen
+| `Vermoegen`
+| Vermögen
+| The sum of the tracked Vermögenspositionen, as a minimum/likely/maximum band, used against the projected retirement need.
+
+| Rentenlücke
+| `Rentenluecke`
+| Rentenlücke
+| Rentenprognose minus Vermögen.
+
+| Barabhebung
+| `Barabhebung`
+| —
+| A cash withdrawal booking; the only cash movement the owner records.
 |===
