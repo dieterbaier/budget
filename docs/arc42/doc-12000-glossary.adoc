@@ -63,12 +63,22 @@ mixed-language sentence from reading as an accident.
 | Fixkosten
 | `Fixkostenposition`
 | Fixkosten
-| A recurring cost, defined once and never booked: a payee, an amount per cycle, an interval, a `Category`, an optional `Verwendungszweck`, a `PaymentMethod`, and a `letzteZahlung`. The spoken term is plural and names the whole class; the identifier is the singular position, because the model holds one at a time.
+| A recurring cost, defined once and never booked: a payee, an amount per cycle, a `Zahlungsintervall`, a `Category`, an optional `Verwendungszweck`, a `PaymentMethod`, and a `letzteZahlung`. The spoken term is plural and names the whole class; the identifier is the singular position, because the model holds one at a time.
 
 | variable Kosten
 | `VariableKosten`
 | Variable Kosten
 | Any recorded expense that is not a `Fixkostenposition`. Averaged over the `Auswertungszeitraum` to give its monthly figure. A classification of `Transaction` rather than something stored, so the identifier appears in calculations and not in the schema.
+
+| Einkünfte
+| `Einkuenfte`
+| Einkünfte
+| What the owner earns, recorded per month. The `Ausgabenwarnung` compares the long-run monthly cost against the average of these.
+
+| Zahlungsintervall
+| `Zahlungsintervall`
+| —
+| The cycle on which a `Fixkostenposition` falls due: monthly, quarterly, half-yearly, yearly or two-yearly. Dividing the amount per cycle by the months in it gives the `MonthlyPortion`.
 
 | Kategorie
 | `Category`
@@ -98,7 +108,7 @@ mixed-language sentence from reading as an accident.
 | nächste Zahlung
 | `naechsteZahlung`
 | Nächste Zahlung
-| `letzteZahlung` plus one interval. No business-day correction — a due date on a Sunday is left as it is, because nothing is executed from it.
+| `letzteZahlung` plus one `Zahlungsintervall`. No business-day correction — a due date on a Sunday is left as it is, because nothing is executed from it.
 
 | fällige Fixkosten
 | `faelligeFixkostenposition`
@@ -138,17 +148,17 @@ mixed-language sentence from reading as an accident.
 | Sollansparung
 | `Sollansparung`
 | —
-| What should have been saved up by now on the reserve call-money `Account` to cover a non-monthly `Fixkostenposition`: whole months elapsed since its `letzteZahlung`, times its `MonthlyPortion`. Zero for a monthly `Fixkostenposition`. Kept German because "reserve requirement" names what must be held, which is a different quantity that happens to be equal today.
+| What should have been saved up by now on the reserve call-money `Account` to cover a non-monthly `Fixkostenposition`: whole months elapsed since its `letzteZahlung`, times its `MonthlyPortion`. Zero when the `Zahlungsintervall` is monthly. Kept German because "reserve requirement" names what must be held, which is a different quantity that happens to be equal today.
 
 | Monatsanteil
 | `MonthlyPortion`
 | Monatsanteil
-| A `Fixkostenposition`'s amount per cycle divided by the months in its cycle, which is how it enters the monthly cost figure.
+| A `Fixkostenposition`'s amount per cycle divided by the months in its `Zahlungsintervall`, which is how it enters the monthly cost figure.
 
 | Ausgabenwarnung
 | `Ausgabenwarnung`
 | —
-| Comparison of the long-run monthly cost against average monthly income, raised when cost exceeds income. Savings and pension contributions count as costs, deliberately. Adopted, not translated.
+| Comparison of the long-run monthly cost against average monthly `Einkuenfte`, raised when cost exceeds income. Savings and pension contributions count as costs, deliberately. Adopted, not translated.
 
 | Restmonatsbedarf
 | `Restmonatsbedarf`
