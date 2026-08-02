@@ -2,11 +2,11 @@
 id: DOC-08000-crosscutting-concepts
 type: Document
 title: Crosscutting Concepts
-status: reviewed
+status: draft
 owner: architecture
 created: '2026-07-03'
-updated: '2026-07-24'
-reviewed: true
+updated: '2026-08-02'
+reviewed: false
 generated: false
 summary: Domain model diagram, money handling, security, testing, observability, and error handling.
 tags:
