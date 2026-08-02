@@ -51,8 +51,8 @@ package "CategoryGroup aggregate" {
 
 package "Account aggregate" {
   class Account <<root>>
-  class BalanceSnapshot <<value object>>
-  Account "1" *-- "0..*" BalanceSnapshot
+  class Kontostand <<value object>>
+  Account "1" *-- "0..*" Kontostand
 }
 
 class Transaction
@@ -81,7 +81,7 @@ natural key, so it uses a bank reference or a generated `TransactionId`
 (Q-ARCH-003).
 
 `Money`, `Zahlungsintervall`, `Zahlungsmethode` and the typed identifiers are value
-objects: no identity, compared by value. A `BalanceSnapshot` and a
+objects: no identity, compared by value. A `Kontostand` and a
 `Vermoegensposition` value are entered by hand and never derived from a
 `Transaction` (ADR-008). Persistence surrogate keys stay inside the JPA entities
 and never appear in the domain (ADR-009).
@@ -105,7 +105,7 @@ retirement span and the owner's `Vermoegen`, the domain computes the
 == Money Handling
 
 All amounts are EUR and stored as exact decimals (`BigDecimal` / `numeric`); no
-floating-point money. `MonthlyPortion` and `Sollansparung` arithmetic rounds
+floating-point money. `Monatsanteil` and `Sollansparung` arithmetic rounds
 explicitly.
 
 == Security
