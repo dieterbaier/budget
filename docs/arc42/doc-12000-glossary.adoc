@@ -46,6 +46,11 @@ Three concepts came from the architecture rather than from the domain and were
 *adopted* under ADR-022 rule 4 rather than translated: `Auswertungszeitraum`,
 `Restmonatsbedarf` and `Ausgabenwarnung`.
 
+Wherever prose names a domain concept it uses the identifier, in backticks — a
+`Fixkostenposition`, not a fixed cost. ADR-022 rule 3 already requires the
+identifier in architecture documentation; the backticks are what stop a
+mixed-language sentence from reading as an accident.
+
 [cols="1,1,1,3", options="header"]
 |===
 | Term | Identifier | Display | Meaning
@@ -53,32 +58,32 @@ Three concepts came from the architecture rather than from the domain and were
 | Transaktion
 | `Transaction`
 | Transaktion
-| A recorded expense, income or transfer taken from a bank statement, with a name (the payee or what it was). Fixed-cost payments are *not* Transaktionen — see Fixkosten.
+| A recorded expense, income or transfer taken from a bank statement, with a name (the payee or what it was). A payment of a `Fixkostenposition` is *not* recorded as a `Transaction`.
 
 | Fixkosten
 | `Fixkostenposition`
 | Fixkosten
-| A recurring cost, defined once and never booked: a payee, an amount per cycle, an interval, a category, an optional Verwendungszweck, a Zahlungsart, and the letzte Zahlung. The spoken term is plural and names the whole class; the identifier is the singular position, because the model holds one at a time.
+| A recurring cost, defined once and never booked: a payee, an amount per cycle, an interval, a `Category`, an optional `Verwendungszweck`, a `PaymentMethod`, and a `letzteZahlung`. The spoken term is plural and names the whole class; the identifier is the singular position, because the model holds one at a time.
 
 | variable Kosten
 | `VariableKosten`
 | Variable Kosten
-| Any recorded expense that is not Fixkosten. Averaged over the Auswertungszeitraum to give its monthly figure. A classification of Transaktionen rather than something stored, so the identifier appears in calculations and not in the schema.
+| Any recorded expense that is not a `Fixkostenposition`. Averaged over the `Auswertungszeitraum` to give its monthly figure. A classification of `Transaction` rather than something stored, so the identifier appears in calculations and not in the schema.
 
 | Kategorie
 | `Category`
 | Kategorie
-| A user-defined classification a Transaktion is assigned to; holds Verwendungszwecke and belongs to one Kategoriegruppe.
+| A user-defined classification a `Transaction` is assigned to; holds `Verwendungszweck` entries and belongs to one `CategoryGroup`.
 
 | Kategoriegruppe
 | `CategoryGroup`
 | Kategoriegruppe
-| A grouping of Kategorien (for example dog, car, household, daughter, licensing) used for the group view.
+| A grouping of `Category` entries (for example dog, car, household, daughter, licensing) used for the group view.
 
 | Verwendungszweck
 | `Verwendungszweck`
 | —
-| The banking term for what a payment is for (`Fernwärme`, `Streaming (Musik)`), one level below the Kategorie. Belongs to exactly one Kategorie; optional on a Transaktion and on Fixkosten. Kept German because `Purpose` is generic where the original is specific.
+| The banking term for what a payment is for ("Fernwärme", "Streaming (Musik)"), one level below the `Category`. Belongs to exactly one `Category`; optional on a `Transaction` and on a `Fixkostenposition`. Kept German because `Purpose` is generic where the original is specific.
 
 | Auswertungszeitraum
 | `Auswertungszeitraum`
@@ -88,17 +93,17 @@ Three concepts came from the architecture rather than from the domain and were
 | letzte Zahlung
 | `letzteZahlung`
 | Letzte Zahlung
-| The date Fixkosten were last paid. Maintained by hand, moves forward, and drives both the nächste Zahlung and the Sollansparung. Kept German because the English rendering `anchorDate` invented a fixed reference point the domain does not have.
+| The date a `Fixkostenposition` was last paid. Maintained by hand, moves forward, and drives both `naechsteZahlung` and `Sollansparung`. Kept German because the English rendering `anchorDate` invented a fixed reference point the domain does not have.
 
 | nächste Zahlung
 | `naechsteZahlung`
 | Nächste Zahlung
-| Letzte Zahlung plus one interval. No business-day correction — a due date on a Sunday is left as it is, because nothing is executed from it.
+| `letzteZahlung` plus one interval. No business-day correction — a due date on a Sunday is left as it is, because nothing is executed from it.
 
 | fällige Fixkosten
 | `faelligeFixkostenposition`
 | Fällige Fixkosten
-| Fixkosten whose nächste Zahlung has arrived. Used to catch a payment missed while transcribing, and to spot Fixkosten that no longer exist (their letzte Zahlung is older than their own interval).
+| A `Fixkostenposition` whose `naechsteZahlung` has arrived. Used to catch a payment missed while transcribing, and to spot a `Fixkostenposition` that no longer exists (its `letzteZahlung` is older than its own interval).
 
 | Zahlungsart
 | `PaymentMethod`
@@ -113,32 +118,32 @@ Three concepts came from the architecture rather than from the domain and were
 | Kontostand
 | `BalanceSnapshot`
 | Kontostand
-| A manually entered account balance with its "as of" date; not derived from Transaktionen. The identifier keeps "snapshot" because the German word names the value and drops the point in time, which is the half that matters here.
+| A manually entered `Account` balance with its "as of" date; not derived from `Transaction` records. The identifier keeps "snapshot" because the German word names the value and drops the point in time, which is the half that matters here.
 
 | Umbuchung
 | `Umbuchung`
 | —
-| Money moved between the owner's own Konten; never counted as an expense. Kept German because `Überweisung` would also cover payments to third parties, which are expenses.
+| Money moved between the owner's own `Account` records; never counted as an expense. Kept German because "Überweisung" would also cover payments to third parties, which are expenses.
 
 | Erstattung
 | `Erstattung`
 | —
-| A booking with a negative amount in the same Kategorie as the original cost. A group total may legitimately be negative. Also spoken as "Gutschrift"; the two are one concept here, and `Erstattung` is the registered term.
+| A booking with a negative amount in the same `Category` as the original cost. A group total may legitimately be negative. Also spoken as "Gutschrift"; the two are one concept here, and `Erstattung` is the registered term.
 
 | Erstattungen pro Monat
 | `ErstattungenProMonat`
 | Erstattungen pro Monat
-| The sum of the negative amounts in a Kategoriegruppe, shown beside the net figure so gross and net are both readable.
+| The sum of the negative amounts in a `CategoryGroup`, shown beside the net figure so gross and net are both readable.
 
 | Sollansparung
 | `Sollansparung`
 | —
-| What should have been saved up by now on the reserve call-money account to cover non-monthly Fixkosten: whole months elapsed since the letzte Zahlung, times the Monatsanteil. Zero for monthly Fixkosten. Kept German because `reserve requirement` names what must be held, which is a different quantity that happens to be equal today.
+| What should have been saved up by now on the reserve call-money `Account` to cover a non-monthly `Fixkostenposition`: whole months elapsed since its `letzteZahlung`, times its `MonthlyPortion`. Zero for a monthly `Fixkostenposition`. Kept German because "reserve requirement" names what must be held, which is a different quantity that happens to be equal today.
 
 | Monatsanteil
 | `MonthlyPortion`
 | Monatsanteil
-| A Fixkostenposition's amount per cycle divided by the months in its cycle, which is how it enters the monthly cost figure.
+| A `Fixkostenposition`'s amount per cycle divided by the months in its cycle, which is how it enters the monthly cost figure.
 
 | Ausgabenwarnung
 | `Ausgabenwarnung`
@@ -148,12 +153,12 @@ Three concepts came from the architecture rather than from the domain and were
 | Restmonatsbedarf
 | `Restmonatsbedarf`
 | —
-| What must be on the current account from today to month end: the remaining days times the daily rate of the variable Kosten, plus the Fixkosten still due this month. An amount, not a duration — which is why it is not called a runway. Adopted, not translated.
+| What must be on the current `Account` from today to month end: the remaining days times the daily rate of `VariableKosten`, plus every `faelligeFixkostenposition` still due this month. An amount, not a duration — which is why it is not called a runway. Adopted, not translated.
 
 | Rentenprognose
 | `Rentenprognose`
 | —
-| Nominal estimate of the monthly need in retirement, computed twice — with inflation only, and with inflation plus an estimated Kostensteigerung. Kept German with the rest of the Renten- concepts, because "pension" and "Rente" are not the same institution.
+| Nominal estimate of the monthly need in retirement, computed twice — with inflation only, and with inflation plus an estimated `CostIncrease`. Kept German with the rest of the `Renten-` concepts, because "pension" and "Rente" are not the same institution.
 
 | Inflationsraten
 | `InflationSeries`
@@ -163,27 +168,27 @@ Three concepts came from the architecture rather than from the domain and were
 | Kostensteigerung
 | `CostIncrease`
 | Kostensteigerung
-| A single estimated percentage on top of inflation, giving the second Rentenprognose.
+| A single estimated percentage on top of inflation, giving the second `Rentenprognose`.
 
 | rentenrelevant
 | `rentenrelevant`
 | Rentenrelevant
-| Marks whether a cost still applies in retirement. The Kategorie carries the default; a Transaktion or Fixkosten may override it, and the override wins.
+| Marks whether a cost still applies in retirement. The `Category` carries the default; a `Transaction` or a `Fixkostenposition` may override it, and the override wins.
 
 | Vermögensposition
 | `Vermoegensposition`
 | Vermögensposition
-| One manually entered entry in the Vermögen: life insurance, house value, investment portfolio, the latest statutory pension figure, or the Geldguthaben across the Konten. Carries a minimum, likely and maximum value.
+| One manually entered entry in the `Vermoegen`: life insurance, house value, investment portfolio, the latest statutory pension figure, or the cash across the `Account` records, which the owner calls "Geldguthaben". Carries a minimum, likely and maximum value.
 
 | Vermögen
 | `Vermoegen`
 | Vermögen
-| The sum of the tracked Vermögenspositionen, as a minimum/likely/maximum band, used against the projected retirement need.
+| The sum of the tracked `Vermoegensposition` entries, as a minimum/likely/maximum band, used against the projected retirement need.
 
 | Rentenlücke
 | `Rentenluecke`
 | Rentenlücke
-| Rentenprognose minus Vermögen.
+| `Rentenprognose` minus `Vermoegen`.
 
 | Barabhebung
 | `Barabhebung`
