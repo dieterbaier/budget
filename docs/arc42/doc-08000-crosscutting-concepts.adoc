@@ -8,7 +8,7 @@ created: '2026-07-03'
 updated: '2026-07-24'
 reviewed: true
 generated: false
-summary: Domain model, money handling, security, testing, observability, and error handling.
+summary: Domain model diagram, money handling, security, testing, observability, and error handling.
 tags:
 - arc42
 - concepts
@@ -26,56 +26,84 @@ metadata_version: '1.0'
 
 == Domain Model
 
-The domain is modelled with DDD tactical patterns (ADR-009): value objects,
-entities with *domain* identity, and aggregates. *Value objects* — `Money`,
-`PaymentInterval`, and the typed identifiers — have no identity and compare by
-value. *Aggregate roots* and their identity:
+The domain is modelled with DDD tactical patterns (ADR-009). What each concept
+below *means* is in xref:glossary[the glossary], which is the term register
+(ADR-022); this section shows only how they hang together.
 
-* `Account` — identity by IBAN/name; owns manually entered balance snapshots
-  (value objects with an "as of" date).
-* `CategoryGroup` / `Category` — identity by name; `Category` carries the
-  *pension-relevance* flag.
-* `Transaction` — a booking with date, amount, category, account, and type
-  (expense/income/transfer); refunds are negative expenses in the same category.
-  It needs identity but has no guaranteed natural key, so it uses a bank reference
-  or a generated `TransactionId` (Q-ARCH-003).
-* `FixedCost` — amount, interval, anchor date, derived next payment date and
-  monthly reserve, plus a *pension-relevance* flag.
-* `IncomeEntry` — identity by month.
-* `Asset` — manually entered net-worth positions (life insurance, house value,
-  account balances, investment portfolio, latest statutory pension figures), and
-  the `PensionProjection` inputs.
+[plantuml,budget-domain-model,png]
+----
+@startuml
+hide empty members
+hide circle
+skinparam shadowing false
+skinparam linetype ortho
+skinparam nodesep 25
+skinparam ranksep 40
 
-Balances and asset values are snapshots, not derived from transactions (ADR-008).
-Persistence surrogate keys stay inside the JPA entities and never appear in the
-domain (ADR-009).
+class CategoryGroup <<aggregate root>>
+class Category <<entity>>
+class Verwendungszweck <<entity>>
+class Account <<aggregate root>>
+class BalanceSnapshot <<value object>>
+class Transaction <<aggregate root>>
+class Fixkostenposition <<aggregate root>>
+class Einkuenfte <<aggregate root>>
+class Vermoegensposition <<aggregate root>>
 
-== Pension And Net Worth
+CategoryGroup "1" *-- "0..*" Category
+Category "1" *-- "0..*" Verwendungszweck
+Account "1" *-- "0..*" BalanceSnapshot
 
-The pension projection works in *nominal* terms. Inputs are the current pension
+Transaction "0..*" --> "1" Account
+Transaction "0..*" --> "1" Category
+Transaction "0..*" --> "0..1" Verwendungszweck
+Fixkostenposition "0..*" --> "1" Category
+Fixkostenposition "0..*" --> "0..1" Verwendungszweck
+
+Einkuenfte -[hidden]down- Vermoegensposition
+Transaction -[hidden]right- Fixkostenposition
+Fixkostenposition -[hidden]right- Einkuenfte
+@enduml
+----
+
+Identity: `Account` by IBAN/name, `CategoryGroup` and `Category` by name,
+`Einkuenfte` by month. A `Transaction` needs identity and has no guaranteed
+natural key, so it uses a bank reference or a generated `TransactionId`
+(Q-ARCH-003).
+
+`Money`, `Zahlungsintervall`, `PaymentMethod` and the typed identifiers are value
+objects: no identity, compared by value. A `BalanceSnapshot` and a
+`Vermoegensposition` value are entered by hand and never derived from a
+`Transaction` (ADR-008). Persistence surrogate keys stay inside the JPA entities
+and never appear in the domain (ADR-009).
+
+== Rentenprognose And Vermoegen
+
+The `Rentenprognose` works in *nominal* terms. Inputs are the current pension
 pot, retirement age, life expectancy, an estimated nominal return the owner
 enters (the rate a safe investment would yield today), and an inflation rate. The
-inflation rate is the average of Germany's historical annual rates, taken from
+inflation rate is the average of the `InflationSeries`, Germany's historical
+annual rates, taken from
 https://www.global-rates.com/de/inflation/historisch/[global-rates.com].
 
 The expected monthly need in retirement is derived from current costs, but only
-those flagged pension-relevant: categories, individual costs, and fixed costs
-each carry a relevance flag, so items such as a mortgage repayment (assumed gone
-in retirement) are excluded. From the projected need over the retirement span and
-the owner's tracked net worth (`Asset` positions plus the latest pension
-figures), the domain computes the *pension shortfall* — how much is still
-missing.
+those flagged `rentenrelevant`: a `Category`, a `Transaction` and a
+`Fixkostenposition` each carry the flag, so items such as a mortgage repayment
+(assumed gone in retirement) are excluded. From the projected need over the
+retirement span and the owner's `Vermoegen`, the domain computes the
+`Rentenluecke`.
 
 == Money Handling
 
 All amounts are EUR and stored as exact decimals (`BigDecimal` / `numeric`); no
-floating-point money. Amortization and reserve math round explicitly.
+floating-point money. `MonthlyPortion` and `Sollansparung` arithmetic rounds
+explicitly.
 
 == Security
 
 Single-user authentication: one credential, Argon2 password hashing, sessions
 over TLS only, server-side authorization on every endpoint, and no third-party
-telemetry. Logs never contain transaction descriptions or amounts tied to
+telemetry. Logs never contain `Transaction` descriptions or amounts tied to
 identifiers.
 
 == Testing
