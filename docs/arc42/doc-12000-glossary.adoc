@@ -51,6 +51,26 @@ Wherever prose names a domain concept it uses the identifier, in backticks — a
 identifier in architecture documentation; the backticks are what stop a
 mixed-language sentence from reading as an accident.
 
+== What the register already binds
+
+This table records the domain as agreed. Rule 3 binds it on the documentation and
+on every domain type added or changed from now on. Four identifiers implemented
+before the register still carry pre-register names — `FixedCost`,
+`PaymentInterval`, `anchorDate` and `monthlyPortion` — and are renamed under
+issue #79, which is what ends the staging. See ADR-022.
+
+The agreed domain is ahead of the implementation in one further place: a
+`Zahlungsintervall` may be two-yearly, and the implemented enum has no such case
+yet. Issue #10 carries it.
+
+The divergence is a command, not a list to keep current:
+
+[source,sh]
+----
+grep -rln 'FixedCost\|PaymentInterval\|anchorDate\|anchor_date\|monthlyPortion' \
+  application/ | grep -v node_modules | grep -v '/build/'
+----
+
 [cols="1,1,1,3", options="header"]
 |===
 | Term | Identifier | Display | Meaning
@@ -78,7 +98,7 @@ mixed-language sentence from reading as an accident.
 | Zahlungsintervall
 | `Zahlungsintervall`
 | —
-| The cycle on which a `Fixkostenposition` falls due: monthly, quarterly, half-yearly, yearly or two-yearly. Dividing the amount per cycle by the months in it gives the `Monatsanteil`.
+| The cycle on which a `Fixkostenposition` falls due: monthly, quarterly, half-yearly, yearly or two-yearly. Dividing the amount per cycle by the months in it gives the `Monatsanteil`. The two-yearly case is agreed and not yet implemented — see *What the register already binds*.
 
 | Kategorie
 | `Category`
