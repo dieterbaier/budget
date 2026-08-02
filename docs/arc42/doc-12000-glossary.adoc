@@ -63,7 +63,7 @@ mixed-language sentence from reading as an accident.
 | Fixkosten
 | `Fixkostenposition`
 | Fixkosten
-| A recurring cost, defined once and never booked: a payee, an amount per cycle, a `Zahlungsintervall`, a `Category`, an optional `Verwendungszweck`, a `PaymentMethod`, and a `letzteZahlung`. The spoken term is plural and names the whole class; the identifier is the singular position, because the model holds one at a time.
+| A recurring cost, defined once and never booked: a payee, an amount per cycle, a `Zahlungsintervall`, a `Category`, an optional `Verwendungszweck`, a `Zahlungsmethode`, and a `letzteZahlung`. The spoken term is plural and names the whole class; the identifier is the singular position, because the model holds one at a time.
 
 | variable Kosten
 | `VariableKosten`
@@ -115,10 +115,10 @@ mixed-language sentence from reading as an accident.
 | Fällige Fixkosten
 | A `Fixkostenposition` whose `naechsteZahlung` has arrived. Used to catch a payment missed while transcribing, and to spot a `Fixkostenposition` that no longer exists (its `letzteZahlung` is older than its own interval).
 
-| Zahlungsart
-| `PaymentMethod`
-| Zahlungsart
-| Direct debit, credit card or PayPal. Recorded for information only; enters no calculation.
+| Zahlungsmethode
+| `Zahlungsmethode`
+| —
+| Direct debit, credit card or PayPal. A value object inside a `Fixkostenposition`, recorded for information only; enters no calculation.
 
 | Konto
 | `Account`
