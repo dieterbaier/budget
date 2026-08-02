@@ -5,15 +5,19 @@ they show.
 
 *Status:* on ice since 2026-07-29 — the domain model turned out to be a level
 short, and building on it would have produced more code answering the wrong
-question. It resumes when #68 has settled the terms and the affected issues carry
-them.
+question. #68 has since settled the terms; what the resumption still waits on is
+#76 and #79 carrying them into the documentation and the code. Defects in what is
+already shipped are fixed while the topic is on ice — #82 was one — because the
+owner is using it.
 
 == The plan
 
 [options="checklist"]
 * [x] Increment 1 — record a transaction, show a monthly figure. Backend,
       PostgreSQL, installable PWA
-* [x] Manage category groups and categories — #8, merged as PR #47
+* [x] Manage category groups and categories — #8, merged as PR #47. A name
+      containing a slash could not be edited afterwards; fixed under #82,
+      merged as PR #83
 * [ ] Correct the figure Increment 1 ships — #62. The current view survives as a
       secondary view
 * [ ] Master data the rest depends on: #9 accounts and balance snapshots,
@@ -43,6 +47,12 @@ calendar month. The number the product needs is a long-run average over the
 tracking window. Everything about it passes — tests, ArchUnit, coverage — because
 no check can ask whether the right quantity is being computed. That is #62, and
 it is the origin of the "wrong question" category in the through-line.
+
+`Category` and `CategoryGroup` are addressed by a name in the query string rather
+than in a path segment, because a name may contain a slash and Tomcat rejects the
+percent-encoded form in a path. The web adapter now has one test that runs over a
+real connector, `NameWithSlashTest`; every other controller test is `@WebMvcTest`
+and cannot see this class of defect at all.
 
 == Open in this topic
 
