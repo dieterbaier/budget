@@ -15,7 +15,10 @@ it, and writing down the practices that emerge here.
       written in — #70, merged as PR #71
 * [x] `skills/diary`, `skills/clock-in`, `skills/clock-out` — the day boundary,
       #73
-* [ ] Check the language rules that can be checked — #72
+* [x] The backtick rule for domain terms — added to `language-profile` as a
+      cross-register rule, merged as PR #75 under #68
+* [ ] Check the language rules that can be checked — #72. After #76, so it does
+      not start life red
 * [ ] Remaining half of #45: replace ADR-001's hand-written admonition with the
       generated include, and delete `skills/refine-adr` if upstream guidance then
       covers it. Blocked on toolkit issue #68
@@ -27,14 +30,23 @@ divergence, and `diary/` is not in the `docs` path filter of
 `pr-validation.yml`, so a diary check would not run on a diary-only change. Both
 are in #72.
 
+It now also comes after #76. A documentation-level language check written today
+would fail on about twenty documents that #76 exists to correct, and a check
+whose first run is red teaches nobody anything.
+
 == Where we are
 
 Five local skills, each a delta that names the condition under which it should be
 deleted: `refine-adr`, `language-profile`, `diary`, `clock-in`, `clock-out`.
 `AGENTS.md` routes to all of them and the agent adapters are generated from it.
 
-`diary/toolkit-validation.adoc` holds five findings so far; two produced upstream
+`diary/toolkit-validation.adoc` holds six findings so far; two produced upstream
 pull requests that are merged.
+
+`language-profile` gained one rule that is not a profile: domain concepts are
+named by their registered identifier in backticks, in every register. It came out
+of the glossary work rather than out of skill work, which is where the useful
+ones seem to come from.
 
 == Open in this topic
 
