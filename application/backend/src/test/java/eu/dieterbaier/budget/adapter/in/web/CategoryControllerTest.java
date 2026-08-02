@@ -84,7 +84,7 @@ class CategoryControllerTest {
         given(manageCategories.update(eq("Grocries"), anyString(), anyString(), anyBoolean()))
                 .willReturn(Category.in(HOUSE, "Groceries"));
 
-        mockMvc.perform(put("/api/categories/Grocries")
+        mockMvc.perform(put("/api/categories").param("name", "Grocries")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {"name":"Groceries","group":"House","pensionRelevant":true}
@@ -97,7 +97,8 @@ class CategoryControllerTest {
 
     @Test
     void deletesAnUnusedCategory() throws Exception {
-        mockMvc.perform(delete("/api/categories/Mistake")).andExpect(status().isNoContent());
+        mockMvc.perform(delete("/api/categories").param("name", "Mistake"))
+                .andExpect(status().isNoContent());
     }
 
     // 409 rather than 400: the request is well formed and conflicts with data
@@ -123,7 +124,7 @@ class CategoryControllerTest {
         willThrow(new NameInUseException("\"Groceries\" is still used by 42 transactions"))
                 .given(manageCategories).delete(any());
 
-        mockMvc.perform(delete("/api/categories/Groceries"))
+        mockMvc.perform(delete("/api/categories").param("name", "Groceries"))
                 .andExpect(status().isConflict())
                 .andExpect(content().json("""
                         {"error":"\\"Groceries\\" is still used by 42 transactions"}
@@ -134,6 +135,7 @@ class CategoryControllerTest {
     void reportsAnUnknownCategoryAsNotFound() throws Exception {
         willThrow(new UnknownNameException("category", "Nope")).given(manageCategories).delete(any());
 
-        mockMvc.perform(delete("/api/categories/Nope")).andExpect(status().isNotFound());
+        mockMvc.perform(delete("/api/categories").param("name", "Nope"))
+                .andExpect(status().isNotFound());
     }
 }
