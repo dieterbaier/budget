@@ -77,7 +77,7 @@ describe('categories api', () => {
     const fetchMock = respondWith({ name: 'House' })
 
     await expect(renameCategoryGroup('Huose', 'House')).resolves.toEqual({ name: 'House' })
-    expect(fetchMock).toHaveBeenCalledWith('/api/category-groups/Huose', {
+    expect(fetchMock).toHaveBeenCalledWith('/api/category-groups?name=Huose', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: '{"name":"House"}',
@@ -89,20 +89,26 @@ describe('categories api', () => {
 
     await updateCategory('Grocries', { name: 'Groceries', group: 'House', pensionRelevant: false })
 
-    expect(fetchMock).toHaveBeenCalledWith('/api/categories/Grocries', {
+    expect(fetchMock).toHaveBeenCalledWith('/api/categories?name=Grocries', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: '{"name":"Groceries","group":"House","pensionRelevant":false}',
     })
   })
 
-  // A name can contain characters that would otherwise change the path.
-  it('encodes the name in the path rather than interpolating it raw', async () => {
+  // This used to assert a percent-encoded path segment, which was not enough:
+  // Tomcat rejects an encoded slash in a path segment with a 400 before the
+  // request reaches the application, so the name goes in the query string
+  // (issue #82). The encoding was never the problem; where it was applied was.
+  it('addresses a name containing a slash through the query string', async () => {
     const fetchMock = respondWith({ name: 'House' })
 
     await renameCategoryGroup('Haus/Hof', 'House')
 
-    expect(fetchMock).toHaveBeenCalledWith('/api/category-groups/Haus%2FHof', expect.anything())
+    expect(fetchMock).toHaveBeenCalledWith(
+      '/api/category-groups?name=Haus%2FHof',
+      expect.anything(),
+    )
   })
 
   it('deletes a group and a category', async () => {
@@ -111,8 +117,12 @@ describe('categories api', () => {
     await deleteCategoryGroup('Empty')
     await deleteCategory('Mistake')
 
-    expect(fetchMock).toHaveBeenNthCalledWith(1, '/api/category-groups/Empty', { method: 'DELETE' })
-    expect(fetchMock).toHaveBeenNthCalledWith(2, '/api/categories/Mistake', { method: 'DELETE' })
+    expect(fetchMock).toHaveBeenNthCalledWith(1, '/api/category-groups?name=Empty', {
+      method: 'DELETE',
+    })
+    expect(fetchMock).toHaveBeenNthCalledWith(2, '/api/categories?name=Mistake', {
+      method: 'DELETE',
+    })
   })
 
   // The refusal message names what still references the category, which is the

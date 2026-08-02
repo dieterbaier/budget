@@ -128,7 +128,7 @@ describe('CategoriesPage', () => {
 
     await waitFor(() =>
       expect(fetchMock).toHaveBeenCalledWith(
-        '/api/category-groups/House',
+        '/api/category-groups?name=House',
         expect.objectContaining({ method: 'PUT', body: '{"name":"Haus"}' }),
       ),
     )
@@ -153,7 +153,7 @@ describe('CategoriesPage', () => {
 
     await waitFor(() =>
       expect(fetchMock).toHaveBeenCalledWith(
-        '/api/categories/Groceries',
+        '/api/categories?name=Groceries',
         expect.objectContaining({
           method: 'PUT',
           body: '{"name":"Food","group":"Car","pensionRelevant":false}',
@@ -172,7 +172,7 @@ describe('CategoriesPage', () => {
       .getAllByRole('button', { name: /^delete$/i })[0])
 
     await waitFor(() =>
-      expect(fetchMock).toHaveBeenCalledWith('/api/categories/Groceries', { method: 'DELETE' }),
+      expect(fetchMock).toHaveBeenCalledWith('/api/categories?name=Groceries', { method: 'DELETE' }),
     )
   })
 
@@ -214,7 +214,7 @@ describe('CategoriesPage', () => {
     fireEvent.click(screen.getByRole('button', { name: /cancel/i }))
 
     expect(screen.queryByLabelText(/new name for Groceries/i)).not.toBeInTheDocument()
-    expect(fetchMock).not.toHaveBeenCalledWith('/api/categories/Groceries', expect.anything())
+    expect(fetchMock).not.toHaveBeenCalledWith('/api/categories?name=Groceries', expect.anything())
   })
 
   // The cross-entity sequence this feature makes possible: rename a group, then
@@ -277,7 +277,7 @@ describe('CategoriesPage', () => {
 
     await waitFor(() =>
       expect(fetchMock).toHaveBeenCalledWith(
-        '/api/categories/Groceries',
+        '/api/categories?name=Groceries',
         expect.objectContaining({
           body: '{"name":"Groceries","group":"Home","pensionRelevant":false}',
         }),
