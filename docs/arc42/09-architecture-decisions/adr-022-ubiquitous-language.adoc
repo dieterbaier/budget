@@ -64,6 +64,20 @@ Four rules follow.
   language when the expert accepts a term for them, which is a different act from
   translating one.
 
+*Rule 3 is staged, and the staging ends.* From the day the register exists it
+binds the architecture documentation and every domain type added or changed
+after it. Identifiers implemented before the register are not retroactively in
+violation: they are named in the glossary and renamed under issue #79, and the
+rule is unstaged when that issue closes. Until then a reader who finds
+`FixedCost` in `domain/model/` is looking at a known exception with an owner,
+not at a rule being ignored.
+
+Staging it is the weaker choice and is taken deliberately. The alternative was
+to rename before the register could be called binding, which reaches an executed
+Flyway migration and a question — whether this project's migration history may
+be rewritten — that is not a language question and should not be answered in a
+hurry to make a rule true.
+
 What these rules forbid is a translation nobody agreed to and nobody can see —
 the kind a developer performs at the keyboard, in the second it takes to pick an
 English word. They do not forbid translation. That is a weaker rule than DDD's
@@ -291,5 +305,24 @@ it.
 
 The decision itself is unaffected. What changed is the claim about what the
 decision cost.
+
+==== Rule 3 was stated as if it already held
+
+The review of the register pass found that merging it would have put the
+repository in immediate violation of this ADR. Rule 3 binds `domain/model/`, and
+`FixedCost`, `PaymentInterval`, `anchorDate` and `monthlyPortion` were still in
+the code — so the rule would have been false on the day it was declared
+enforceable.
+
+Two ways out were available: rename first, or say when the rule takes effect. The
+rename reaches 22 files and an executed Flyway migration, and it depends on a
+question this ADR has no business answering — whether a migration history with
+one deployment may be rewritten. Deciding that quickly, in order to make a
+sentence true, is the failure mode this document exists to name.
+
+So rule 3 is now staged, with the exception listed in the register and an issue
+that ends the staging. That is weaker than the original wording and it is honest,
+where the original was strong and false. The Decision records the transition
+rather than leaving a reader to discover the gap.
 
 include::generated/adr-022-ubiquitous-language-traceability.adoc[leveloffset=+1]
