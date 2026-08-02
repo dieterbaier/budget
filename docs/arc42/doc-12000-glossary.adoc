@@ -78,7 +78,7 @@ mixed-language sentence from reading as an accident.
 | Zahlungsintervall
 | `Zahlungsintervall`
 | —
-| The cycle on which a `Fixkostenposition` falls due: monthly, quarterly, half-yearly, yearly or two-yearly. Dividing the amount per cycle by the months in it gives the `MonthlyPortion`.
+| The cycle on which a `Fixkostenposition` falls due: monthly, quarterly, half-yearly, yearly or two-yearly. Dividing the amount per cycle by the months in it gives the `Monatsanteil`.
 
 | Kategorie
 | `Category`
@@ -126,9 +126,9 @@ mixed-language sentence from reading as an accident.
 | One of the three tracked accounts: current account, reserve call-money account, savings call-money account.
 
 | Kontostand
-| `BalanceSnapshot`
-| Kontostand
-| A manually entered `Account` balance with its "as of" date; not derived from `Transaction` records. The identifier keeps "snapshot" because the German word names the value and drops the point in time, which is the half that matters here.
+| `Kontostand`
+| —
+| A manually entered `Account` balance together with the date it applies to; never derived from `Transaction` records. The date is what makes it entered rather than computed, and it is a field of the concept rather than part of its name.
 
 | Umbuchung
 | `Umbuchung`
@@ -148,11 +148,11 @@ mixed-language sentence from reading as an accident.
 | Sollansparung
 | `Sollansparung`
 | —
-| What should have been saved up by now on the reserve call-money `Account` to cover a non-monthly `Fixkostenposition`: whole months elapsed since its `letzteZahlung`, times its `MonthlyPortion`. Zero when the `Zahlungsintervall` is monthly. Kept German because "reserve requirement" names what must be held, which is a different quantity that happens to be equal today.
+| What should have been saved up by now on the reserve call-money `Account` to cover a non-monthly `Fixkostenposition`: whole months elapsed since its `letzteZahlung`, times its `Monatsanteil`. Zero when the `Zahlungsintervall` is monthly. Kept German because "reserve requirement" names what must be held, which is a different quantity that happens to be equal today.
 
 | Monatsanteil
-| `MonthlyPortion`
-| Monatsanteil
+| `Monatsanteil`
+| —
 | A `Fixkostenposition`'s amount per cycle divided by the months in its `Zahlungsintervall`, which is how it enters the monthly cost figure.
 
 | Ausgabenwarnung
@@ -168,7 +168,7 @@ mixed-language sentence from reading as an accident.
 | Rentenprognose
 | `Rentenprognose`
 | —
-| Nominal estimate of the monthly need in retirement, computed twice — with inflation only, and with inflation plus an estimated `CostIncrease`. Kept German with the rest of the `Renten-` concepts, because "pension" and "Rente" are not the same institution.
+| Nominal estimate of the monthly need in retirement, computed twice — with inflation only, and with inflation plus an estimated `Kostensteigerung`. Kept German with the rest of the `Renten-` concepts, because "pension" and "Rente" are not the same institution.
 
 | Inflationsraten
 | `InflationSeries`
@@ -176,8 +176,8 @@ mixed-language sentence from reading as an accident.
 | The historical annual inflation rates, entered by the owner. The application averages them itself rather than taking a single typed-in rate.
 
 | Kostensteigerung
-| `CostIncrease`
-| Kostensteigerung
+| `Kostensteigerung`
+| —
 | A single estimated percentage on top of inflation, giving the second `Rentenprognose`.
 
 | rentenrelevant
