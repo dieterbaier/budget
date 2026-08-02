@@ -147,3 +147,74 @@ no owner.
 
 The three of them are the honest measure of the day. None is new work. All three
 are work that the term decision on 31 July implied and nobody had counted.
+
+=== A postscript: the day was closed and then continued
+
+PR #81 closed this day at 17:10 UTC and declared the file append-only. Half an
+hour later the owner opened the running application and found a defect in shipped
+code, and the day acquired a third merged pull request, #83, and its first
+product-code change.
+
+What follows is written under that rule: the sections above stand as they were,
+including the sentence "no product code changed", which was true when the day was
+closed and is not true of the day as a whole. The correction is here rather than
+there.
+
+=== The test that named the case it could not see
+
+The owner could not assign `Gesundheit / Arzt Dieter` to a group. The name
+addressed the resource through a URL path segment, the client percent-encoded it,
+and Tomcat rejects `%2F` in a path segment with an HTML 400 before any handler is
+chosen. Measured against the running backend, `/` and `\` were the only two
+characters that failed; `#`, `?`, `%`, `&`, `+`, `.`, space, `:`, `;` and `=` all
+reached the application and answered 404 for an unknown name.
+
+Two tests existed about exactly this case, one on each side, and both were green.
+
+`categories.test.ts` carried a case called *encodes the name in the path rather
+than interpolating it raw*, with the comment "a name can contain characters that
+would otherwise change the path". It asserted
+`/api/category-groups/Haus%2FHof`. It was written for this hazard, it chose a
+slash as its example, and it passed — because the client did percent-encode the
+name. The encoding was never the problem. Where it was applied was, and the test
+asserted the wrong half of the sentence its own comment made.
+
+`CategoryControllerTest` and `CategoryGroupControllerTest` cover the four
+endpoints in fourteen cases, all `@WebMvcTest` with `MockMvc`. `MockMvc` builds
+the request object directly and never runs a connector, so it cannot reject a
+URL. Those fourteen tests could not have failed this way whatever they asserted.
+The suite was not under-written; it was attached below the layer where the defect
+lived.
+
+That is instance 12 of the through-line, and it is the first one the *application*
+refuted rather than CI. Everything in the repository agreed with itself. The only
+thing that disagreed was the owner clicking Save.
+
+The regression test that replaces them runs over a real Tomcat on a random port
+with the two controllers and no persistence. We broke it deliberately before
+trusting it, as the habit requires: with the controllers reverted, three of its
+four cases fail. The fourth asserts that an encoded slash in a path segment is
+rejected and passes either way on purpose — it is the constraint that shaped the
+endpoints, kept as a check rather than as a claim in a comment.
+
+=== The specification layer had nothing to say about it
+
+`skills/bdd-specification` in the toolkit is the strict default for a
+behaviour-changing bug fix, and it says the only way out is an explicit recorded
+human waiver. We skipped it on our own judgement, which the skill forbids. The
+reasoning went into #82 and #83, which is where such a decision is supposed to be
+recorded — but a recorded reason written by the same agent that decided is not a
+waiver, and calling it one would be marking our own homework.
+
+The reasoning itself holds, and it is why this became a method finding rather
+than only a lapse. `manage-categories.feature` drives the use-case ports, and the
+domain always accepted a name containing a slash. A scenario saying a category
+with a slash in its name can be moved to another group is green against the
+broken code. The strict default, followed literally here, asks for a guard with
+no failure path — the one thing this diary has been arguing against for twelve
+instances.
+
+Filed upstream as toolkit issue #74. It is the seventh toolkit finding and the
+first to come out of application code rather than documentation work, which is
+worth noting on its own: six findings came from the days spent on the method, and
+this one came from a day the method was simply being used.

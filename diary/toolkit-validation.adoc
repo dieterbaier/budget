@@ -9,7 +9,7 @@ This recap is the return on that goal. It is kept separate from the daily
 recaps on purpose: a finding about the *method* is reusable by other projects,
 while a finding about the budget application is not.
 
-The measure is findings, not artifact count. Six have gone upstream so far, and
+The measure is findings, not artifact count. Seven have gone upstream so far, and
 each came out of ordinary product work rather than out of looking for something
 to report. Two of them are fixed rather than filed, and both of those arrived on
 the same day — the one day nobody wrote application code.
@@ -264,6 +264,58 @@ down in `diary/open-threads.adoc`, in this repository, by us. It was not read.
 That is the argument for putting the guidance next to the command rather than in
 a project's own notes: prose that must be remembered at the right moment is a
 guard with no failure path.
+
+=== Finding 7 — the strict default asks for a scenario that cannot fail
+
+Upstream: toolkit issue
+https://github.com/docs-as-code-toolkit/architecture-knowledge-toolkit/issues/74[#74].
+Downstream: budget issue #82, merged as PR #83.
+
+`skills/bdd-specification/SKILL.md` is the strict default for "any change that
+adds or changes observable behaviour", naming behaviour-changing bug fixes
+explicitly, and `skills/implement-issue-workflow/SKILL.md` invokes it at
+implementation time. "The only way out is an explicit, recorded human waiver. Do
+not skip the specification on your own judgement."
+
+#82 was a behaviour-changing bug fix by any reading: the owner could not edit a
+category whose name contained a slash. So the default applied. And a scenario
+saying such a category can be moved to another group is *green against the broken
+code* — `manage-categories.feature` drives the use-case ports, and the domain
+always accepted the name. The defect was in the web adapter above them.
+
+Two of the skill's rules are individually right and jointly leave a hole. A
+scenario describes business behaviour rather than technical decomposition, so the
+bridge attaches at the use-case layer. Every behaviour-changing bug fix needs a
+scenario, including defects that exist only above that layer. Where the two meet,
+the skill asks for a guard with no failure path — which is instance 12 of this
+project's through-line, requested by the method rather than stumbled into.
+
+The waiver clause does not close it. A waiver is a human judgement about
+*proportionality*: this is too small to specify. This is not that. The behaviour
+is not disproportionate to specify, it is not expressible at the bridge layer at
+all, and no human authority changes that.
+
+==== What we did, and why it is not a defence
+
+We skipped the specification on our own judgement, which the skill forbids, and
+recorded the reasoning in #82 and #83. That is where such a decision belongs, and
+it is still not a waiver: the agent that decided also wrote the record. Marking
+one's own homework is the thing this project already has a working agreement
+about.
+
+The finding stands on its own evidence rather than on our compliance, which is
+why it went upstream anyway. The suggestion sent with it is one sentence and
+mechanical: before writing the scenario, run it against the unfixed code. If it
+cannot fail, the behaviour is not specifiable at the bridge layer, and what the
+change needs is a test at the layer that owns the defect plus a note saying so.
+
+==== Where this one came from
+
+Findings 1 to 6 came out of documentation and method work — ADRs, the metamodel,
+the register, the build script, the integration step. This is the first that came
+out of ordinary application code, on a day when the method was not being examined
+at all, only used. That is the shape of evidence the second goal was set up to
+collect, and it took eight days to produce one.
 
 === What the toolkit got right
 

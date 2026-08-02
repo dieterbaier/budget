@@ -49,6 +49,17 @@ draws it dashed rather than choosing, because a diagram that picks a boundary
 decides it. The decision belongs in ADR-009 or a record refining it, and it has
 to be made before #58 is implemented rather than discovered during it.
 
+How a name-as-identity reaches the API is decided in two comments and no record:: ADR-009
+makes the name the identity for `Category` and `CategoryGroup`, and it does the
+same for `Account` (IBAN or name) and `Einkuenfte` (month). #82 settled how one
+of those travels over HTTP — in the query string, because a path segment cannot
+carry a slash — but settled it for two controllers, in their comments. #9 and #11
+will each address a name-identified resource and will each meet the question
+again, with nothing to inherit from. Whether that is worth an ADR is genuinely
+open: it is one sentence of consequence, which is exactly the case toolkit issue
+#66 says should not become a ceremonial record. The cheaper answer may be a line
+in ADR-009 or in chapter 8, and the thing to avoid is discovering it a third time.
+
 === A process note, learned the hard way
 
 Stacked pull requests need the dependent PR retargeted to `main` *before* the
