@@ -47,12 +47,18 @@ as the example of the error it prevents, and it is still there:
 
 * `domain/model/FixedCost.java` — the record component and its Javadoc
 * `adapter/out/persistence/entity/FixedCostEntity.java`
+* `adapter/out/persistence/FixedCostPersistenceAdapter.java` — the getter call
 * `db/migration/V1__initial_schema.sql` — column `anchor_date`
 * `docs/doc-004-roadmap.adoc` (twice) and
   `docs/arc42/doc-08000-crosscutting-concepts.adoc`
 
-The occurrence in `docs/doc-005-questions-and-answers.adoc` line 22 stays: it is
-a historical answer, and that document corrects visibly rather than silently.
+Half of those write it as two words, `anchor date`, so a search for the
+identifier alone reports the prose clean when it is not.
+
+The occurrences in `docs/doc-005-questions-and-answers.adoc` stay: it is a
+historical answer, and that document corrects visibly rather than silently. The
+ones in ADR-022 stay too — the decision is named after the term and cites it as
+the example of the error it prevents.
 
 A rename touches a Flyway migration that has already run. Whether that is a new
 migration or an edit of V1 is undecided and is not a language question.
@@ -68,5 +74,5 @@ rule 4 says must be adopted rather than translated.
 [source,sh]
 ----
 ./build.sh all
-grep -rn 'anchorDate\|anchor_date' application/ docs/ | grep -v generated
+grep -rniE 'anchor[ _]?date' application/ docs/ | grep -v generated
 ----
