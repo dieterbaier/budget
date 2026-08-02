@@ -42,6 +42,13 @@ None of these were agreed up front. Each one came out of something going wrong.
   would have violated it. A rule that is not true yet is staged, with the
   exception named and an issue that ends the staging — or it is not merged.
 
+* *A boundary is only guarded by a test that crosses it.* Fourteen controller
+  tests and one client test were written about names with special characters, and
+  none could fail the way the application did, because all fifteen ran on one
+  side of the boundary the defect lived on. Before trusting a test to guard a
+  boundary, name what it does not execute — the container, the network, the
+  browser — and ask whether the defect could live there.
+
 * *A term nobody was asked is not agreed.* Twelve terms were put to the owner
   one at a time and were his; the rest arrived in a bulk table and one of them
   was wrong. The batching step is where an agreement pass stops being one.

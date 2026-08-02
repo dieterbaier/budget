@@ -2,7 +2,7 @@
 
 If these days have one theme, it is *green signals that check nothing*.
 
-It came up ten times, in ten different disguises:
+It came up twelve times, in twelve different disguises:
 
 . a lint rule that reported no cycles because it could not parse the files it was following
 . a locale setting that would have silently reverted to English
@@ -15,6 +15,7 @@ It came up ten times, in ten different disguises:
 . a container-engine probe reporting that podman was configured, on a host where podman could not start a container
 . a PR check whose own comment promised the deployment would render, while that deployment was failing
 . a grep for a term that reported the prose clean, in a file whose own list of occurrences said otherwise
+. a controller suite that could not reject a URL, and a client test that asserted the encoding while the encoding was applied in the wrong place
 
 Each one *passed*. None of them was checking anything.
 
@@ -29,12 +30,13 @@ for is absent, and because it is not looking. Both render identically. Nothing
 in a passing build distinguishes them, and the reporting layer of most tools is
 built to celebrate the first case without ever considering the second.
 
-The ten above split along a second axis, which is the more useful one for
+The twelve above split along a second axis, which is the more useful one for
 deciding where to spend suspicion:
 
 Wrong wiring:: the cycle rule, the locale, the shell check, the container-engine
-probe, the term grep. The tool was capable and was asked the wrong question, or
-its answer was read wrong. These are found by feeding the tool a known-bad input.
+probe, the term grep, the controller suite. The tool was capable and was asked
+the wrong question, or its answer was read wrong. These are found by feeding the
+tool a known-bad input.
 +
 The term grep is the cheapest specimen and the most embarrassing. It searched for
 `anchorDate` in a repository where half the occurrences are prose and spelled
@@ -45,6 +47,15 @@ The engine probe is the clearest specimen of the whole family. `podman info`
 answers "is podman configured?" and was read as "can podman run a container?".
 Both are questions about podman; only one of them is the question that mattered,
 and on the day it mattered they gave opposite answers.
++
+The controller suite is the engine probe again, in the place we would have said
+we were safest. Fourteen `@WebMvcTest` cases answered "does the handler behave?"
+and were read as "does this request work?". `MockMvc` builds the request object
+directly and runs no connector, so a URL that a real server rejects cannot fail
+there — the known-bad input was a category name the owner had been using for
+weeks. Its companion on the client asserted that the name was percent-encoded,
+which was true and was never the question; the question was which part of the URL
+it was encoded into.
 
 Wrong threshold:: the payload budget. The tool worked perfectly and the number
 was set where it could not bite. These are found by arithmetic against a real
