@@ -41,24 +41,22 @@ skinparam packageStyle rectangle
 skinparam nodesep 25
 skinparam ranksep 40
 
-package "CategoryGroup aggregate" {
-  class CategoryGroup <<root>>
-  class Category
-  class Verwendungszweck
-  CategoryGroup "1" *-- "0..*" Category
-  Category "1" *-- "0..*" Verwendungszweck
-}
-
 package "Account aggregate" {
   class Account <<root>>
   class Kontostand <<value object>>
   Account "1" *-- "0..*" Kontostand
 }
 
+class CategoryGroup
+class Category
+class Verwendungszweck
 class Transaction
 class Fixkostenposition
 class Einkuenfte
 class Vermoegensposition
+
+Category "0..*" --> "1" CategoryGroup
+Verwendungszweck "0..*" --> "1" Category
 
 Transaction "0..*" --> "1" Account
 Transaction "0..*" --> "1" Category
@@ -67,13 +65,17 @@ Fixkostenposition "0..*" --> "1" Category
 Fixkostenposition "0..*" --> "0..1" Verwendungszweck
 
 Einkuenfte -[hidden]down- Vermoegensposition
-Transaction -[hidden]right- Fixkostenposition
 @enduml
 ----
 
-A frame is one aggregate. The four unframed classes are aggregates too — of a
-single entity each — so they carry no label; only an aggregate with an interior
-needs its root pointed out.
+Every box is its own aggregate root, per ADR-009's aggregate map. Only `Account`
+has an interior — the `Kontostand` values it owns — so only it is framed. An
+arrow is a reference across an aggregate boundary, never containment:
+`Category` names its `CategoryGroup` and can be moved to another one, which is
+why the two are separate roots rather than a tree.
+
+`Verwendungszweck` is not yet in ADR-009's map; #58 specifies it, and it is drawn
+here the same way `Category` is until that lands.
 
 Identity: `Account` by IBAN/name, `CategoryGroup` and `Category` by name,
 `Einkuenfte` by month. A `Transaction` needs identity and has no guaranteed
