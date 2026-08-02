@@ -5,8 +5,8 @@ title: A Term Register For The Domain Language
 status: accepted
 owner: architecture
 created: '2026-07-31'
-updated: '2026-08-01'
-reviewed: true
+updated: '2026-08-02'
+reviewed: false
 summary: Every domain concept has one register entry fixing both the term the expert speaks and the identifier used in code; translation is permitted, silent or lossy translation is not.
 derived_from:
 - type: prompt
@@ -30,7 +30,8 @@ metadata_version: '1.0'
 
 Accepted. Decided by the owner on 2026-07-31, after he observed that the domain
 is spoken in German while the code is English and that nothing in this repository
-had ever decided that. Reworked on 2026-08-01 after his review; see
+had ever decided that. Reworked on 2026-08-01 after his review, and corrected on
+2026-08-02 when applying it found a factual claim in it to be false; see
 <<adr-022-what-the-review-changed,What the review changed>>.
 
 === Decision
@@ -109,10 +110,12 @@ Neither had been marked as a translation. That is the actual failure mode — no
 English, but *unagreed* translation. `Category` for "Kategorie" costs nothing and
 nobody would object to it.
 
-The timing matters and made the decision cheap. Every lossy term identified was
-still unimplemented — `Sollansparung` in issue #16, `Verwendungszweck` in #58,
-`letzte Zahlung` in #10 — so adopting this rule changed issues and the glossary,
-not working code.
+Two of the three lossy terms were still unimplemented when this was decided —
+`Sollansparung` in issue #16 and `Verwendungszweck` in #58. The third was not.
+`letzte Zahlung` was already in the code as `anchorDate`, which is the example
+this decision is built on, and renaming it reaches the domain record, the JPA
+entity, the persistence adapter and a Flyway migration that has already run. See
+<<adr-022-what-the-review-changed,What the review changed>>.
 
 === Considered Options
 
@@ -194,8 +197,9 @@ the better model and the worse trade.
   who would notice it. A name that invents a concept can still be proposed, but
   it cannot be adopted at the keyboard: it reaches the register first, and the
   register is where the expert reads it.
-* The decision cost no implemented code, because every lossy term was still in
-  the backlog when it was taken.
+* The decision was cheap in implemented code, though not free: two of the three
+  lossy terms were still in the backlog when it was taken, and the third —
+  `anchorDate` — was not.
 * The glossary stops being merely descriptive and becomes authoritative. It is
   the artifact a later reader consults to find out what something is *called*,
   not only what it means.
@@ -260,5 +264,32 @@ identifier belongs to which concept did not change.
 Recorded here rather than fixed silently, because the contradiction is the more
 useful half: two paragraphs of an ADR can each be defensible and jointly
 impossible, and only reading them against one another finds it.
+
+==== The claim that the decision cost no implemented code
+
+It did cost some, and this ADR said otherwise twice — in Context and in the first
+list of positive consequences. Both are corrected above.
+
+`letzte Zahlung` was listed with `Sollansparung` and `Verwendungszweck` as a term
+still in the backlog. It was not. It was in the code as `anchorDate`, in the
+domain record, the JPA entity, the persistence adapter and a Flyway migration
+that had already run — and `anchorDate` is the example this whole decision is
+built on, named in its Context and in its first positive consequence.
+
+Nobody checked before the ADR merged. It was found four days later, by writing
+`progress/domain-model.adoc`, because that format asks for the *order* of the
+work rather than a list of it: writing down that the rename has to happen before
+the check that enforces the agreed terms is what made someone look at where the
+term actually sat.
+
+Two things about the error are worth keeping. It is not the through-line — no
+check went green over it, because prose has no checks. And it is not the
+unsatisfiable-rule shape above either: both statements were internally
+consistent and simply untrue, which is the one failure a careful re-reading of
+the document cannot catch. Only the repository could, and only if someone asked
+it.
+
+The decision itself is unaffected. What changed is the claim about what the
+decision cost.
 
 include::generated/adr-022-ubiquitous-language-traceability.adoc[leveloffset=+1]
