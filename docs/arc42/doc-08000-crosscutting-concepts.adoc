@@ -40,6 +40,10 @@ skinparam linetype ortho
 skinparam packageStyle rectangle
 skinparam nodesep 25
 skinparam ranksep 40
+skinparam class<<boundary undecided>> {
+  BorderStyle dashed
+  BackgroundColor White
+}
 
 package "Account aggregate" {
   class Account <<root>>
@@ -49,33 +53,37 @@ package "Account aggregate" {
 
 class CategoryGroup
 class Category
-class Verwendungszweck
+class Verwendungszweck <<boundary undecided>>
 class Transaction
 class Fixkostenposition
 class Einkuenfte
 class Vermoegensposition
 
 Category "0..*" --> "1" CategoryGroup
-Verwendungszweck "0..*" --> "1" Category
+Verwendungszweck "0..*" ..> "1" Category
 
 Transaction "0..*" --> "1" Account
 Transaction "0..*" --> "1" Category
-Transaction "0..*" --> "0..1" Verwendungszweck
+Transaction "0..*" ..> "0..1" Verwendungszweck
 Fixkostenposition "0..*" --> "1" Category
-Fixkostenposition "0..*" --> "0..1" Verwendungszweck
+Fixkostenposition "0..*" ..> "0..1" Verwendungszweck
 
 Einkuenfte -[hidden]down- Vermoegensposition
 @enduml
 ----
 
-Every box is its own aggregate root, per ADR-009's aggregate map. Only `Account`
-has an interior — the `Kontostand` values it owns — so only it is framed. An
-arrow is a reference across an aggregate boundary, never containment:
-`Category` names its `CategoryGroup` and can be moved to another one, which is
-why the two are separate roots rather than a tree.
+Every solid box is its own aggregate root, per ADR-009's aggregate map. Only
+`Account` has an interior — the `Kontostand` values it owns — so only it is
+framed. A solid arrow is a reference across an aggregate boundary, never
+containment: `Category` names its `CategoryGroup` and can be moved to another
+one, which is why the two are separate roots rather than a tree.
 
-`Verwendungszweck` is not yet in ADR-009's map; #58 specifies it, and it is drawn
-here the same way `Category` is until that lands.
+`Verwendungszweck` is dashed because its aggregate boundary is **not decided**.
+ADR-009's map does not cover it, and #58 specifies the concept — identity, its
+own lifecycle, belonging to exactly one `Category` — without settling whether it
+is a root of its own, an entity inside the `Category` aggregate, or a boundary
+cut some third way. The dashes mark the open question; solid lines there would
+answer it by drawing.
 
 Identity: `Account` by IBAN/name, `CategoryGroup` and `Category` by name,
 `Einkuenfte` by month. A `Transaction` needs identity and has no guaranteed
