@@ -11,63 +11,65 @@ words it is described in.
 * [x] Specify the model from the Notion views — #56, merged as PR #57
 * [x] Decide the ubiquitous language and the UI language — #66, merged as PR #67
       (ADR-022, ADR-023)
-* [ ] Agree the term list and rework the glossary — #68. Needs a working session
-      with the owner, not a guess
-* [ ] Rename the terms that are already in code — see *Open in this topic*
-* [ ] Check that domain types resolve to glossary terms — #69, blocked on #68
-* [ ] Then the slices that carry the corrected terms: #58 Verwendungszweck,
-      #10 fixed costs including the last payment, #16 Sollansparung,
-      #62 tracking window, #59 inflation series, #60 transaction name,
-      #61 due fixed costs
+* [x] Agree the term list and rework the glossary — #68, merged as PR #75
+* [x] Show the domain model as a diagram in chapter 8 — #77, merged as PR #80
+* [ ] Rename the implemented identifiers to the registered terms — #79. Answer
+      the Flyway question first
+* [ ] Check that domain types resolve to glossary terms — #69, after #79
+* [ ] Bring the architecture documentation onto the registered terms — #76.
+      Independent of #79; needs a decision on the six ADRs before it starts
+* [ ] Then the slices that carry the corrected terms: #58 `Verwendungszweck`,
+      #10 fixed costs including the `letzteZahlung`, #16 `Sollansparung`,
+      #62 `Auswertungszeitraum`, #59 `InflationSeries`, #60 transaction name,
+      #61 `faelligeFixkostenposition`
 
-The order is the point of this file. #68 comes before every slice below it
-because each of those slices names concepts whose terms are not settled yet.
-Implementing first means renaming afterwards in the model, the schema, the REST
-payload and the TypeScript types at once — which is exactly the cost ADR-022
-declined to pay, and it would be paid by accident.
+The order is the point of this file. #79 comes before #69 because a check that
+enforces the registered terms can only be switched on once the code carries them
+— otherwise its first run reports a known state as a failure, which is a check
+nobody trusts twice.
 
-The rename step sits between #68 and #69 rather than inside #69: the check
-enforces agreement, so it can only be switched on once what it enforces exists.
+#76 sits outside that chain. It touches documentation only, so it neither blocks
+nor is blocked by the rename — but it must land before #72 grows a
+documentation-level check, or that check fails on the day it is written.
 
 == Where we are
 
-The tactical model is decided (ADR-009) and the language is decided (ADR-022,
-ADR-023), but the register those decisions point at — the glossary — has not been
-reworked yet. Until it is, rule 3 of ADR-022 is a convention.
+The register exists and is authoritative. Every domain concept has one entry
+fixing the term the owner speaks, the identifier, and the display form ADR-023
+needs.
 
-The domain model in `application/backend/src/main/java/.../domain/model/` holds
-`Transaction`, `Category`, `CategoryGroup`, `FixedCost`, `Money`,
-`PaymentInterval` and `TransactionType`. Only `FixedCost` carries a term the
-language decision rejects.
+ADR-022 rule 3 is *staged*, and that is a deliberate weakening recorded in the
+ADR itself. It binds the architecture documentation and every domain type added
+or changed from now on. Four identifiers implemented before the register —
+`FixedCost`, `PaymentInterval`, `anchorDate`, `monthlyPortion` — are a named
+exception with an owner. #79 is what ends the staging.
+
+Chapter 8 leads with the domain model diagram rather than a bulleted list, drawn
+from ADR-009's aggregate map. `Verwendungszweck` is dashed there because its
+aggregate boundary is not decided.
+
+The glossary, chapter 8 and ADR-022 all carry `reviewed: false`: the terms are
+the owner's, the prose is not, and his acceptance is what flips them.
 
 == Open in this topic
 
-*`anchorDate` is in implemented code, not only in the backlog.* ADR-022 uses it
-as the example of the error it prevents, and it is still there:
+*The Flyway question is unanswered and blocks #79.* The rename reaches
+`V1__initial_schema.sql`, a migration that has already run. Whether that becomes
+a new migration or an edit of `V1` is a question about whether this project's
+migration history may be rewritten while it has one deployment and one user. It
+is not a language question, and #79 answers it before touching the schema.
 
-* `domain/model/FixedCost.java` — the record component and its Javadoc
-* `adapter/out/persistence/entity/FixedCostEntity.java`
-* `adapter/out/persistence/FixedCostPersistenceAdapter.java` — the getter call
-* `db/migration/V1__initial_schema.sql` — column `anchor_date`
-* `docs/doc-004-roadmap.adoc` (twice) and
-  `docs/arc42/doc-08000-crosscutting-concepts.adoc`
+*Two implemented types name concepts with no register entry at all* —
+`TransactionType`, whose `EXPENSE` value has no term, and `MonthlyExpenditure`.
+Registering them by hand is the wrong move: #69 is the check that finds this
+class systematically, and it should find them rather than be told about them.
 
-Half of those write it as two words, `anchor date`, so a search for the
-identifier alone reports the prose clean when it is not.
+*The six ADRs in #76 need a decision before that issue starts* — leave them as
+historical record, or annotate them. Several, including ADR-022 itself, use the
+retired renderings legitimately as examples of the error they name.
 
-The occurrences in `docs/doc-005-questions-and-answers.adoc` stay: it is a
-historical answer, and that document corrects visibly rather than silently. The
-ones in ADR-022 stay too — the decision is named after the term and cites it as
-the example of the error it prevents.
-
-A rename touches a Flyway migration that has already run. Whether that is a new
-migration or an edit of V1 is undecided and is not a language question.
-
-*Questions #68 has to settle*, from the first pass: `Rentengap` as the owner's
-actual word; whether `Erstattung` and `Gutschrift` are one concept or two;
-the `Vermögen` / `Net worth` / `Asset` / `Geldguthaben` cluster; and the invented
-concepts — tracking window, cash runway, overspending signal — which ADR-022
-rule 4 says must be adopted rather than translated.
+`Verwendungszweck`'s aggregate boundary outlives this topic and is recorded in
+`diary/open-threads.adoc`.
 
 == Checks
 
@@ -75,4 +77,6 @@ rule 4 says must be adopted rather than translated.
 ----
 ./build.sh all
 grep -rniE 'anchor[ _]?date' application/ docs/ | grep -v generated
+grep -rln 'FixedCost\|PaymentInterval\|anchorDate\|anchor_date\|monthlyPortion' \
+  application/ | grep -v node_modules | grep -v '/build/'
 ----
