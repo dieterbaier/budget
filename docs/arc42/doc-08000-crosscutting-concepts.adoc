@@ -37,22 +37,28 @@ hide empty members
 hide circle
 skinparam shadowing false
 skinparam linetype ortho
+skinparam packageStyle rectangle
 skinparam nodesep 25
 skinparam ranksep 40
 
-class CategoryGroup <<aggregate root>>
-class Category <<entity>>
-class Verwendungszweck <<entity>>
-class Account <<aggregate root>>
-class BalanceSnapshot <<value object>>
-class Transaction <<aggregate root>>
-class Fixkostenposition <<aggregate root>>
-class Einkuenfte <<aggregate root>>
-class Vermoegensposition <<aggregate root>>
+package "CategoryGroup aggregate" {
+  class CategoryGroup <<root>>
+  class Category
+  class Verwendungszweck
+  CategoryGroup "1" *-- "0..*" Category
+  Category "1" *-- "0..*" Verwendungszweck
+}
 
-CategoryGroup "1" *-- "0..*" Category
-Category "1" *-- "0..*" Verwendungszweck
-Account "1" *-- "0..*" BalanceSnapshot
+package "Account aggregate" {
+  class Account <<root>>
+  class BalanceSnapshot <<value object>>
+  Account "1" *-- "0..*" BalanceSnapshot
+}
+
+class Transaction
+class Fixkostenposition
+class Einkuenfte
+class Vermoegensposition
 
 Transaction "0..*" --> "1" Account
 Transaction "0..*" --> "1" Category
@@ -62,16 +68,19 @@ Fixkostenposition "0..*" --> "0..1" Verwendungszweck
 
 Einkuenfte -[hidden]down- Vermoegensposition
 Transaction -[hidden]right- Fixkostenposition
-Fixkostenposition -[hidden]right- Einkuenfte
 @enduml
 ----
+
+A frame is one aggregate. The four unframed classes are aggregates too — of a
+single entity each — so they carry no label; only an aggregate with an interior
+needs its root pointed out.
 
 Identity: `Account` by IBAN/name, `CategoryGroup` and `Category` by name,
 `Einkuenfte` by month. A `Transaction` needs identity and has no guaranteed
 natural key, so it uses a bank reference or a generated `TransactionId`
 (Q-ARCH-003).
 
-`Money`, `Zahlungsintervall`, `PaymentMethod` and the typed identifiers are value
+`Money`, `Zahlungsintervall`, `Zahlungsmethode` and the typed identifiers are value
 objects: no identity, compared by value. A `BalanceSnapshot` and a
 `Vermoegensposition` value are entered by hand and never derived from a
 `Transaction` (ADR-008). Persistence surrogate keys stay inside the JPA entities
