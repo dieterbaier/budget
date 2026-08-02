@@ -38,6 +38,8 @@ include::2026-07-29-domain-model.adoc[]
 
 include::2026-08-01-rules-that-could-not-be-followed.adoc[]
 
+include::2026-08-02-true-on-the-page.adoc[]
+
 include::toolkit-validation.adoc[]
 
 include::working-agreements.adoc[]

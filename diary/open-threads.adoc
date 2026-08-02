@@ -41,6 +41,14 @@ The evidence-level vocabulary is unproposed:: Measured / Estimated / Directional
 / Hypothesis / Unknown works well enough here to be worth offering upstream, but
 one project is not evidence. It should survive longer first.
 
+`Verwendungszweck` has no aggregate boundary:: ADR-009's aggregate map does not
+cover it, and #58 specifies the concept — identity, its own lifecycle, belonging
+to exactly one `Category` — without settling whether it is a root of its own, an
+entity inside the `Category` aggregate, or a third cut. The chapter 8 diagram
+draws it dashed rather than choosing, because a diagram that picks a boundary
+decides it. The decision belongs in ADR-009 or a record refining it, and it has
+to be made before #58 is implemented rather than discovered during it.
+
 === A process note, learned the hard way
 
 Stacked pull requests need the dependent PR retargeted to `main` *before* the
@@ -50,3 +58,11 @@ Merging the base PR deletes its branch, which auto-closes every PR pointing at
 it — and a closed PR's base can be neither retargeted nor reopened. That cost
 PR #52, which had to be recreated as #54 with identical content. PR #53 was
 retargeted pre-emptively and survived the same deletion.
+
+It cost the same thing again on 2 August. #75 was integrated with
+`--delete-branch` while #78 still pointed at `issue_68`; #78 closed and had to be
+recreated as #80. The note above was already in this file, written after the
+first time, and nobody opened it. That is the more useful half of the second
+occurrence: a rule that lives only in prose is re-learned at full price, and
+this is the strongest local argument for #72 — the issue about which language
+rules can be made checkable at all.

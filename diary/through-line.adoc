@@ -14,6 +14,7 @@ It came up ten times, in ten different disguises:
 . a fully tested monthly calculation that answered a different question than the product needed
 . a container-engine probe reporting that podman was configured, on a host where podman could not start a container
 . a PR check whose own comment promised the deployment would render, while that deployment was failing
+. a grep for a term that reported the prose clean, in a file whose own list of occurrences said otherwise
 
 Each one *passed*. None of them was checking anything.
 
@@ -32,8 +33,13 @@ The ten above split along a second axis, which is the more useful one for
 deciding where to spend suspicion:
 
 Wrong wiring:: the cycle rule, the locale, the shell check, the container-engine
-probe. The tool was capable and was asked the wrong question, or its answer was
-read wrong. These are found by feeding the tool a known-bad input.
+probe, the term grep. The tool was capable and was asked the wrong question, or
+its answer was read wrong. These are found by feeding the tool a known-bad input.
++
+The term grep is the cheapest specimen and the most embarrassing. It searched for
+`anchorDate` in a repository where half the occurrences are prose and spelled
+"anchor date". The known-bad input was sitting three lines above it, in the same
+file, as a list of the places it should have found.
 +
 The engine probe is the clearest specimen of the whole family. `podman info`
 answers "is podman configured?" and was read as "can podman run a container?".

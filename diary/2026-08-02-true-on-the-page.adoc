@@ -1,0 +1,149 @@
+== Day 8 — 2 August 2026: true on the page, false in the repository
+
+Two pull requests, #75 and #80, both merged. No product code changed. The day was
+spent filling in the term register ADR-022 declared in July, and almost
+everything that went wrong shares one shape: a statement that no amount of
+re-reading could have falsified, because the document was internally consistent
+and the repository disagreed with it.
+
+That is the distinction from yesterday. 1 August found rules contradicted by
+another paragraph of the same document, and the fix was a reader who had not just
+written the text. Today's findings would have survived that reader. Only asking
+the repository could refute them.
+
+=== The check that could not see half of what it listed
+
+`progress/domain-model.adoc` was written on 1 August with a *Checks* section
+containing `grep -rn 'anchorDate\|anchor_date' application/ docs/`. The same file
+listed six places the term still sat, including `docs/doc-004-roadmap.adoc` and
+`docs/arc42/doc-08000-crosscutting-concepts.adoc`.
+
+The grep found neither. Three of the six write it as two words — "anchor date" —
+and the search was for the identifier. The file's own list contradicted the file's
+own check, and both had been committed together in `be32394`.
+
+Corrected in `d33f135` to `grep -rniE 'anchor[ _]?date'`, which also turned up a
+fourth code site the list had missed: `FixedCostPersistenceAdapter.java`.
+
+This one *is* the through-line — a check that was quiet because it was not
+looking, in a file about a term whose whole story is a name that invented a
+concept. It has been added there as instance 11.
+
+=== The ADR that said the decision cost nothing
+
+ADR-022 stated twice that it cost no implemented code: in Context, that "every
+lossy term identified was still unimplemented", and among its positive
+consequences.
+
+`letzte Zahlung` was one of the three lossy terms. It was in the code as
+`anchorDate` — the domain record, the JPA entity, the persistence adapter, the
+schema — and `anchorDate` is the example the entire decision is built on. The ADR
+named the term it was wrong about, in the sentence claiming it was right.
+
+PR #67 repeated the claim when it merged on 1 August. It was found the next day,
+and corrected in `673b79f` with a *What The Review Changed* subsection rather than
+a silent edit.
+
+Worth separating from the day-7 findings it superficially resembles. Those were
+two paragraphs that were each defensible and jointly impossible. This was one
+paragraph, perfectly coherent, and simply untrue — and the only thing that could
+contradict it was a `grep` nobody ran before merging.
+
+=== A rule that the commit declaring it would have broken
+
+The owner's review of #75 found the sharpest instance. ADR-022 rule 3 binds
+`domain/model/`. Merging the register would have created, in the same commit, a
+repository violating the ADR the commit implemented: `FixedCost`,
+`PaymentInterval`, `anchorDate` and `monthlyPortion` were all still there.
+
+The rule had been written as a description of a state nobody had established.
+
+Two ways out existed, and the review named both. Renaming first reaches 22 files
+and an executed Flyway migration, and it depends on whether this project's
+migration history may be rewritten — which is not a language question and should
+not be settled quickly to make a sentence true. So rule 3 is now *staged*
+(`7e0dc17`): binding on documentation and on every domain type added or changed
+from now on, with the four identifiers as a named exception and #79 as the
+condition that ends it.
+
+The staging is the weaker text and the honest one. The original was strong and
+false.
+
+=== The aggregate boundary that came from the document that was open
+
+The chapter 8 diagram framed `Category` inside a `CategoryGroup` aggregate,
+joined by a composition. The owner's review of #78 rejected it: ADR-009 carries an
+aggregate map listing `CategoryGroup` and `Category` as *separate* roots, and
+`Category` holds its group as a reference it can be moved to.
+
+The error is worth recording precisely because the source was so plausible. The
+aggregates had been read out of chapter 8's bulleted list — the very list the same
+pull request was replacing. ADR-009's map was never opened. A claim taken from
+the document in view rather than the document that decides, which is the third
+instance of that shape in one day.
+
+Corrected in `55d62e4`: only `Account` is framed, because only `Account` has an
+interior.
+
+=== The agreement pass introduced an unagreed term
+
+`Zahlungsart` reached the register as the identifier `PaymentMethod`. The owner
+had never been asked. Twelve terms were put to him individually; the rest arrived
+in a bulk table, and that table was proposed rather than agreed.
+
+He corrected it to `Zahlungsmethode` in review (`4581e8d`), and the correction
+mattered less than what it exposed: the pass whose stated job was to remove
+unagreed renderings had quietly created one, by the only step in it that skipped
+the expert. ADR-022 rule 2 says faithfulness is judged by the domain expert. A
+bulk table is where that rule is easiest to satisfy on paper and skip in fact.
+
+Eight terms were still in that state when the register was otherwise finished.
+Listing them for him rather than defending them changed three: `Kontostand`,
+`Monatsanteil` and `Kostensteigerung` (`f3c6dd4`). `Kontostand` overrode an
+argument the entry had been making for itself.
+
+=== The register was checked in one direction only
+
+#68's acceptance criteria included "no glossary entry names a concept the domain
+does not have". Nothing checked the converse.
+
+Drafting the domain model diagram found two concepts with no entry at all:
+`IncomeEntry`, named as an aggregate in chapter 8, and `PaymentInterval`, in
+implemented code since day four. Both violate rule 3. They are now `Einkuenfte`
+and `Zahlungsintervall` (`96b1d7b`).
+
+A register fails by omission far more readily than by excess, and the criteria
+had been written to catch the excess. Two more candidates surfaced afterwards —
+`TransactionType`, whose `EXPENSE` value has no term, and `MonthlyExpenditure` —
+and were deliberately left for #69 rather than hand-registered, because finding
+them by hand a third time would prove the same thing again.
+
+=== A process note we had already written down
+
+`diary/open-threads.adoc` has carried this since PR #52 was lost:
+
+[quote]
+____
+Stacked pull requests need the dependent PR retargeted to `main` *before* the one
+below it merges.
+____
+
+#75 was integrated with `--delete-branch` while #78 still pointed at
+`issue_68`. #78 closed, and a closed pull request's base can be neither
+retargeted nor reopened. It was recreated as #80 with identical content — the
+same recovery, and the same cost, as #52 → #54 eleven days earlier.
+
+The note was three files away from the work and had been written by us, about us.
+Being recorded is not the same as being read, and a rule that only lives in prose
+gets re-learned at full price.
+
+=== What the day cost and what it produced
+
+`main` gained the register, the backtick rule, the staged rule 3, the corrected
+ADR and the domain model diagram. It also gained three issues that did not exist
+at breakfast: #76 for the documentation sweep, #77 for the diagram, and #79 for
+the rename that had been a step in a progress file with no number and therefore
+no owner.
+
+The three of them are the honest measure of the day. None is new work. All three
+are work that the term decision on 31 July implied and nobody had counted.
