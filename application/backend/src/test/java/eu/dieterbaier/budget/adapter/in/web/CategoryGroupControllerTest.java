@@ -74,7 +74,7 @@ class CategoryGroupControllerTest {
     void renamesThroughTheOldName() throws Exception {
         given(manageGroups.rename(eq("Huose"), anyString())).willReturn(new CategoryGroup("House"));
 
-        mockMvc.perform(put("/api/category-groups/Huose")
+        mockMvc.perform(put("/api/category-groups").param("name", "Huose")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {"name":"House"}
@@ -87,7 +87,8 @@ class CategoryGroupControllerTest {
 
     @Test
     void deletesAnEmptyGroup() throws Exception {
-        mockMvc.perform(delete("/api/category-groups/Empty")).andExpect(status().isNoContent());
+        mockMvc.perform(delete("/api/category-groups").param("name", "Empty"))
+                .andExpect(status().isNoContent());
     }
 
     @Test
@@ -95,7 +96,7 @@ class CategoryGroupControllerTest {
         willThrow(new NameInUseException("\"House\" still holds 3 categories"))
                 .given(manageGroups).delete(any());
 
-        mockMvc.perform(delete("/api/category-groups/House"))
+        mockMvc.perform(delete("/api/category-groups").param("name", "House"))
                 .andExpect(status().isConflict())
                 .andExpect(content().json("""
                         {"error":"\\"House\\" still holds 3 categories"}
