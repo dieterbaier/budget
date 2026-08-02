@@ -9,7 +9,7 @@ This recap is the return on that goal. It is kept separate from the daily
 recaps on purpose: a finding about the *method* is reusable by other projects,
 while a finding about the budget application is not.
 
-The measure is findings, not artifact count. Five have gone upstream so far, and
+The measure is findings, not artifact count. Six have gone upstream so far, and
 each came out of ordinary product work rather than out of looking for something
 to report. Two of them are fixed rather than filed, and both of those arrived on
 the same day — the one day nobody wrote application code.
@@ -235,6 +235,35 @@ wrong — and by then the failure was in CI, where experimenting is expensive.
 distinction is easy to state and easy to miss, because the working case makes
 them indistinguishable. `podman info` and `podman run` agree on every healthy
 host, which is exactly why the substitution survived.
+
+=== Finding 6 — the integration step creates a hazard it does not name
+
+Upstream: toolkit issue
+https://github.com/docs-as-code-toolkit/architecture-knowledge-toolkit/issues/73[#73].
+
+`skills/implement-issue-workflow/SKILL.md` prescribes
+`gh pr merge <number> --rebase --delete-branch`, and follows it with an explicit
+list of warning signs that should stop an agent from integrating: failed checks,
+unresolved merge state, a diverged local branch, unpushed commits, uncertain PR
+state, unclear branch ownership.
+
+A *dependent* pull request is not on that list, and it is the one hazard the
+command itself produces. `--delete-branch` removes the base; GitHub closes every
+pull request pointing at it; a closed pull request can be neither retargeted nor
+reopened. The dependent PR is recreated and its review history is left behind.
+
+What makes it a method finding rather than a mistake is where the stacking comes
+from. `skills/slice-issues/SKILL.md` encourages splitting work into reviewable
+slices, and a slice that names terms or types introduced by the slice below it
+*must* branch from that branch. The method produces the arrangement and the
+integration step does not mention it.
+
+This project has now paid for it twice — PR #52 on 22 July, PR #78 on 2 August.
+The second time is the one worth reporting, because by then the rule was written
+down in `diary/open-threads.adoc`, in this repository, by us. It was not read.
+That is the argument for putting the guidance next to the command rather than in
+a project's own notes: prose that must be remembered at the right moment is a
+guard with no failure path.
 
 === What the toolkit got right
 

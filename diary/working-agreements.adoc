@@ -32,6 +32,20 @@ None of these were agreed up front. Each one came out of something going wrong.
   Its companion: a rule generalised from the example in front of you is right for
   that example and usually wrong for the next one.
 
+* *A document that is open is not the document that decides.* Chapter 8's
+  bulleted list gave the aggregates; ADR-009's aggregate map decided them, and
+  they disagreed. The list was being replaced by the same pull request that read
+  it. Before asserting a structural fact, open the artifact that owns it.
+
+* *A rule about code says when it starts binding.* ADR-022 rule 3 was written as
+  a description of a state nobody had established, so the commit implementing it
+  would have violated it. A rule that is not true yet is staged, with the
+  exception named and an issue that ends the staging — or it is not merged.
+
+* *A term nobody was asked is not agreed.* Twelve terms were put to the owner
+  one at a time and were his; the rest arrived in a bulk table and one of them
+  was wrong. The batching step is where an agreement pass stops being one.
+
 === On the collaboration itself
 
 Two corrections shaped how the work is done more than any technical decision
