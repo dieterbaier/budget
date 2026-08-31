@@ -18,10 +18,10 @@ Apply instructions in this order:
      request body or a code comment, not only when something looks like a
      style question
    - `skills/diary/SKILL.md` — what a diary entry contains and where it goes
-   - `skills/clock-in/SKILL.md` — starting a session and picking up a topic
-     from `progress/`
-   - `skills/clock-out/SKILL.md` — ending a session: refresh the progress
-     files, then write the diary entry
+   - `skills/clock-in/SKILL.md` and `skills/clock-out/SKILL.md` — this
+     project's paths and formats for the session handoff. The ritual itself is
+     the toolkit's `skills/clock-in/SKILL.md` and `skills/clock-out/SKILL.md`;
+     read those first
 4. Relevant toolkit skill, for example `skills/bootstrap-project/SKILL.md`,
    `skills/implement-issue-workflow/SKILL.md`, `skills/commit-message/SKILL.md`,
    `skills/pr-review/SKILL.md`, `skills/slice-issues/SKILL.md`,
@@ -155,13 +155,19 @@ shape would therefore be the mechanism plus a requirement that each project
 declare its own profiles.
 
 `skills/diary/SKILL.md`, `skills/clock-in/SKILL.md` and
-`skills/clock-out/SKILL.md` are the day boundary. The toolkit has no
-session-handoff skill, so these are an addition rather than a delta, and they
-divide one job three ways: `diary` owns what a recap contains and where it goes,
-`clock-in` resumes a topic from `progress/`, `clock-out` leaves the repository
-resumable. The split between the two artifacts they maintain is the rule to
-remember — the diary is what we learned and is never revised; a file under
-`progress/` is where we are and carries no history at all.
+`skills/clock-out/SKILL.md` are the day boundary, and they divide one job three
+ways: `diary` owns what a recap contains and where it goes, `clock-in` resumes a
+topic from `progress/`, `clock-out` leaves the repository resumable. The split
+between the two artifacts they maintain is the rule to remember — the diary is
+what we learned and is never revised; a file under `progress/` is where we are
+and carries no history at all.
+
+The toolkit now ships the session handoff itself, so `clock-in` and `clock-out`
+became deltas: they hold this project's paths, AsciiDoc shape, and day-file
+lifecycle, and defer the ritual, the single topic question, and the private
+journal binding upstream. The progress template is the toolkit's, referenced
+rather than copied. `diary` remains an addition — the toolkit has no diary
+contract.
 
 `progress/` is working state, not documentation. It stays outside `docs/`, so it
 carries no metamodel front matter and the validator does not read it.
