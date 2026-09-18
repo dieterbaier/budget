@@ -72,18 +72,18 @@ public class CategoryService implements ManageCategoriesUseCase {
         Category category = require(name);
 
         long transactions = usage.countTransactionsIn(category.name());
-        long fixedCosts = usage.countFixedCostsIn(category.name());
+        long fixkostenpositionen = usage.countFixkostenpositionenIn(category.name());
 
         // Both are counted before reporting, so the owner learns everything they
         // have to move in one go rather than fixing the transactions and then
-        // being told about the fixed costs.
-        if (transactions > 0 || fixedCosts > 0) {
+        // being told about the Fixkostenpositionen.
+        if (transactions > 0 || fixkostenpositionen > 0) {
             throw new NameInUseException(
                     "\"%s\" is still used by %d transaction%s and %d fixed cost%s; recategorize them first"
                             .formatted(
                                     category.name(),
                                     transactions, transactions == 1 ? "" : "s",
-                                    fixedCosts, fixedCosts == 1 ? "" : "s"));
+                                    fixkostenpositionen, fixkostenpositionen == 1 ? "" : "s"));
         }
 
         catalog.deleteByName(category.name());

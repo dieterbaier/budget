@@ -14,7 +14,7 @@ import java.time.LocalDate;
 
 @Entity
 @Table(name = "fixed_costs")
-public class FixedCostEntity {
+public class FixkostenpositionEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,25 +27,25 @@ public class FixedCostEntity {
     private BigDecimal amount;
 
     @Column(name = "payment_interval", nullable = false, length = 20)
-    private String paymentInterval;
+    private String zahlungsintervall;
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "category_id", nullable = false)
     private CategoryEntity category;
 
     @Column(name = "anchor_date", nullable = false)
-    private LocalDate anchorDate;
+    private LocalDate letzteZahlung;
 
-    protected FixedCostEntity() {
+    protected FixkostenpositionEntity() {
     }
 
-    public FixedCostEntity(String name, BigDecimal amount, String paymentInterval, CategoryEntity category,
-                           LocalDate anchorDate) {
+    public FixkostenpositionEntity(String name, BigDecimal amount, String zahlungsintervall, CategoryEntity category,
+                                   LocalDate letzteZahlung) {
         this.name = name;
         this.amount = amount;
-        this.paymentInterval = paymentInterval;
+        this.zahlungsintervall = zahlungsintervall;
         this.category = category;
-        this.anchorDate = anchorDate;
+        this.letzteZahlung = letzteZahlung;
     }
 
     public Long getId() {
@@ -60,15 +60,15 @@ public class FixedCostEntity {
         return amount;
     }
 
-    public String getPaymentInterval() {
-        return paymentInterval;
+    public String getZahlungsintervall() {
+        return zahlungsintervall;
     }
 
     public CategoryEntity getCategory() {
         return category;
     }
 
-    public LocalDate getAnchorDate() {
-        return anchorDate;
+    public LocalDate getLetzteZahlung() {
+        return letzteZahlung;
     }
 }

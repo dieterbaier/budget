@@ -1,6 +1,6 @@
 package eu.dieterbaier.budget.domain.service;
 
-import eu.dieterbaier.budget.domain.model.FixedCost;
+import eu.dieterbaier.budget.domain.model.Fixkostenposition;
 import eu.dieterbaier.budget.domain.model.Money;
 import eu.dieterbaier.budget.domain.model.Transaction;
 
@@ -12,7 +12,7 @@ import java.util.List;
  *
  * <p>Variable costs are the month's EXPENSE transactions (refunds are negative
  * expenses that net against their category; transfers and income are excluded).
- * Fixed costs are amortized to their monthly portion. The total is compared to
+ * Each Fixkostenposition enters with its Monatsanteil. The total is compared to
  * the average monthly income to produce the overspending signal.
  */
 public class MonthlyExpenditureCalculator {
@@ -20,7 +20,7 @@ public class MonthlyExpenditureCalculator {
     public MonthlyExpenditure calculate(
             YearMonth month,
             List<Transaction> transactions,
-            List<FixedCost> fixedCosts,
+            List<Fixkostenposition> fixkostenpositionen,
             Money averageIncome) {
 
         Money variableCosts = transactions.stream()
@@ -28,8 +28,8 @@ public class MonthlyExpenditureCalculator {
                 .map(Transaction::amount)
                 .reduce(Money.ZERO, Money::add);
 
-        Money fixedCostsMonthly = fixedCosts.stream()
-                .map(FixedCost::monthlyPortion)
+        Money fixedCostsMonthly = fixkostenpositionen.stream()
+                .map(Fixkostenposition::monatsanteil)
                 .reduce(Money.ZERO, Money::add);
 
         Money total = variableCosts.add(fixedCostsMonthly);

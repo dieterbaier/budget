@@ -2,12 +2,12 @@ package eu.dieterbaier.budget.persistence;
 
 import eu.dieterbaier.budget.adapter.out.persistence.CategoryJpaRepository;
 import eu.dieterbaier.budget.adapter.out.persistence.CategoryGroupJpaRepository;
-import eu.dieterbaier.budget.adapter.out.persistence.FixedCostJpaRepository;
+import eu.dieterbaier.budget.adapter.out.persistence.FixkostenpositionJpaRepository;
 import eu.dieterbaier.budget.adapter.out.persistence.IncomeEntryJpaRepository;
 import eu.dieterbaier.budget.adapter.out.persistence.TransactionJpaRepository;
 import eu.dieterbaier.budget.adapter.out.persistence.entity.CategoryEntity;
 import eu.dieterbaier.budget.adapter.out.persistence.entity.CategoryGroupEntity;
-import eu.dieterbaier.budget.adapter.out.persistence.entity.FixedCostEntity;
+import eu.dieterbaier.budget.adapter.out.persistence.entity.FixkostenpositionEntity;
 import eu.dieterbaier.budget.adapter.out.persistence.entity.IncomeEntryEntity;
 import eu.dieterbaier.budget.adapter.out.persistence.entity.TransactionEntity;
 import eu.dieterbaier.budget.application.port.in.GetMonthlyExpenditureUseCase;
@@ -55,14 +55,14 @@ class MonthlyExpenditurePersistenceIntegrationTest {
     @Autowired
     private TransactionJpaRepository transactions;
     @Autowired
-    private FixedCostJpaRepository fixedCosts;
+    private FixkostenpositionJpaRepository fixkostenpositionen;
     @Autowired
     private IncomeEntryJpaRepository incomeEntries;
 
     @BeforeEach
     void clearDatabase() {
         transactions.deleteAll();
-        fixedCosts.deleteAll();
+        fixkostenpositionen.deleteAll();
         incomeEntries.deleteAll();
         categories.deleteAll();
         groups.deleteAll();
@@ -80,7 +80,7 @@ class MonthlyExpenditurePersistenceIntegrationTest {
         transactions.save(new TransactionEntity(LocalDate.of(2026, 7, 5), new BigDecimal("500.00"), groceries, "TRANSFER"));
         transactions.save(expense(LocalDate.of(2026, 6, 30), "999.00", groceries)); // other month
 
-        fixedCosts.save(new FixedCostEntity("Car insurance", new BigDecimal("1200.00"), "YEARLY", car, LocalDate.of(2026, 3, 15)));
+        fixkostenpositionen.save(new FixkostenpositionEntity("Car insurance", new BigDecimal("1200.00"), "YEARLY", car, LocalDate.of(2026, 3, 15)));
 
         incomeEntries.save(new IncomeEntryEntity(LocalDate.of(2026, 7, 1), new BigDecimal("900.00")));
         incomeEntries.save(new IncomeEntryEntity(LocalDate.of(2026, 6, 1), new BigDecimal("1000.00"))); // average 950

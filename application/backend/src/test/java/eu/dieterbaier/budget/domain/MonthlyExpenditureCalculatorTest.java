@@ -2,9 +2,9 @@ package eu.dieterbaier.budget.domain;
 
 import eu.dieterbaier.budget.domain.model.Category;
 import eu.dieterbaier.budget.domain.model.CategoryGroup;
-import eu.dieterbaier.budget.domain.model.FixedCost;
+import eu.dieterbaier.budget.domain.model.Fixkostenposition;
 import eu.dieterbaier.budget.domain.model.Money;
-import eu.dieterbaier.budget.domain.model.PaymentInterval;
+import eu.dieterbaier.budget.domain.model.Zahlungsintervall;
 import eu.dieterbaier.budget.domain.model.Transaction;
 import eu.dieterbaier.budget.domain.model.TransactionType;
 import eu.dieterbaier.budget.domain.service.MonthlyExpenditure;
@@ -75,9 +75,9 @@ class MonthlyExpenditureCalculatorTest {
     }
 
     @Test
-    void addsAmortizedFixedCostsToTheTotal() {
-        FixedCost carInsurance = new FixedCost(
-                "Car insurance", Money.of("1200"), PaymentInterval.YEARLY, FUEL, LocalDate.of(2026, 3, 15));
+    void addsAmortizedFixkostenpositionenToTheTotal() {
+        Fixkostenposition carInsurance = new Fixkostenposition(
+                "Car insurance", Money.of("1200"), Zahlungsintervall.YEARLY, FUEL, LocalDate.of(2026, 3, 15));
 
         MonthlyExpenditure result = calculator.calculate(
                 JULY,

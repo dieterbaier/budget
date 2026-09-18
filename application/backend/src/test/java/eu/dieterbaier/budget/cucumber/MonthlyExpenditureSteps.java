@@ -1,15 +1,15 @@
 package eu.dieterbaier.budget.cucumber;
 
 import eu.dieterbaier.budget.application.port.in.GetMonthlyExpenditureUseCase;
-import eu.dieterbaier.budget.application.port.out.FixedCostRepository;
+import eu.dieterbaier.budget.application.port.out.FixkostenpositionRepository;
 import eu.dieterbaier.budget.application.port.out.IncomeRepository;
 import eu.dieterbaier.budget.application.port.out.TransactionRepository;
 import eu.dieterbaier.budget.application.service.MonthlyExpenditureService;
 import eu.dieterbaier.budget.domain.model.Category;
 import eu.dieterbaier.budget.domain.model.CategoryGroup;
-import eu.dieterbaier.budget.domain.model.FixedCost;
+import eu.dieterbaier.budget.domain.model.Fixkostenposition;
 import eu.dieterbaier.budget.domain.model.Money;
-import eu.dieterbaier.budget.domain.model.PaymentInterval;
+import eu.dieterbaier.budget.domain.model.Zahlungsintervall;
 import eu.dieterbaier.budget.domain.model.Transaction;
 import eu.dieterbaier.budget.domain.model.TransactionType;
 import eu.dieterbaier.budget.domain.service.MonthlyExpenditure;
@@ -38,7 +38,7 @@ public class MonthlyExpenditureSteps {
     private static final CategoryGroup GROUP = new CategoryGroup("Household");
 
     private final List<Transaction> transactions = new ArrayList<>();
-    private final List<FixedCost> fixedCosts = new ArrayList<>();
+    private final List<Fixkostenposition> fixkostenpositionen = new ArrayList<>();
     private Money averageIncome = Money.ZERO;
     private MonthlyExpenditure result;
 
@@ -53,12 +53,12 @@ public class MonthlyExpenditureSteps {
     }
 
     @ParameterType("monthly|quarterly|half-yearly|yearly")
-    public PaymentInterval interval(String value) {
+    public Zahlungsintervall interval(String value) {
         return switch (value) {
-            case "monthly" -> PaymentInterval.MONTHLY;
-            case "quarterly" -> PaymentInterval.QUARTERLY;
-            case "half-yearly" -> PaymentInterval.HALF_YEARLY;
-            case "yearly" -> PaymentInterval.YEARLY;
+            case "monthly" -> Zahlungsintervall.MONTHLY;
+            case "quarterly" -> Zahlungsintervall.QUARTERLY;
+            case "half-yearly" -> Zahlungsintervall.HALF_YEARLY;
+            case "yearly" -> Zahlungsintervall.YEARLY;
             default -> throw new IllegalArgumentException("Unknown interval: " + value);
         };
     }
@@ -69,8 +69,8 @@ public class MonthlyExpenditureSteps {
     }
 
     @Given("a {interval} fixed cost {string} of {money} EUR")
-    public void aFixedCostOf(PaymentInterval interval, String name, Money amount) {
-        fixedCosts.add(new FixedCost(name, amount, interval, Category.in(GROUP, name), null));
+    public void aFixkostenpositionOf(Zahlungsintervall interval, String name, Money amount) {
+        fixkostenpositionen.add(new Fixkostenposition(name, amount, interval, Category.in(GROUP, name), null));
     }
 
     @Given("in month {yearMonth} the following expenses:")
@@ -115,16 +115,16 @@ public class MonthlyExpenditureSteps {
                 transactions.add(transaction);
             }
         };
-        FixedCostRepository fixedCostRepository = () -> List.copyOf(fixedCosts);
+        FixkostenpositionRepository fixkostenpositionRepository = () -> List.copyOf(fixkostenpositionen);
         IncomeRepository incomeRepository = () -> averageIncome;
 
         GetMonthlyExpenditureUseCase useCase =
-                new MonthlyExpenditureService(transactionRepository, fixedCostRepository, incomeRepository);
+                new MonthlyExpenditureService(transactionRepository, fixkostenpositionRepository, incomeRepository);
         result = useCase.forMonth(month);
     }
 
     @Then("the fixed costs share is {money} EUR")
-    public void theFixedCostsShareIs(Money expected) {
+    public void theFixkostenpositionenShareIs(Money expected) {
         assertThat(result.fixedCostsMonthly()).isEqualTo(expected);
     }
 
