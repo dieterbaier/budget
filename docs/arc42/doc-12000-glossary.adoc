@@ -5,7 +5,7 @@ title: Glossary
 status: draft
 owner: product owner
 created: '2026-07-03'
-updated: '2026-08-02'
+updated: '2026-09-18'
 reviewed: false
 generated: false
 summary: The term register for the private Budget domain, fixing the spoken term, the identifier and the display form of every domain concept.
@@ -54,22 +54,26 @@ mixed-language sentence from reading as an accident.
 == What the register already binds
 
 This table records the domain as agreed. Rule 3 binds it on the documentation and
-on every domain type added or changed from now on. Four identifiers implemented
-before the register still carry pre-register names — `FixedCost`,
-`PaymentInterval`, `anchorDate` and `monthlyPortion` — and are renamed under
-issue #79, which is what ends the staging. See ADR-022.
+on every type in `domain/model/`. The four identifiers implemented before the
+register — `FixedCost`, `PaymentInterval`, `anchorDate` and `monthlyPortion` —
+were renamed under issue #79, which ended the staging. See ADR-022.
 
 The agreed domain is ahead of the implementation in one further place: a
 `Zahlungsintervall` may be two-yearly, and the implemented enum has no such case
 yet. Issue #10 carries it.
 
-The divergence is a command, not a list to keep current:
+That the old names are gone is a command, not a claim to keep current. It
+prints nothing:
 
 [source,sh]
 ----
 grep -rln 'FixedCost\|PaymentInterval\|anchorDate\|anchor_date\|monthlyPortion' \
-  application/ | grep -v node_modules | grep -v '/build/'
+  application/ | grep -v node_modules | grep -v '/build/' | grep -v '/db/migration/'
 ----
+
+The migrations are excluded because they keep the old names for good: `V1`
+created them, `V3` renamed them, and ADR-010 forbids editing a migration that
+has run.
 
 [cols="1,1,1,3", options="header"]
 |===
