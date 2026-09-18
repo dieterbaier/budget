@@ -13,7 +13,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Entity
-@Table(name = "fixed_costs")
+@Table(name = "fixkostenpositionen")
 public class FixkostenpositionEntity {
 
     @Id
@@ -26,14 +26,14 @@ public class FixkostenpositionEntity {
     @Column(nullable = false, precision = 12, scale = 2)
     private BigDecimal amount;
 
-    @Column(name = "payment_interval", nullable = false, length = 20)
+    @Column(name = "zahlungsintervall", nullable = false, length = 20)
     private String zahlungsintervall;
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "category_id", nullable = false)
     private CategoryEntity category;
 
-    @Column(name = "anchor_date", nullable = false)
+    @Column(name = "letzte_zahlung", nullable = false)
     private LocalDate letzteZahlung;
 
     protected FixkostenpositionEntity() {
