@@ -10,7 +10,7 @@ import java.util.List;
 
 /**
  * Implements the catalogue port on JPA. As with groups, an update mutates the
- * existing row so that every transaction and fixed cost keeps pointing at the
+ * existing row so that every transaction and Fixkostenposition keeps pointing at the
  * same category across a rename (ADR-021).
  */
 @Repository

@@ -12,8 +12,8 @@ public interface CategoryUsage {
     /** How many transactions reference the category with this name. */
     long countTransactionsIn(String categoryName);
 
-    /** How many fixed-cost definitions reference the category with this name. */
-    long countFixedCostsIn(String categoryName);
+    /** How many Fixkostenpositionen reference the category with this name. */
+    long countFixkostenpositionenIn(String categoryName);
 
     /** How many categories belong to the group with this name. */
     long countCategoriesInGroup(String groupName);

@@ -8,7 +8,7 @@ import eu.dieterbaier.budget.application.port.out.CategoryCatalog;
 import eu.dieterbaier.budget.application.port.out.CategoryGroupRepository;
 import eu.dieterbaier.budget.application.port.out.CategoryRepository;
 import eu.dieterbaier.budget.application.port.out.CategoryUsage;
-import eu.dieterbaier.budget.application.port.out.FixedCostRepository;
+import eu.dieterbaier.budget.application.port.out.FixkostenpositionRepository;
 import eu.dieterbaier.budget.application.port.out.IncomeRepository;
 import eu.dieterbaier.budget.application.port.out.TransactionRepository;
 import eu.dieterbaier.budget.application.service.CategoryGroupService;
@@ -29,9 +29,9 @@ public class UseCaseConfig {
     @Bean
     public GetMonthlyExpenditureUseCase getMonthlyExpenditureUseCase(
             TransactionRepository transactionRepository,
-            FixedCostRepository fixedCostRepository,
+            FixkostenpositionRepository fixkostenpositionRepository,
             IncomeRepository incomeRepository) {
-        return new MonthlyExpenditureService(transactionRepository, fixedCostRepository, incomeRepository);
+        return new MonthlyExpenditureService(transactionRepository, fixkostenpositionRepository, incomeRepository);
     }
 
     @Bean

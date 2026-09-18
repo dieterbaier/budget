@@ -5,7 +5,7 @@ title: A Term Register For The Domain Language
 status: accepted
 owner: architecture
 created: '2026-07-31'
-updated: '2026-08-02'
+updated: '2026-09-18'
 reviewed: false
 summary: Every domain concept has one register entry fixing both the term the expert speaks and the identifier used in code; translation is permitted, silent or lossy translation is not.
 derived_from:
@@ -32,7 +32,9 @@ Accepted. Decided by the owner on 2026-07-31, after he observed that the domain
 is spoken in German while the code is English and that nothing in this repository
 had ever decided that. Reworked on 2026-08-01 after his review, and corrected on
 2026-08-02 when applying it found a factual claim in it to be false; see
-<<adr-022-what-the-review-changed,What the review changed>>.
+<<adr-022-what-the-review-changed,What the review changed>>. Rule 3 has been
+unstaged since 2026-09-18, when issue #79 renamed the last identifiers that
+predated the register.
 
 === Decision
 
@@ -64,19 +66,25 @@ Four rules follow.
   language when the expert accepts a term for them, which is a different act from
   translating one.
 
-*Rule 3 is staged, and the staging ends.* From the day the register exists it
-binds the architecture documentation and every domain type added or changed
-after it. Identifiers implemented before the register are not retroactively in
-violation: they are named in the glossary and renamed under issue #79, and the
-rule is unstaged when that issue closes. Until then a reader who finds
-`FixedCost` in `domain/model/` is looking at a known exception with an owner,
-not at a rule being ignored.
+*Rule 3 was staged, and the staging has ended.* From the day the register
+existed it bound the architecture documentation and every domain type added or
+changed after it. The four identifiers implemented before it — `FixedCost`,
+`PaymentInterval`, `anchorDate` and `monthlyPortion` — were a named exception
+with an owner. Issue #79 renamed them to `Fixkostenposition`,
+`Zahlungsintervall`, `letzteZahlung` and `monatsanteil` on 2026-09-18, and rule 3
+now binds `domain/model/` without exception.
 
-Staging it is the weaker choice and is taken deliberately. The alternative was
-to rename before the register could be called binding, which reaches an executed
+The old names survive in one place, and legitimately: the migration history.
+`V1` created `fixed_costs` and `anchor_date`, `V3` renamed them, and
+xref:adr-010-flyway-migrations[ADR-010] forbids editing a migration that has
+run.
+
+Staging it was the weaker choice, taken deliberately. The alternative was to
+rename before the register could be called binding, which reached an executed
 Flyway migration and a question — whether this project's migration history may
-be rewritten — that is not a language question and should not be answered in a
-hurry to make a rule true.
+be rewritten — that is not a language question and should not have been
+answered in a hurry to make a rule true. The owner answered it under #79, and
+the answer is in ADR-010.
 
 What these rules forbid is a translation nobody agreed to and nobody can see —
 the kind a developer performs at the keyboard, in the second it takes to pick an
