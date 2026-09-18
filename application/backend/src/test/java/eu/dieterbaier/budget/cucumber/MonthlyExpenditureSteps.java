@@ -53,13 +53,13 @@ public class MonthlyExpenditureSteps {
     }
 
     @ParameterType("monthly|quarterly|half-yearly|yearly")
-    public Zahlungsintervall interval(String value) {
+    public Zahlungsintervall zahlungsintervall(String value) {
         return switch (value) {
             case "monthly" -> Zahlungsintervall.MONTHLY;
             case "quarterly" -> Zahlungsintervall.QUARTERLY;
             case "half-yearly" -> Zahlungsintervall.HALF_YEARLY;
             case "yearly" -> Zahlungsintervall.YEARLY;
-            default -> throw new IllegalArgumentException("Unknown interval: " + value);
+            default -> throw new IllegalArgumentException("Unknown Zahlungsintervall: " + value);
         };
     }
 
@@ -68,9 +68,9 @@ public class MonthlyExpenditureSteps {
         this.averageIncome = income;
     }
 
-    @Given("a {interval} fixed cost {string} of {money} EUR")
-    public void aFixkostenpositionOf(Zahlungsintervall interval, String name, Money amount) {
-        fixkostenpositionen.add(new Fixkostenposition(name, amount, interval, Category.in(GROUP, name), null));
+    @Given("a {zahlungsintervall} Fixkostenposition {string} of {money} EUR")
+    public void aFixkostenpositionOf(Zahlungsintervall zahlungsintervall, String name, Money amount) {
+        fixkostenpositionen.add(new Fixkostenposition(name, amount, zahlungsintervall, Category.in(GROUP, name), null));
     }
 
     @Given("in month {yearMonth} the following expenses:")
@@ -123,8 +123,8 @@ public class MonthlyExpenditureSteps {
         result = useCase.forMonth(month);
     }
 
-    @Then("the fixed costs share is {money} EUR")
-    public void theFixkostenpositionenShareIs(Money expected) {
+    @Then("the Monatsanteile add up to {money} EUR")
+    public void theMonatsanteileAddUpTo(Money expected) {
         assertThat(result.fixedCostsMonthly()).isEqualTo(expected);
     }
 
