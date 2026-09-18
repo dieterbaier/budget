@@ -120,7 +120,7 @@ public class ManageCategoriesSteps {
             }
 
             @Override
-            public long countFixedCostsIn(String categoryName) {
+            public long countFixkostenpositionenIn(String categoryName) {
                 return 0;
             }
 

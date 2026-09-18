@@ -62,7 +62,7 @@ class HexagonalArchitectureTest {
             // the right intent but fails today with 28 violations, all of them
             // LocalDataSeeder reaching the JPA repositories. Making it pass would mean
             // deleting the seeder or adding save methods to CategoryRepository,
-            // FixedCostRepository and IncomeRepository -- widening three production
+            // FixkostenpositionRepository and IncomeRepository -- widening three production
             // ports for a local-profile convenience. "Development" is the narrower
             // price: no inner layer may name an adapter, the seeder alone may.
             .whereLayer("Adapters").mayOnlyBeAccessedByLayers("Development")

@@ -5,7 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 import eu.dieterbaier.budget.adapter.out.persistence.CategoryGroupJpaRepository;
 import eu.dieterbaier.budget.adapter.out.persistence.CategoryJpaRepository;
-import eu.dieterbaier.budget.adapter.out.persistence.FixedCostJpaRepository;
+import eu.dieterbaier.budget.adapter.out.persistence.FixkostenpositionJpaRepository;
 import eu.dieterbaier.budget.adapter.out.persistence.IncomeEntryJpaRepository;
 import eu.dieterbaier.budget.adapter.out.persistence.TransactionJpaRepository;
 import eu.dieterbaier.budget.application.port.in.ManageCategoriesUseCase;
@@ -55,7 +55,7 @@ class CategoryPersistenceIntegrationTest {
     @Autowired
     private TransactionJpaRepository transactions;
     @Autowired
-    private FixedCostJpaRepository fixedCosts;
+    private FixkostenpositionJpaRepository fixkostenpositionen;
     @Autowired
     private IncomeEntryJpaRepository incomeEntries;
     @Autowired
@@ -66,7 +66,7 @@ class CategoryPersistenceIntegrationTest {
     @BeforeEach
     void clearDatabase() {
         transactions.deleteAll();
-        fixedCosts.deleteAll();
+        fixkostenpositionen.deleteAll();
         incomeEntries.deleteAll();
         categories.deleteAll();
         groups.deleteAll();

@@ -12,15 +12,15 @@ import org.springframework.stereotype.Repository;
 public class CategoryUsageAdapter implements CategoryUsage {
 
     private final TransactionJpaRepository transactions;
-    private final FixedCostJpaRepository fixedCosts;
+    private final FixkostenpositionJpaRepository fixkostenpositionen;
     private final CategoryJpaRepository categories;
 
     public CategoryUsageAdapter(
             TransactionJpaRepository transactions,
-            FixedCostJpaRepository fixedCosts,
+            FixkostenpositionJpaRepository fixkostenpositionen,
             CategoryJpaRepository categories) {
         this.transactions = transactions;
-        this.fixedCosts = fixedCosts;
+        this.fixkostenpositionen = fixkostenpositionen;
         this.categories = categories;
     }
 
@@ -30,8 +30,8 @@ public class CategoryUsageAdapter implements CategoryUsage {
     }
 
     @Override
-    public long countFixedCostsIn(String categoryName) {
-        return fixedCosts.countByCategoryName(categoryName);
+    public long countFixkostenpositionenIn(String categoryName) {
+        return fixkostenpositionen.countByCategoryName(categoryName);
     }
 
     @Override

@@ -97,10 +97,10 @@ class CategoryServiceTest {
     }
 
     @Test
-    void countsBothTransactionsAndFixedCostsBeforeRefusingADeletion() {
+    void countsBothTransactionsAndFixkostenpositionenBeforeRefusingADeletion() {
         given(categories.findByName("Groceries")).willReturn(Optional.of(Category.in(HOUSE, "Groceries")));
         given(usage.countTransactionsIn("Groceries")).willReturn(1L);
-        given(usage.countFixedCostsIn("Groceries")).willReturn(2L);
+        given(usage.countFixkostenpositionenIn("Groceries")).willReturn(2L);
 
         // Singular and plural in one message, and both counts, so the owner
         // learns everything they have to move in one go.
@@ -110,10 +110,10 @@ class CategoryServiceTest {
     }
 
     @Test
-    void refusesADeletionForFixedCostsAlone() {
+    void refusesADeletionForFixkostenpositionenAlone() {
         given(categories.findByName("Groceries")).willReturn(Optional.of(Category.in(HOUSE, "Groceries")));
         given(usage.countTransactionsIn("Groceries")).willReturn(0L);
-        given(usage.countFixedCostsIn("Groceries")).willReturn(1L);
+        given(usage.countFixkostenpositionenIn("Groceries")).willReturn(1L);
 
         assertThatExceptionOfType(NameInUseException.class)
                 .isThrownBy(() -> service.delete("Groceries"))

@@ -6,7 +6,7 @@ import java.time.YearMonth;
 
 /**
  * Result of the current monthly expenditure calculation: the variable costs of
- * the month, the amortized monthly share of all fixed costs, their total, and
+ * the month, the sum of every Fixkostenposition's Monatsanteil, their total, and
  * the comparison against average monthly income (the overspending signal).
  */
 public record MonthlyExpenditure(

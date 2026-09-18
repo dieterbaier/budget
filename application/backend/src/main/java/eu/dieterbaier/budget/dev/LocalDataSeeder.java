@@ -2,12 +2,12 @@ package eu.dieterbaier.budget.dev;
 
 import eu.dieterbaier.budget.adapter.out.persistence.CategoryGroupJpaRepository;
 import eu.dieterbaier.budget.adapter.out.persistence.CategoryJpaRepository;
-import eu.dieterbaier.budget.adapter.out.persistence.FixedCostJpaRepository;
+import eu.dieterbaier.budget.adapter.out.persistence.FixkostenpositionJpaRepository;
 import eu.dieterbaier.budget.adapter.out.persistence.IncomeEntryJpaRepository;
 import eu.dieterbaier.budget.adapter.out.persistence.TransactionJpaRepository;
 import eu.dieterbaier.budget.adapter.out.persistence.entity.CategoryEntity;
 import eu.dieterbaier.budget.adapter.out.persistence.entity.CategoryGroupEntity;
-import eu.dieterbaier.budget.adapter.out.persistence.entity.FixedCostEntity;
+import eu.dieterbaier.budget.adapter.out.persistence.entity.FixkostenpositionEntity;
 import eu.dieterbaier.budget.adapter.out.persistence.entity.IncomeEntryEntity;
 import eu.dieterbaier.budget.adapter.out.persistence.entity.TransactionEntity;
 import org.slf4j.Logger;
@@ -40,16 +40,16 @@ public class LocalDataSeeder implements CommandLineRunner {
     private final CategoryGroupJpaRepository groups;
     private final CategoryJpaRepository categories;
     private final TransactionJpaRepository transactions;
-    private final FixedCostJpaRepository fixedCosts;
+    private final FixkostenpositionJpaRepository fixkostenpositionen;
     private final IncomeEntryJpaRepository incomeEntries;
 
     public LocalDataSeeder(CategoryGroupJpaRepository groups, CategoryJpaRepository categories,
                            TransactionJpaRepository transactions,
-                           FixedCostJpaRepository fixedCosts, IncomeEntryJpaRepository incomeEntries) {
+                           FixkostenpositionJpaRepository fixkostenpositionen, IncomeEntryJpaRepository incomeEntries) {
         this.groups = groups;
         this.categories = categories;
         this.transactions = transactions;
-        this.fixedCosts = fixedCosts;
+        this.fixkostenpositionen = fixkostenpositionen;
         this.incomeEntries = incomeEntries;
     }
 
@@ -72,7 +72,7 @@ public class LocalDataSeeder implements CommandLineRunner {
         transactions.save(new TransactionEntity(LocalDate.of(2026, 7, 5), new BigDecimal("500.00"), groceries, "TRANSFER"));
         transactions.save(expense(LocalDate.of(2026, 6, 30), "999.00", groceries)); // previous month
 
-        fixedCosts.save(new FixedCostEntity("Car insurance", new BigDecimal("1200.00"), "YEARLY", car, LocalDate.of(2026, 3, 15)));
+        fixkostenpositionen.save(new FixkostenpositionEntity("Car insurance", new BigDecimal("1200.00"), "YEARLY", car, LocalDate.of(2026, 3, 15)));
 
         incomeEntries.save(new IncomeEntryEntity(LocalDate.of(2026, 7, 1), new BigDecimal("900.00")));
         incomeEntries.save(new IncomeEntryEntity(LocalDate.of(2026, 6, 1), new BigDecimal("1000.00")));
