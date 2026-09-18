@@ -5,9 +5,9 @@ title: Flyway For Database Migrations
 status: accepted
 owner: architecture
 created: '2026-07-24'
-updated: '2026-07-24'
-reviewed: true
-summary: Plain-SQL, versioned Flyway migrations manage the schema; Hibernate validates against them.
+updated: '2026-09-18'
+reviewed: false
+summary: Plain-SQL, versioned Flyway migrations manage the schema; Hibernate validates against them; an applied migration is never edited.
 tags:
 - decision
 - persistence
@@ -24,13 +24,23 @@ metadata_version: '1.0'
 
 === Status
 
-Accepted. Confirmed by the owner on 2026-07-24.
+Accepted. Confirmed by the owner on 2026-07-24. The owner added the rule that an
+applied migration is never edited on 2026-09-18, when issue #79 had to rename a
+table that `V1` created.
 
 === Decision
 
 Schema changes are versioned, plain-SQL Flyway migrations (`V__` scripts).
 Hibernate runs with `ddl-auto: validate`, so the entities are checked against the
 Flyway-managed schema at startup and never generate it.
+
+*An applied migration is never edited.* A change to the schema, a rename
+included, is a new `V__` script, however few deployments exist. Flyway validates
+every applied script against the checksum it stored, so an edited script stops
+the application from starting on a database that already ran it. The ways out —
+`flyway repair`, or a fresh database — either hide the edit from the one check
+that saw it or discard the owner's data. The script that ran also stays a true
+record of what ran.
 
 === Decision Drivers
 
@@ -72,9 +82,13 @@ s| Sum s| 3 s| 0 s| -1
 
 * Every schema change is an explicit, ordered, reviewable SQL script.
 * `ddl-auto: validate` catches entity/schema drift at startup.
+* The migration directory is append-only, so the schema's history can be read
+  in order and every script in it describes a state that existed.
 
 ==== Negative
 
 * Migrations are hand-written SQL (acceptable and intended here).
+* An early mistake in a schema stays visible in `V1` for good, and a reader
+  meets the old name before the script that corrects it.
 
 include::generated/adr-010-flyway-migrations-traceability.adoc[leveloffset=+1]
