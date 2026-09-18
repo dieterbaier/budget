@@ -5,7 +5,7 @@ title: Hexagonal Boundaries
 status: reviewed
 owner: architecture
 created: '2026-07-25'
-updated: '2026-07-25'
+updated: '2026-09-18'
 reviewed: true
 summary: Dependencies point inwards, outbound ports are interfaces, and adapters reach use cases only through ports.
 tags:
@@ -63,7 +63,7 @@ The adapter ring is declared as reachable from the development layer only, not a
 unreachable outright. The stricter form is the better intent and was tried: it
 fails with 28 violations, every one of them `LocalDataSeeder` reaching the JPA
 repositories. Passing it would mean deleting the seeder or adding save methods to
-`CategoryRepository`, `FixedCostRepository` and `IncomeRepository` — widening
+`CategoryRepository`, `FixkostenpositionRepository` and `IncomeRepository` — widening
 three production ports to serve a local-profile convenience. Naming the
 development layer is the narrower price: no layer inside the hexagon may name an
 adapter, and the seeder alone may. See
