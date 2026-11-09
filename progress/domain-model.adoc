@@ -13,11 +13,11 @@ words it is described in.
       (ADR-022, ADR-023)
 * [x] Agree the term list and rework the glossary — #68, merged as PR #75
 * [x] Show the domain model as a diagram in chapter 8 — #77, merged as PR #80
-* [ ] Rename the implemented identifiers to the registered terms — #79. Answer
-      the Flyway question first
-* [ ] Check that domain types resolve to glossary terms — #69, after #79
+* [x] Rename the implemented identifiers to the registered terms — #79, merged
+      as PR #87 on 9 November 2026
+* [ ] Check that domain types resolve to glossary terms — #69, next
 * [ ] Bring the architecture documentation onto the registered terms — #76.
-      Independent of #79; needs a decision on the six ADRs before it starts
+      Independent of #69; needs a decision on the six ADRs before it starts
 * [ ] Then the slices that carry the corrected terms: #58 `Verwendungszweck`,
       #10 fixed costs including the `letzteZahlung`, #16 `Sollansparung`,
       #62 `Auswertungszeitraum`, #59 `InflationSeries`, #60 transaction name,
@@ -38,11 +38,17 @@ The register exists and is authoritative. Every domain concept has one entry
 fixing the term the owner speaks, the identifier, and the display form ADR-023
 needs.
 
-ADR-022 rule 3 is *staged*, and that is a deliberate weakening recorded in the
-ADR itself. It binds the architecture documentation and every domain type added
-or changed from now on. Four identifiers implemented before the register —
-`FixedCost`, `PaymentInterval`, `anchorDate`, `monthlyPortion` — are a named
-exception with an owner. #79 is what ends the staging.
+ADR-022 rule 3 is no longer staged. The four identifiers implemented before the
+register are renamed: `Fixkostenposition`, `Zahlungsintervall`, `letzteZahlung`,
+`monatsanteil()`, and in the schema `fixkostenpositionen`, `zahlungsintervall`,
+`letzte_zahlung`. The schema moved through a new migration,
+`V3__fixkostenposition_terms.sql`, because ADR-010 now says an applied migration
+is never edited. The old names remain only in `V1__initial_schema.sql` and in
+`V3`, which renames them.
+
+Two things #79 left alone on purpose: `fixedCostsMonthly` belongs to
+`MonthlyExpenditure`, which has no register entry and is #69's to name; ADR-009
+and ADR-014 still say `FixedCost`, which waits on the decision in #76.
 
 Chapter 8 leads with the domain model diagram rather than a bulleted list, drawn
 from ADR-009's aggregate map. `Verwendungszweck` is dashed there because its
@@ -52,12 +58,6 @@ The glossary, chapter 8 and ADR-022 all carry `reviewed: false`: the terms are
 the owner's, the prose is not, and his acceptance is what flips them.
 
 == Open in this topic
-
-*The Flyway question is unanswered and blocks #79.* The rename reaches
-`V1__initial_schema.sql`, a migration that has already run. Whether that becomes
-a new migration or an edit of `V1` is a question about whether this project's
-migration history may be rewritten while it has one deployment and one user. It
-is not a language question, and #79 answers it before touching the schema.
 
 *Two implemented types name concepts with no register entry at all* —
 `TransactionType`, whose `EXPENSE` value has no term, and `MonthlyExpenditure`.
@@ -78,5 +78,9 @@ retired renderings legitimately as examples of the error they name.
 ./build.sh all
 grep -rniE 'anchor[ _]?date' application/ docs/ | grep -v generated
 grep -rln 'FixedCost\|PaymentInterval\|anchorDate\|anchor_date\|monthlyPortion' \
-  application/ | grep -v node_modules | grep -v '/build/'
+  application/ | grep -v node_modules | grep -v '/build/' | grep -v '/.gradle/'
 ----
+
+The second command lists exactly `V1__initial_schema.sql` and
+`V3__fixkostenposition_terms.sql`. The first still finds the old term in the
+documentation; that is #76.
